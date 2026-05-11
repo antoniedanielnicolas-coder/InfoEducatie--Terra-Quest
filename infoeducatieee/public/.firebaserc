@@ -1,7 +1,5 @@
 {
   "projects": {
-    "default": "terraquest-1"
-  },
-  "targets": {},
-  "etags": {}
+    "default": "geoinformatica-bd3b3"
+  }
 }

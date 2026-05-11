@@ -2,7 +2,7 @@ import { initI18n, setLanguage, currentLang, t } from './i18n.js';
 import { initLessons } from './lessons.js';
 import { initQuizzes } from './quizzes.js?v=4';
 import { initAI } from './ai-agent.js';
-import { initSounds, playSound, startAmbientMusic, setSoundTheme, getCurrentSoundTheme, musicLibrary, setBackgroundMusic, getCurrentMusicId } from './sounds.js';
+import { initSounds, playSound, startAmbientMusic, stopAmbientMusic, setSoundTheme, getCurrentSoundTheme, musicLibrary, setBackgroundMusic, getCurrentMusicId } from './sounds.js';
 import { startGame, endGame } from './games.js';
 import { showToast } from './utils.js';
 import { initWorldMap } from './worldmap.js';
@@ -480,6 +480,68 @@ async function initApp() {
         }).join('');
     }
 
+    let shopAudio = null;
+    let currentShopShelfIndex = 0;
+
+    function handleShopLogic(targetPageId) {
+        if (targetPageId === 'shop') {
+            // Stop ambient, play shop music
+            stopAmbientMusic();
+            if (!shopAudio) {
+                shopAudio = new Audio('assets/night-nook-pecan-pie-main-version-43149-02-17 - Copie.mp3');
+                shopAudio.loop = true;
+                shopAudio.volume = 0.5;
+            }
+            shopAudio.play().catch(e => console.log('Shop audio blocked:', e));
+        } else {
+            // Leave shop
+            if (shopAudio) {
+                shopAudio.pause();
+            }
+            // If they returned to a page that needs ambient music, start it again
+            // Only if they've passed the welcome screen
+            if (!document.getElementById('welcome-overlay')) {
+                startAmbientMusic();
+            }
+        }
+    }
+
+    // Shop 3D Setup
+    const shopContainer = document.getElementById('shop-3d-container');
+    const shopPrevBtn = document.getElementById('shop-prev-btn');
+    const shopNextBtn = document.getElementById('shop-next-btn');
+    const shopCategoryTitle = document.getElementById('shop-category-title');
+    
+    if (shopContainer && shopPrevBtn && shopNextBtn && shopCategoryTitle) {
+        const categories = shopContainer.querySelectorAll('.shop-category-view');
+        const totalCategories = categories.length;
+
+        function updateShopView() {
+            shopContainer.style.transform = `translateX(-${currentShopShelfIndex * 100}vw)`;
+            shopCategoryTitle.textContent = categories[currentShopShelfIndex].getAttribute('data-title');
+            shopPrevBtn.style.display = currentShopShelfIndex > 0 ? 'block' : 'none';
+            shopNextBtn.style.display = currentShopShelfIndex < totalCategories - 1 ? 'block' : 'none';
+        }
+
+        shopPrevBtn.addEventListener('click', () => {
+            if (currentShopShelfIndex > 0) {
+                playSound('click');
+                currentShopShelfIndex--;
+                updateShopView();
+            }
+        });
+
+        shopNextBtn.addEventListener('click', () => {
+            if (currentShopShelfIndex < totalCategories - 1) {
+                playSound('click');
+                currentShopShelfIndex++;
+                updateShopView();
+            }
+        });
+
+        updateShopView();
+    }
+
     // Page Navigation
     const navLinks = document.querySelectorAll('[data-page]');
     const pages = document.querySelectorAll('.page');
@@ -504,6 +566,8 @@ async function initApp() {
                 updateHomeStatsUI();
                 populateLeaderboardUI();
             }
+
+            handleShopLogic(targetPageId);
         });
     });
 

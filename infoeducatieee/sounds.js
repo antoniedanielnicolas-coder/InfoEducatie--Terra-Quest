@@ -464,6 +464,10 @@ export function startAmbientMusic() {
     }
 }
 
+export function stopAmbientMusic() {
+    stopMusic();
+}
+
 export function setSoundTheme(themeKey) {
     if (soundThemes[themeKey]) {
         currentSoundTheme = themeKey;

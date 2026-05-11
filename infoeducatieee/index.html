@@ -160,6 +160,9 @@
                 <a href="#" class="nav-link" data-page="tests" data-i18n="nav.tests">
                     <span class="nav-icon">📝</span>Tests
                 </a>
+                <a href="#" class="nav-link" data-page="coaching" data-i18n="nav.coaching">
+                    <span class="nav-icon">🎓</span>Coaching
+                </a>
                 <a href="#" class="nav-link" data-page="shop" data-i18n="nav.shop">
                     <span class="nav-icon">🛒</span>Geo-Market
                 </a>
@@ -807,155 +810,205 @@
             </div>
         </section>
 
+        <!-- COACHING PAGE -->
+        <section id="page-coaching" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Geo <span class="gradient-text">Coaching</span></h1>
+                <p class="page-subtitle">Conectează-te cu experți, profesori și colegi pentru a-ți aprofunda cunoștințele.</p>
+            </div>
+
+            <!-- Questionnaire Overlay (Shown if not completed) -->
+            <div id="coaching-questionnaire" class="glass-card" style="max-width: 600px; margin: 0 auto 40px; padding: 30px; border: 1px solid var(--neon-blue);">
+                <h2 style="font-family:'Orbitron',sans-serif; color:var(--neon-blue); margin-bottom:15px; font-size:1.5rem;">Interese în Geografie</h2>
+                <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem;">Pentru a-ți recomanda cei mai buni mentori, spune-ne cu cine dorești să interacționezi.</p>
+                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:25px;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="colegi" style="width:18px; height:18px;">
+                        <span>Colegi (pentru studiu în echipă)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="profesori" style="width:18px; height:18px;">
+                        <span>Profesori de Geografie</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="experti" style="width:18px; height:18px;">
+                        <span>Experți în Geopolitică</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="geologi" style="width:18px; height:18px;">
+                        <span>Geologi</span>
+                    </label>
+                </div>
+                <button id="coaching-submit-btn" class="btn btn-primary" style="width:100%;">Salvează Preferințele</button>
+            </div>
+
+            <!-- Coaching Dashboard (Hidden initially) -->
+            <div id="coaching-dashboard" class="hidden">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+                    <!-- Mentor 1 -->
+                    <div class="glass-card mentor-card mentor-profesori" style="padding:20px; border-left:4px solid var(--neon-blue); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#00d4ff,#0077ff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">👨‍🏫</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Prof. Alexandru M.</h3>
+                                <div style="color:var(--neon-blue); font-size:0.8rem;">Profesor de Geografie</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Specializat în geografia Europei și schimbări climatice. Disponibil pentru sesiuni de 30 min.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    <!-- Mentor 2 -->
+                    <div class="glass-card mentor-card mentor-experti" style="padding:20px; border-left:4px solid var(--gold-bright); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#d4a843,#a17e2e); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🕵️‍♂️</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Elena V.</h3>
+                                <div style="color:var(--gold-bright); font-size:0.8rem;">Expert Geopolitică</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Analist relații internaționale. Te poate ajuta să înțelegi conflictele moderne.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    <!-- Mentor 3 -->
+                    <div class="glass-card mentor-card mentor-colegi" style="padding:20px; border-left:4px solid var(--success); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#00e676,#00a352); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">👨‍🎓</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Andrei G.</h3>
+                                <div style="color:var(--success); font-size:0.8rem;">Olimpic (Coleg)</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Medaliat cu aur la OIG. Disponibil pentru schimb de experiență și rezolvare teste.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    <!-- Mentor 4 -->
+                    <div class="glass-card mentor-card mentor-geologi" style="padding:20px; border-left:4px solid var(--danger); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#ff4466,#cc0033); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🧗</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Dr. Mihai T.</h3>
+                                <div style="color:var(--danger); font-size:0.8rem;">Geolog</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Expert în resurse naturale și topografie. Îți poate oferi o perspectivă practică.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- SHOP PAGE -->
-        <section id="page-shop" class="page">
-            <div class="max-w-6xl mx-auto p-6 mt-8">
-                <!-- Shop Header -->
-                <div class="bg-[#121a2e]/80 backdrop-blur-xl border border-[#00d4ff]/30 rounded-2xl p-8 mb-8 flex flex-col md:flex-row items-center justify-between shadow-[0_0_40px_rgba(0,212,255,0.15)] relative overflow-hidden">
-                    <div class="absolute -top-20 -right-20 w-64 h-64 bg-[#00d4ff]/10 rounded-full blur-3xl"></div>
-                    <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-[#d4a843]/10 rounded-full blur-3xl"></div>
+        <section id="page-shop" class="page" style="height:100vh; overflow:hidden; padding:0; background:radial-gradient(circle at center, #1a2436 0%, #0a0e17 100%); perspective:1200px;">
+            <!-- Ambient shop music handled via JS -->
+            
+            <!-- Header overlay -->
+            <div style="position:absolute; top:20px; left:20px; z-index:10; background:rgba(10,14,23,0.8); padding:10px 20px; border-radius:15px; border:2px solid #d4a843; backdrop-filter:blur(5px); box-shadow:0 0 20px rgba(212,168,67,0.3);">
+                <h1 style="font-family:'Orbitron',sans-serif; color:white; margin:0; font-size:1.5rem; text-shadow:0 0 10px #d4a843; text-transform:uppercase;">Geo-Market</h1>
+                <div style="color:#d4a843; font-family:'JetBrains Mono',monospace; font-weight:bold; font-size:1.2rem; display:flex; align-items:center; gap:8px;">
+                    <span class="animate-[spin_4s_linear_infinite]">🧭</span> <span id="shop-balance">0</span>
+                </div>
+            </div>
+
+            <!-- Current Category Title -->
+            <div style="position:absolute; top:30px; left:50%; transform:translateX(-50%); z-index:10; background:rgba(0,212,255,0.15); padding:10px 40px; border-radius:30px; border:1px solid rgba(0,212,255,0.5); backdrop-filter:blur(10px); box-shadow:0 0 30px rgba(0,212,255,0.2);">
+                <h2 id="shop-category-title" style="margin:0; font-family:'Orbitron',sans-serif; color:white; font-size:2.2rem; text-shadow:0 0 15px #00d4ff; text-transform:uppercase; letter-spacing:2px;">Profile Banners</h2>
+            </div>
+
+            <!-- Left / Right Navigation -->
+            <button id="shop-prev-btn" style="position:absolute; left:30px; top:50%; transform:translateY(-50%); z-index:10; background:rgba(10,14,23,0.8); color:#00d4ff; border:2px solid #00d4ff; border-radius:50%; width:60px; height:60px; font-size:2rem; cursor:pointer; display:none; transition:all 0.3s; box-shadow:0 0 15px rgba(0,212,255,0.5); backdrop-filter:blur(5px);" onmouseover="this.style.transform='translateY(-50%) scale(1.1)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'">❮</button>
+            <button id="shop-next-btn" style="position:absolute; right:30px; top:50%; transform:translateY(-50%); z-index:10; background:rgba(10,14,23,0.8); color:#00d4ff; border:2px solid #00d4ff; border-radius:50%; width:60px; height:60px; font-size:2rem; cursor:pointer; transition:all 0.3s; box-shadow:0 0 15px rgba(0,212,255,0.5); backdrop-filter:blur(5px);" onmouseover="this.style.transform='translateY(-50%) scale(1.1)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'">❯</button>
+
+            <!-- 3D Shelves Container -->
+            <div id="shop-3d-container" style="width:100%; height:100%; display:flex; transition:transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); transform-style:preserve-3d; padding-top:180px;">
+                
+                <!-- Category 1: Banners -->
+                <div class="shop-category-view" data-title="Profile Banners" style="min-width:100vw; height:100%; display:flex; flex-direction:column; align-items:center; gap:180px;">
                     
-                    <div class="z-10 text-center md:text-left mb-6 md:mb-0">
-                        <h1 class="text-4xl font-orbitron font-bold text-white mb-2 uppercase tracking-widest drop-shadow-lg" data-i18n="shop.title">Geo<span class="text-[#00d4ff]">-Market</span></h1>
-                        <p class="text-gray-400 font-jetbrains text-sm" data-i18n="shop.subtitle">Spend your Compass Coins on exclusive operational assets.</p>
-                    </div>
-
-                    <div class="z-10 bg-[#0a0e17] border border-[#d4a843]/30 px-6 py-4 rounded-xl flex items-center gap-4 shadow-xl">
-                        <div class="text-4xl animate-[spin_4s_linear_infinite] filter drop-shadow-[0_0_10px_rgba(212,168,67,0.5)]">🧭</div>
-                        <div>
-                            <p class="text-xs text-gray-500 font-orbitron uppercase tracking-widest mb-1" data-i18n="shop.funds">Available Funds</p>
-                            <p class="text-3xl font-jetbrains font-bold text-[#d4a843]" id="shop-balance">0</p>
+                    <!-- Shelf 1 -->
+                    <div class="wooden-shelf" style="width:85%; max-width:1100px; height:40px; background:linear-gradient(to bottom, #8b5a2b 0%, #5c3a21 100%); border-radius:8px; box-shadow:0 25px 50px rgba(0,0,0,0.8), inset 0 3px 6px rgba(255,255,255,0.15); position:relative; display:flex; justify-content:center; gap:60px; perspective:800px;">
+                        
+                        <!-- Item 1 -->
+                        <div class="shop-item shop-item-square" data-type="banner" data-price="100" data-id="banner-world" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #00d4ff; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,212,255,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
+                            <div style="position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=400&auto=format&fit=crop') center/cover; opacity:0.6;"></div>
+                            <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; border:1px solid #d4a843; color:#d4a843; font-size:0.7rem; font-family:'JetBrains Mono'; font-weight:bold; z-index:2;">RARE</div>
+                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
+                                <h4 style="color:white; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">World Map</h4>
+                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 100</div>
+                            </div>
                         </div>
+
+                        <!-- Item 2 -->
+                        <div class="shop-item shop-item-square" data-type="banner" data-price="150" data-id="banner-cyberpunk" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #b829e3; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(184,41,227,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
+                            <div style="position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=400&auto=format&fit=crop') center/cover; opacity:0.6;"></div>
+                            <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; border:1px solid #b829e3; color:#b829e3; font-size:0.7rem; font-family:'JetBrains Mono'; font-weight:bold; z-index:2;">EPIC</div>
+                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
+                                <h4 style="color:white; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Cyberpunk</h4>
+                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 150</div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="shop-item shop-item-square" data-type="banner" data-price="300" data-id="banner-topographic" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #f0c94d; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; box-shadow:0 15px 25px rgba(0,0,0,0.6), 0 0 30px rgba(240,201,77,0.3), inset 0 0 20px rgba(240,201,77,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
+                            <div style="position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=400&auto=format&fit=crop') center/cover; opacity:0.6;"></div>
+                            <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; border:1px solid #f0c94d; color:#f0c94d; font-size:0.7rem; font-family:'JetBrains Mono'; font-weight:bold; z-index:2;">LEGENDARY</div>
+                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
+                                <h4 style="color:#f0c94d; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px; text-shadow:0 0 5px #f0c94d;">Topographic</h4>
+                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 300</div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- Shop Tabs -->
-                <div class="flex gap-4 mb-8 overflow-x-auto pb-2 shop-tabs-container">
-                    <button class="shop-tab-tw active flex-1 py-3 px-6 rounded-lg bg-gradient-to-r from-[#00d4ff]/20 to-[#0077ff]/20 border border-[#00d4ff]/50 text-white font-bold transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] min-w-[150px]" data-tab="banners" data-i18n="shop.tab_banners">
-                        🖼️ Profile Banners
-                    </button>
-                    <button class="shop-tab-tw flex-1 py-3 px-6 rounded-lg bg-[#121a2e] border border-white/10 text-gray-400 font-bold hover:bg-white/5 transition-all min-w-[150px]" data-tab="avatars" data-i18n="shop.tab_avatars">
-                        👤 Agent Avatars
-                    </button>
-                    <button class="shop-tab-tw flex-1 py-3 px-6 rounded-lg bg-[#121a2e] border border-white/10 text-gray-400 font-bold hover:bg-white/5 transition-all min-w-[150px]" data-tab="themes" data-i18n="shop.tab_themes">
-                        🎨 UI Themes
-                    </button>
-                </div>
-
-                <!-- Shop Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-grid">
+                <!-- Category 2: Avatars -->
+                <div class="shop-category-view" data-title="Agent Avatars" style="min-width:100vw; height:100%; display:flex; flex-direction:column; align-items:center; gap:180px;">
                     
-                    <!-- Item 1 -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#00d4ff]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(0,212,255,0.2)] shop-item" data-type="banner" data-price="100" data-id="banner-world">
-                        <div class="h-40 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121a2e] to-transparent"></div>
-                            <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs font-jetbrains text-[#d4a843] border border-[#d4a843]/30">RARE</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_banner_world_name">World Map Banner</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_banner_world_desc">A classic cartographic representation for true geographers.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 100
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00d4ff] text-white hover:text-[#0a0e17] border border-white/20 hover:border-[#00d4ff] px-4 py-2 rounded font-bold transition-all" data-i18n="shop.btn_purchase">Purchase</button>
+                    <!-- Shelf 1 -->
+                    <div class="wooden-shelf" style="width:85%; max-width:1100px; height:40px; background:linear-gradient(to bottom, #8b5a2b 0%, #5c3a21 100%); border-radius:8px; box-shadow:0 25px 50px rgba(0,0,0,0.8), inset 0 3px 6px rgba(255,255,255,0.15); position:relative; display:flex; justify-content:center; gap:60px;">
+                        
+                        <!-- Item 1 -->
+                        <div class="shop-item shop-item-square" data-type="avatar" data-price="250" data-id="avatar-explorer" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #00e676; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding-top:15px; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,230,118,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
+                            <div style="font-size:4rem; filter:drop-shadow(0 0 10px rgba(0,230,118,0.5));">🧗</div>
+                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
+                                <h4 style="color:white; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Explorer</h4>
+                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 250</div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Item 2 -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#00d4ff]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(0,212,255,0.2)] shop-item" data-type="banner" data-price="150" data-id="banner-cyberpunk">
-                        <div class="h-40 bg-[url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121a2e] to-transparent"></div>
-                            <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs font-jetbrains text-[#b829e3] border border-[#b829e3]/30">EPIC</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_banner_cyber_name">Cyberpunk City</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_banner_cyber_desc">Neon lights and futuristic metropolis aesthetics.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 150
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00d4ff] text-white hover:text-[#0a0e17] border border-white/20 hover:border-[#00d4ff] px-4 py-2 rounded font-bold transition-all" data-i18n="shop.btn_purchase">Purchase</button>
-                            </div>
-                        </div>
                     </div>
-
-                    <!-- Item 3 -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-[#d4a843]/30 hover:border-[#d4a843] transition-all duration-300 group hover:-translate-y-2 shadow-[0_0_15px_rgba(212,168,67,0.1)] hover:shadow-[0_10px_30px_rgba(212,168,67,0.3)] shop-item relative" data-type="banner" data-price="300" data-id="banner-topographic">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#d4a843] to-transparent opacity-50"></div>
-                        <div class="h-40 bg-[url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121a2e] to-transparent"></div>
-                            <div class="absolute top-3 right-3 bg-[#d4a843]/20 backdrop-blur-sm px-2 py-1 rounded text-xs font-jetbrains text-[#f0c94d] border border-[#d4a843]">LEGENDARY</div>
-                        </div>
-                        <div class="p-5 relative z-10">
-                            <h4 class="text-xl font-orbitron font-bold text-[#f0c94d] mb-2" data-i18n="shop.item_banner_topo_name">Topographic Master</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_banner_topo_desc">The ultimate agent dossier background. Exudes authority.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 300
-                                </div>
-                                <button class="buy-btn bg-gradient-to-r from-[#d4a843] to-[#a17e2e] text-[#0a0e17] hover:scale-105 px-4 py-2 rounded font-bold transition-transform shadow-[0_0_15px_rgba(212,168,67,0.4)]" data-i18n="shop.btn_purchase">Purchase</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 4: Avatar -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#00e676]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(0,230,118,0.2)] shop-item" data-type="avatar" data-price="250" data-id="avatar-explorer">
-                        <div class="h-40 bg-[#0a0e17] flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-50"></div>
-                            <div class="text-6xl group-hover:scale-125 transition-transform duration-500 filter drop-shadow-[0_0_15px_rgba(0,230,118,0.5)]">🧗</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_avatar_explorer_name">Field Explorer</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_avatar_explorer_desc">An avatar for those who prefer boots on the ground.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 250
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00e676] text-white hover:text-[#0a0e17] border border-white/20 hover:border-[#00e676] px-4 py-2 rounded font-bold transition-all">Purchase</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 5: Theme -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#ff4466]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(255,68,102,0.2)] shop-item" data-type="theme" data-price="400" data-id="theme-volcanic">
-                        <div class="h-40 bg-gradient-to-br from-[#121a2e] to-[#4a0011] flex items-center justify-center relative">
-                            <div class="w-16 h-16 rounded-full bg-[#ff4466] blur-xl absolute"></div>
-                            <div class="text-5xl relative z-10">🌋</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_theme_volcanic_name">Volcanic Red UI</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_theme_volcanic_desc">Unlock the aggressive Volcanic Red theme for your dossier.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 400
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#ff4466] text-white hover:text-white border border-white/20 hover:border-[#ff4466] px-4 py-2 rounded font-bold transition-all">Purchase</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 6: Power-Up -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-[#00d4ff]/30 hover:border-[#00d4ff] transition-all duration-300 group hover:-translate-y-2 shadow-[0_0_15px_rgba(0,212,255,0.1)] hover:shadow-[0_10px_30px_rgba(0,212,255,0.3)] shop-item relative" data-type="powerup" data-price="50" data-id="powerup-chronos">
-                        <div class="h-40 bg-[#0a0e17] flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#00d4ff]/20 to-transparent opacity-50"></div>
-                            <div class="text-6xl group-hover:rotate-12 transition-transform duration-500 filter drop-shadow-[0_0_15px_rgba(0,212,255,0.8)]">⏳</div>
-                            <div class="absolute top-3 right-3 bg-[#00d4ff]/20 px-2 py-1 rounded text-xs font-jetbrains text-[#00d4ff] border border-[#00d4ff]">PASSIVE</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-[#00d4ff] mb-2" data-i18n="shop.item_powerup_chronos_name">Chronos Protocol</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_powerup_chronos_desc">Grants a permanent +10 seconds time extension in the Timeline Challenge.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 50
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00d4ff] text-white hover:text-[#0a0e17] border border-[#00d4ff]/50 hover:border-[#00d4ff] px-4 py-2 rounded font-bold transition-all" data-i18n="shop.btn_purchase">Purchase</button>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+
+                <!-- Category 3: Themes & Powerups -->
+                <div class="shop-category-view" data-title="Themes & Upgrades" style="min-width:100vw; height:100%; display:flex; flex-direction:column; align-items:center; gap:180px;">
+                    
+                    <!-- Shelf 1 -->
+                    <div class="wooden-shelf" style="width:85%; max-width:1100px; height:40px; background:linear-gradient(to bottom, #8b5a2b 0%, #5c3a21 100%); border-radius:8px; box-shadow:0 25px 50px rgba(0,0,0,0.8), inset 0 3px 6px rgba(255,255,255,0.15); position:relative; display:flex; justify-content:center; gap:60px;">
+                        
+                        <!-- Theme Volcanic -->
+                        <div class="shop-item shop-item-square" data-type="theme" data-price="400" data-id="theme-volcanic" style="position:relative; top:-150px; width:160px; height:160px; background:linear-gradient(to bottom right, #4a0011, #121a2e); border:3px solid #ff4466; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding-top:15px; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,68,102,0.3); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
+                            <div style="font-size:4rem; filter:drop-shadow(0 0 10px rgba(255,68,102,0.8));">🌋</div>
+                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
+                                <h4 style="color:#ff4466; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Volcanic Red UI</h4>
+                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 400</div>
+                            </div>
+                        </div>
+
+                        <!-- Powerup Chronos -->
+                        <div class="shop-item shop-item-square" data-type="powerup" data-price="50" data-id="powerup-chronos" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #00d4ff; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding-top:15px; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,212,255,0.3); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
+                            <div style="font-size:4rem; filter:drop-shadow(0 0 10px rgba(0,212,255,0.8));">⏳</div>
+                            <div style="position:absolute; top:10px; left:10px; background:rgba(0,212,255,0.2); padding:2px 6px; border-radius:6px; border:1px solid #00d4ff; color:#00d4ff; font-size:0.6rem; font-family:'JetBrains Mono'; font-weight:bold;">PASSIVE</div>
+                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
+                                <h4 style="color:#00d4ff; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Chronos</h4>
+                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 50</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </section>
 
