@@ -1,4 +1,4 @@
-import { initI18n, setLanguage, currentLang, t } from './i18n.js';
+import { initI18n, setLanguage, currentLang, t, updateDOMTranslations } from './i18n.js';
 import { initLessons } from './lessons.js';
 import { initQuizzes } from './quizzes.js?v=4';
 import { initAI } from './ai-agent.js';
@@ -622,26 +622,24 @@ async function initApp() {
     const langToggle = document.getElementById('lang-toggle');
     const langFlag = document.getElementById('current-lang-flag');
     if (langToggle && langFlag) {
+        // Set initial flag based on saved/default language
         langFlag.innerText = currentLang === 'ro' ? '🇷🇴' : '🇬🇧';
         langToggle.addEventListener('click', () => {
+            // currentLang is a live ES module binding — always reads the latest value
             const newLang = currentLang === 'ro' ? 'en' : 'ro';
             setLanguage(newLang);
             langFlag.innerText = newLang === 'ro' ? '🇷🇴' : '🇬🇧';
         });
     }
 
-    // Listen for language changes to re-render dynamic content
+    // Listen for language changes to re-render ALL dynamic content
     document.addEventListener('languageChanged', () => {
-        // Re-render lessons and quizzes which use currentLang internally
-        initLessons(); 
+        // 1. Update every element that has a data-i18n attribute
+        updateDOMTranslations();
+        // 2. Re-render dynamically-built lesson module cards and lesson lists
+        initLessons();
+        // 3. Re-render quiz content
         initQuizzes();
-        
-        // Re-render games selection if on games page
-        const gamesSelection = document.getElementById('games-selection');
-        if (gamesSelection && !gamesSelection.classList.contains('hidden')) {
-            // Need a way to re-show selection. For now, just re-init games logic if needed
-            // Actually startGame handle views, so we just need to ensure the selection screen is refreshed
-        }
     });
 
     // Game Launch Event Listener (from lessons or elsewhere)

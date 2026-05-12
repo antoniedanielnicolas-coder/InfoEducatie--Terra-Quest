@@ -5,8 +5,9 @@
 
 import { playSound } from './sounds.js';
 import { showToast } from './utils.js';
+import { currentLang, t } from './i18n.js';
 
-let currentYear = "9"; // Default
+let currentYear = "10"; // Default — matches the active tab in HTML
 
 export const modulesData = [
   // --- CLASA A 9-A ---
@@ -2761,9 +2762,8 @@ export const lessonsData = [
   },
 ];
 
-// INITIALIZATION
+// INITIALIZATION — year tabs set up on DOMContentLoaded only (translations init handled by app.js)
 document.addEventListener('DOMContentLoaded', () => {
-    initLessons();
     setupYearTabs();
 });
 
@@ -2779,8 +2779,7 @@ function setupYearTabs() {
     });
 }
 
-export async function renderModules() {
-    const { currentLang, t } = await import('./i18n.js');
+export function renderModules() {
     const grid = document.getElementById('lessons-grid');
     if (!grid) return;
 
@@ -2798,8 +2797,8 @@ export async function renderModules() {
                 <div class="module-tag" style="border-color: ${module.color}; color: ${module.color}">${t('lessons.count_label') || 'Lessons'}: ${lessonCount}</div>
             </div>
             <div class="module-body">
-                <h3>${module.title[currentLang]}</h3>
-                <p>${module.desc[currentLang]}</p>
+                <h3>${module.title[currentLang] || module.title['en']}</h3>
+                <p>${module.desc[currentLang] || module.desc['en']}</p>
             </div>
             <div class="module-footer">
                 <button class="module-open-btn" style="background: ${module.color}">${t('lessons.btn_open') || 'Open Module'}</button>
@@ -2823,14 +2822,13 @@ function openModule(module) {
     renderModuleLessons(module);
 }
 
-export async function renderModuleLessons(module) {
-    const { currentLang, t } = await import('./i18n.js');
+export function renderModuleLessons(module) {
     const grid = document.getElementById('lessons-grid');
     const detail = document.getElementById('lesson-detail');
     const titleDisplay = document.getElementById('module-title-display');
     const listContainer = document.getElementById('module-lessons-list');
 
-    titleDisplay.textContent = module.title[currentLang];
+    titleDisplay.textContent = module.title[currentLang] || module.title['en'];
     listContainer.innerHTML = '';
 
     const lessons = lessonsData.filter(l => l.module === module.id);
@@ -2844,7 +2842,7 @@ export async function renderModuleLessons(module) {
         item.className = 'lesson-list-item';
         item.innerHTML = `
             <div class="lesson-info">
-                <h4>${lesson.title[currentLang]}</h4>
+                <h4>${lesson.title[currentLang] || lesson.title['en']}</h4>
                 <div class="lesson-meta">
                     <span class="xp-badge">⚡ ${lesson.xpReward} XP</span>
                 </div>
@@ -2859,19 +2857,18 @@ export async function renderModuleLessons(module) {
     detail.classList.remove('hidden');
 }
 
-export async function showLessonContent(lesson) {
-    const { currentLang, t } = await import('./i18n.js');
-    const modal = document.getElementById('lesson-modal-overlay');
+export function showLessonContent(lesson) {
+    const modal = document.getElementById('lesson-modal') || document.getElementById('lesson-modal-overlay');
     if (!modal) return;
     
     const title = document.getElementById('lesson-modal-title');
     const body = document.getElementById('lesson-modal-body');
     const completeBtn = document.getElementById('lesson-complete-btn');
 
-    title.textContent = lesson.title[currentLang];
+    title.textContent = lesson.title[currentLang] || lesson.title['en'];
     let contentHTML = '';
     if (lesson.image) contentHTML += `<div class="lesson-image-container"><img src="${lesson.image}"></div>`;
-    contentHTML += `<div class="lesson-rich-content">${lesson.content[currentLang]}</div>`;
+    contentHTML += `<div class="lesson-rich-content">${lesson.content[currentLang] || lesson.content['en']}</div>`;
     body.innerHTML = contentHTML;
 
     // Attach game launchers
@@ -2911,7 +2908,7 @@ export function initLessons() {
     }
 
     // Modal close logic
-    const modal = document.getElementById('lesson-modal-overlay');
+    const modal = document.getElementById('lesson-modal') || document.getElementById('lesson-modal-overlay');
     const closeBtn = document.getElementById('lesson-modal-close');
     const completeBtn = document.getElementById('lesson-complete-btn');
     
