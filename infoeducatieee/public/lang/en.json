@@ -219,7 +219,8 @@
       "semi_pres": "Semi-Presidential Republic",
       "one_party": "One-Party State",
       "territory": "Territory / Disputed",
-      "federal": "Federal Republic"
+      "federal": "Federal Republic",
+      "other": "Other / Unclassified"
     },
     "current_map": "🌍 Current Map",
     "historic_map": "📜 Historical Map",

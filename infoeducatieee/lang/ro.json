@@ -192,7 +192,13 @@
     "subtitle": "Asistentul tău personal de geografie politică",
     "greeting": "Salut! Sunt asistentul tău GeoAI. Întreabă-mă orice despre geografie politică!",
     "placeholder": "Scrie întrebarea ta de geografie aici...",
-    "btn_send": "Trimite"
+    "btn_send": "Trimite",
+    "mode_label": "Mod",
+    "voice_label": "Voce",
+    "mode_normal": "Normal",
+    "mode_learning": "Învățare",
+    "mode_assistant": "Asistent",
+    "mode_test": "Test"
   },
   "common": {
     "level": "Nivel",
@@ -218,7 +224,8 @@
       "semi_pres": "Republică Semi-Prezidențială",
       "one_party": "Stat cu un singur partid",
       "territory": "Teritoriu / Disputat",
-      "federal": "Republică Federală"
+      "federal": "Republică Federală",
+      "other": "Altele / Neclasificate"
     },
     "current_map": "🌍 Harta Curentă",
     "historic_map": "📜 Harta Istorică",

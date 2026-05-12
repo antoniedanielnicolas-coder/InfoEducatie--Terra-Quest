@@ -218,7 +218,8 @@
       "semi_pres": "Republică Semi-Prezidențială",
       "one_party": "Stat cu un singur partid",
       "territory": "Teritoriu / Disputat",
-      "federal": "Republică Federală"
+      "federal": "Republică Federală",
+      "other": "Altele / Neclasificate"
     },
     "current_map": "🌍 Harta Curentă",
     "historic_map": "📜 Harta Istorică",

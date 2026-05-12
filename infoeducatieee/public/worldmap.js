@@ -144,6 +144,7 @@ const countryData = {
 let worldMapInstance = null;
 let mapInitialized = false;
 let geoJsonLayer = null;
+window.activeFilter = null;
 
 export function initWorldMap() {
     // Reset initialization flag when navigating to other pages
@@ -194,12 +195,21 @@ function renderWorldMap() {
             geoJsonLayer = L.geoJSON(data, {
                 style: feature => {
                     const iso = feature.properties['ISO3166-1-Alpha-3'] || feature.properties.ISO_A3;
-                    const info = countryData[iso];
+                    let info = countryData[iso];
+                    if (!info) {
+                        info = {
+                            type: 'Altele / Neclasificate',
+                            color: '#556677',
+                            flag: '🏳️',
+                            name: feature.properties.ADMIN || feature.properties.name || feature.properties.SOVEREIGN || 'Unknown'
+                        };
+                        countryData[iso] = info;
+                    }
                     return {
-                        fillColor: info ? info.color : '#1a2440',
-                        fillOpacity: info ? 0.72 : 0.25,
-                        color: info ? '#00d4ff' : 'rgba(0,212,255,0.1)',
-                        weight: info ? 1.5 : 0.5,
+                        fillColor: info.color,
+                        fillOpacity: 0.72,
+                        color: '#00d4ff',
+                        weight: 1.5,
                         className: 'country-feature'
                     };
                 },
@@ -211,13 +221,16 @@ function renderWorldMap() {
                         layer.bindTooltip(`<strong>${info.flag} ${info.name}</strong><br>${info.type}`, { sticky: true });
                         
                         layer.on('mouseover', function() {
+                            if (window.activeFilter && info.type !== window.activeFilter) return;
                             this.setStyle({ fillOpacity: 0.95, weight: 2.5 });
                             this.bringToFront();
                         });
                         layer.on('mouseout', function() {
+                            if (window.activeFilter && info.type !== window.activeFilter) return;
                             this.setStyle({ fillOpacity: 0.72, weight: 1.5 });
                         });
                         layer.on('click', async function(e) {
+                            if (window.activeFilter && info.type !== window.activeFilter) return;
                             const originalFill = info.color;
                             this.setStyle({ fillColor: '#ffffff', fillOpacity: 1, weight: 3 });
                             setTimeout(() => {
@@ -237,5 +250,64 @@ function renderWorldMap() {
                     }
                 }
             }).addTo(worldMapInstance);
+
+            // Add Legend Filter Logic
+            document.querySelectorAll('.legend-item').forEach(item => {
+                // Ensure we don't add multiple listeners if init is called multiple times
+                item.replaceWith(item.cloneNode(true));
+            });
+
+            document.querySelectorAll('.legend-item').forEach(item => {
+                item.style.cursor = 'pointer';
+                item.style.transition = 'all 0.3s ease';
+                item.addEventListener('click', () => {
+                    const type = item.getAttribute('data-type');
+                    
+                    if (window.activeFilter === type) {
+                        window.activeFilter = null; // Toggle off
+                        document.querySelectorAll('.legend-item').forEach(li => {
+                            li.style.opacity = '1';
+                            li.style.transform = 'scale(1)';
+                            li.style.border = 'none';
+                        });
+                    } else {
+                        window.activeFilter = type;
+                        document.querySelectorAll('.legend-item').forEach(li => {
+                            li.style.opacity = '0.4';
+                            li.style.transform = 'scale(0.95)';
+                            li.style.border = 'none';
+                        });
+                        item.style.opacity = '1';
+                        item.style.transform = 'scale(1.05)';
+                        item.style.border = '1px solid #00d4ff';
+                        item.style.borderRadius = '8px';
+                        item.style.padding = '4px';
+                    }
+
+                    if (geoJsonLayer) {
+                        geoJsonLayer.eachLayer(layer => {
+                            const iso = layer.feature.properties['ISO3166-1-Alpha-3'] || layer.feature.properties.ISO_A3;
+                            const info = countryData[iso];
+                            if (info) {
+                                if (!window.activeFilter || info.type === window.activeFilter) {
+                                    layer.setStyle({
+                                        fillColor: info.color,
+                                        fillOpacity: 0.72,
+                                        color: '#00d4ff',
+                                        weight: 1.5
+                                    });
+                                } else {
+                                    layer.setStyle({
+                                        fillColor: '#1a2440',
+                                        fillOpacity: 0.15,
+                                        color: 'rgba(0,212,255,0.05)',
+                                        weight: 0.5
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
         });
 }

@@ -901,115 +901,557 @@
         </section>
 
         <!-- SHOP PAGE -->
-        <section id="page-shop" class="page" style="height:100vh; overflow:hidden; padding:0; background:radial-gradient(circle at center, #1a2436 0%, #0a0e17 100%); perspective:1200px;">
-            <!-- Ambient shop music handled via JS -->
-            
-            <!-- Header overlay -->
-            <div style="position:absolute; top:20px; left:20px; z-index:10; background:rgba(10,14,23,0.8); padding:10px 20px; border-radius:15px; border:2px solid #d4a843; backdrop-filter:blur(5px); box-shadow:0 0 20px rgba(212,168,67,0.3);">
-                <h1 style="font-family:'Orbitron',sans-serif; color:white; margin:0; font-size:1.5rem; text-shadow:0 0 10px #d4a843; text-transform:uppercase;">Geo-Market</h1>
-                <div style="color:#d4a843; font-family:'JetBrains Mono',monospace; font-weight:bold; font-size:1.2rem; display:flex; align-items:center; gap:8px;">
-                    <span class="animate-[spin_4s_linear_infinite]">🧭</span> <span id="shop-balance">0</span>
+                <!-- SHOP PAGE -->
+        <section id="page-shop" class="page" style="padding:0;overflow:hidden;background:linear-gradient(160deg,#0a1628 0%,#0d1f3c 50%,#0a1628 100%);position:relative;height:calc(100vh - 70px);">
+
+            <!-- Ambient radial glow -->
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(0,150,255,0.06) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+
+            <!-- ═══ TOP HEADER BAR ═══ -->
+            <div style="position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 50px 0;">
+                <div>
+                    <h1 style="font-family:'Orbitron',sans-serif;color:white;margin:0;font-size:1.7rem;letter-spacing:6px;text-shadow:0 0 25px rgba(0,180,255,0.5);">GEO<span style="color:#d4a843;">-MARKET</span></h1>
+                    <p style="color:rgba(255,255,255,0.3);font-size:0.7rem;margin:2px 0 0;font-family:'JetBrains Mono',monospace;letter-spacing:3px;">BROWSE · BUY · UPGRADE</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:20px;">
+                    <div style="background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.35);padding:8px 20px;border-radius:40px;display:flex;align-items:center;gap:8px;box-shadow:0 0 18px rgba(212,168,67,0.1);">
+                        <span style="font-size:1.2rem;">🧭</span>
+                        <span id="shop-balance" style="color:#d4a843;font-family:'JetBrains Mono',monospace;font-weight:bold;font-size:1.4rem;">0</span>
+                        <span style="color:rgba(255,255,255,0.2);font-size:0.65rem;font-family:'Orbitron',monospace;">CP</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Current Category Title -->
-            <div style="position:absolute; top:30px; left:50%; transform:translateX(-50%); z-index:10; background:rgba(0,212,255,0.15); padding:10px 40px; border-radius:30px; border:1px solid rgba(0,212,255,0.5); backdrop-filter:blur(10px); box-shadow:0 0 30px rgba(0,212,255,0.2);">
-                <h2 id="shop-category-title" style="margin:0; font-family:'Orbitron',sans-serif; color:white; font-size:2.2rem; text-shadow:0 0 15px #00d4ff; text-transform:uppercase; letter-spacing:2px;">Profile Banners</h2>
+            <!-- ═══ CATEGORY TABS ═══ -->
+            <div style="position:relative;z-index:10;display:flex;justify-content:center;gap:6px;margin:12px 0 8px;">
+                <button class="shop-tab-btn active" data-cat="0" onclick="switchShopCat(0,this)" style="padding:7px 22px;border-radius:25px;border:1px solid rgba(0,212,255,0.5);background:rgba(0,212,255,0.15);color:#00d4ff;font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;cursor:pointer;transition:all 0.3s;">🖼️ BANNERE</button>
+                <button class="shop-tab-btn" data-cat="1" onclick="switchShopCat(1,this)" style="padding:7px 22px;border-radius:25px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;cursor:pointer;transition:all 0.3s;">🧗 AVATARE</button>
+                <button class="shop-tab-btn" data-cat="2" onclick="switchShopCat(2,this)" style="padding:7px 22px;border-radius:25px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;cursor:pointer;transition:all 0.3s;">⚡ UPGRADE</button>
             </div>
 
-            <!-- Left / Right Navigation -->
-            <button id="shop-prev-btn" style="position:absolute; left:30px; top:50%; transform:translateY(-50%); z-index:10; background:rgba(10,14,23,0.8); color:#00d4ff; border:2px solid #00d4ff; border-radius:50%; width:60px; height:60px; font-size:2rem; cursor:pointer; display:none; transition:all 0.3s; box-shadow:0 0 15px rgba(0,212,255,0.5); backdrop-filter:blur(5px);" onmouseover="this.style.transform='translateY(-50%) scale(1.1)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'">❮</button>
-            <button id="shop-next-btn" style="position:absolute; right:30px; top:50%; transform:translateY(-50%); z-index:10; background:rgba(10,14,23,0.8); color:#00d4ff; border:2px solid #00d4ff; border-radius:50%; width:60px; height:60px; font-size:2rem; cursor:pointer; transition:all 0.3s; box-shadow:0 0 15px rgba(0,212,255,0.5); backdrop-filter:blur(5px);" onmouseover="this.style.transform='translateY(-50%) scale(1.1)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'">❯</button>
-
-            <!-- 3D Shelves Container -->
-            <div id="shop-3d-container" style="width:100%; height:100%; display:flex; transition:transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); transform-style:preserve-3d; padding-top:180px;">
-                
-                <!-- Category 1: Banners -->
-                <div class="shop-category-view" data-title="Profile Banners" style="min-width:100vw; height:100%; display:flex; flex-direction:column; align-items:center; gap:180px;">
-                    
-                    <!-- Shelf 1 -->
-                    <div class="wooden-shelf" style="width:85%; max-width:1100px; height:40px; background:linear-gradient(to bottom, #8b5a2b 0%, #5c3a21 100%); border-radius:8px; box-shadow:0 25px 50px rgba(0,0,0,0.8), inset 0 3px 6px rgba(255,255,255,0.15); position:relative; display:flex; justify-content:center; gap:60px; perspective:800px;">
-                        
-                        <!-- Item 1 -->
-                        <div class="shop-item shop-item-square" data-type="banner" data-price="100" data-id="banner-world" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #00d4ff; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,212,255,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
-                            <div style="position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=400&auto=format&fit=crop') center/cover; opacity:0.6;"></div>
-                            <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; border:1px solid #d4a843; color:#d4a843; font-size:0.7rem; font-family:'JetBrains Mono'; font-weight:bold; z-index:2;">RARE</div>
-                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
-                                <h4 style="color:white; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">World Map</h4>
-                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 100</div>
-                            </div>
-                        </div>
-
-                        <!-- Item 2 -->
-                        <div class="shop-item shop-item-square" data-type="banner" data-price="150" data-id="banner-cyberpunk" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #b829e3; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(184,41,227,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
-                            <div style="position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=400&auto=format&fit=crop') center/cover; opacity:0.6;"></div>
-                            <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; border:1px solid #b829e3; color:#b829e3; font-size:0.7rem; font-family:'JetBrains Mono'; font-weight:bold; z-index:2;">EPIC</div>
-                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
-                                <h4 style="color:white; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Cyberpunk</h4>
-                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 150</div>
-                            </div>
-                        </div>
-
-                        <!-- Item 3 -->
-                        <div class="shop-item shop-item-square" data-type="banner" data-price="300" data-id="banner-topographic" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #f0c94d; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; box-shadow:0 15px 25px rgba(0,0,0,0.6), 0 0 30px rgba(240,201,77,0.3), inset 0 0 20px rgba(240,201,77,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
-                            <div style="position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=400&auto=format&fit=crop') center/cover; opacity:0.6;"></div>
-                            <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); padding:2px 8px; border-radius:8px; border:1px solid #f0c94d; color:#f0c94d; font-size:0.7rem; font-family:'JetBrains Mono'; font-weight:bold; z-index:2;">LEGENDARY</div>
-                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
-                                <h4 style="color:#f0c94d; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px; text-shadow:0 0 5px #f0c94d;">Topographic</h4>
-                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 300</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Category 2: Avatars -->
-                <div class="shop-category-view" data-title="Agent Avatars" style="min-width:100vw; height:100%; display:flex; flex-direction:column; align-items:center; gap:180px;">
-                    
-                    <!-- Shelf 1 -->
-                    <div class="wooden-shelf" style="width:85%; max-width:1100px; height:40px; background:linear-gradient(to bottom, #8b5a2b 0%, #5c3a21 100%); border-radius:8px; box-shadow:0 25px 50px rgba(0,0,0,0.8), inset 0 3px 6px rgba(255,255,255,0.15); position:relative; display:flex; justify-content:center; gap:60px;">
-                        
-                        <!-- Item 1 -->
-                        <div class="shop-item shop-item-square" data-type="avatar" data-price="250" data-id="avatar-explorer" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #00e676; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding-top:15px; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,230,118,0.2); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
-                            <div style="font-size:4rem; filter:drop-shadow(0 0 10px rgba(0,230,118,0.5));">🧗</div>
-                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
-                                <h4 style="color:white; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Explorer</h4>
-                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 250</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Category 3: Themes & Powerups -->
-                <div class="shop-category-view" data-title="Themes & Upgrades" style="min-width:100vw; height:100%; display:flex; flex-direction:column; align-items:center; gap:180px;">
-                    
-                    <!-- Shelf 1 -->
-                    <div class="wooden-shelf" style="width:85%; max-width:1100px; height:40px; background:linear-gradient(to bottom, #8b5a2b 0%, #5c3a21 100%); border-radius:8px; box-shadow:0 25px 50px rgba(0,0,0,0.8), inset 0 3px 6px rgba(255,255,255,0.15); position:relative; display:flex; justify-content:center; gap:60px;">
-                        
-                        <!-- Theme Volcanic -->
-                        <div class="shop-item shop-item-square" data-type="theme" data-price="400" data-id="theme-volcanic" style="position:relative; top:-150px; width:160px; height:160px; background:linear-gradient(to bottom right, #4a0011, #121a2e); border:3px solid #ff4466; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding-top:15px; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,68,102,0.3); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
-                            <div style="font-size:4rem; filter:drop-shadow(0 0 10px rgba(255,68,102,0.8));">🌋</div>
-                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
-                                <h4 style="color:#ff4466; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Volcanic Red UI</h4>
-                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 400</div>
-                            </div>
-                        </div>
-
-                        <!-- Powerup Chronos -->
-                        <div class="shop-item shop-item-square" data-type="powerup" data-price="50" data-id="powerup-chronos" style="position:relative; top:-150px; width:160px; height:160px; background:#121a2e; border:3px solid #00d4ff; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding-top:15px; box-shadow:0 15px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,212,255,0.3); cursor:pointer; transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow:hidden;">
-                            <div style="font-size:4rem; filter:drop-shadow(0 0 10px rgba(0,212,255,0.8));">⏳</div>
-                            <div style="position:absolute; top:10px; left:10px; background:rgba(0,212,255,0.2); padding:2px 6px; border-radius:6px; border:1px solid #00d4ff; color:#00d4ff; font-size:0.6rem; font-family:'JetBrains Mono'; font-weight:bold;">PASSIVE</div>
-                            <div style="position:relative; z-index:2; width:100%; background:rgba(10,14,23,0.9); padding:10px; text-align:center; border-top:1px solid rgba(255,255,255,0.1);">
-                                <h4 style="color:#00d4ff; font-family:'Orbitron'; font-size:0.8rem; margin:0 0 5px;">Chronos</h4>
-                                <div style="color:#d4a843; font-family:'JetBrains Mono'; font-weight:bold; font-size:0.9rem;">🧭 50</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+            <!-- ═══ CATEGORY TITLE ═══ -->
+            <div style="text-align:center;position:relative;z-index:10;margin-bottom:6px;">
+                <span id="shop-cat-label" style="font-family:'Orbitron',sans-serif;color:rgba(255,255,255,0.07);font-size:2.4rem;letter-spacing:18px;font-weight:900;text-transform:uppercase;pointer-events:none;">BANNERE</span>
             </div>
+
+            <!-- ═══ SHELF VIEWPORT ═══ -->
+            <div style="position:relative;z-index:5;overflow:hidden;height:calc(100% - 160px);">
+                <div id="shop-shelf-track" style="display:flex;height:100%;transition:transform 0.75s cubic-bezier(0.4,0,0.2,1);will-change:transform;">
+
+                    <!-- ██ CATEGORY 0 : BANNERE (9 items, 3 shelves) ██ -->
+                    <div class="shop-cat-panel" style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0 60px;">
+
+                        
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="ban-world" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#d4a843;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #d4a843;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">RARE</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">World Map</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 100</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="100" data-id="ban-world" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-cyber" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Cyberpunk</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 150</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="150" data-id="ban-cyber" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-topo" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#f0c94d;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #f0c94d;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">LEGEND</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Topographic</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 300</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="300" data-id="ban-topo" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="ban-space" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Deep Space</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 200</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="200" data-id="ban-space" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-ocean" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#d4a843;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #d4a843;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">RARE</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Ocean View</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 120</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="120" data-id="ban-ocean" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-mnt" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Mountain</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 180</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="180" data-id="ban-mnt" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="ban-desert" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff6b35;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff6b3566'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#d4a843;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #d4a843;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">RARE</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1542401886-65d6c61db217?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff6b3544;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Desert</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 160</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="160" data-id="ban-desert" style="padding:3px 9px;background:#ff6b3522;border:1px solid #ff6b35;color:#ff6b35;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff6b35';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff6b3522';this.style.color='#ff6b35'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-arctic" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Arctic</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 220</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="220" data-id="ban-arctic" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-gold" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#f0c94d;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #f0c94d;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">LEGEND</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1503756234508-e32369269dde?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Golden Age</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 500</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="500" data-id="ban-gold" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+
+                    </div>
+
+                    <!-- ██ CATEGORY 1 : AVATARE (9 items, 3 shelves) ██ -->
+                    <div class="shop-cat-panel" style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0 60px;">
+
+                        
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="av-explorer" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">🧗</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Explorer</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 250</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="250" data-id="av-explorer" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-globe" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff6b35;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff6b3566'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff6b35);">🌍</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff6b3544;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Globetrotter</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 180</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="180" data-id="av-globe" style="padding:3px 9px;background:#ff6b3522;border:1px solid #ff6b35;color:#ff6b35;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff6b35';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff6b3522';this.style.color='#ff6b35'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-agent" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #b829e3);">🕵️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Secret Agent</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 350</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="350" data-id="av-agent" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="av-scientist" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00d4ff);">🧑‍🔬</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Scientist</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 200</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="200" data-id="av-scientist" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-ninja" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff4466;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff446666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff4466);">🥷</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff446644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Geo Ninja</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 300</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="300" data-id="av-ninja" style="padding:3px 9px;background:#ff446622;border:1px solid #ff4466;color:#ff4466;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff4466';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff446622';this.style.color='#ff4466'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-astronaut" style="width:140px;height:155px;background:#0b1420;border:2px solid #d4a843;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #d4a84366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #d4a843);">👩‍🚀</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #d4a84344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Astronaut</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 400</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="400" data-id="av-astronaut" style="padding:3px 9px;background:#d4a84322;border:1px solid #d4a843;color:#d4a843;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#d4a843';this.style.color='#07101d'"
+          onmouseout="this.style.background='#d4a84322';this.style.color='#d4a843'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="av-wizard" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #b829e3);">🧙‍♂️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Geo Wizard</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 280</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="280" data-id="av-wizard" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-knight" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">💂</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Knight</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 320</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="320" data-id="av-knight" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-champion" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #f0c94d);">👑</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Champion</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 600</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="600" data-id="av-champion" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+
+                    </div>
+
+                    <!-- ██ CATEGORY 2 : UPGRADES (9 items, 3 shelves) ██ -->
+                    <div class="shop-cat-panel" style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0 60px;">
+
+                        
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="up-volcanic" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff4466;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff446666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff4466);">🌋</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff446644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Volcanic UI</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 400</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="400" data-id="up-volcanic" style="padding:3px 9px;background:#ff446622;border:1px solid #ff4466;color:#ff4466;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff4466';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff446622';this.style.color='#ff4466'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-chronos" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00d4ff);">⏳</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Chronos +10s</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 50</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="50" data-id="up-chronos" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-boost" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #f0c94d);">⚡</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">XP Boost x2</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 75</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="75" data-id="up-boost" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="up-compass" style="width:140px;height:155px;background:#0b1420;border:2px solid #d4a843;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #d4a84366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #d4a843);">🧭</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #d4a84344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Compass Pro</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 120</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="120" data-id="up-compass" style="padding:3px 9px;background:#d4a84322;border:1px solid #d4a843;color:#d4a843;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#d4a843';this.style.color='#07101d'"
+          onmouseout="this.style.background='#d4a84322';this.style.color='#d4a843'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-shield" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">🛡️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Shield</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 90</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="90" data-id="up-shield" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-emerald" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">💎</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Emerald UI</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 350</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="350" data-id="up-emerald" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="up-streak" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff6b35;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff6b3566'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff6b35);">🔥</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff6b3544;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Streak Saver</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 60</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="60" data-id="up-streak" style="padding:3px 9px;background:#ff6b3522;border:1px solid #ff6b35;color:#ff6b35;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff6b35';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff6b3522';this.style.color='#ff6b35'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-hint" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #f0c94d);">💡</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Hint Pack x5</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 40</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="40" data-id="up-hint" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-arctic" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00d4ff);">❄️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Arctic UI</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 380</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="380" data-id="up-arctic" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ═══ NAV ARROWS ═══ -->
+            <button id="shop-prev-btn" onclick="shopNav(-1)" style="display:none;position:absolute;left:14px;top:55%;transform:translateY(-50%);z-index:30;width:46px;height:46px;border-radius:50%;background:rgba(0,180,255,0.1);border:2px solid rgba(0,212,255,0.45);color:#00d4ff;font-size:1.2rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(0,212,255,0.25)'" onmouseout="this.style.background='rgba(0,180,255,0.1)'">❮</button>
+            <button id="shop-next-btn" onclick="shopNav(1)"  style="position:absolute;right:14px;top:55%;transform:translateY(-50%);z-index:30;width:46px;height:46px;border-radius:50%;background:rgba(0,180,255,0.1);border:2px solid rgba(0,212,255,0.45);color:#00d4ff;font-size:1.2rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(0,212,255,0.25)'" onmouseout="this.style.background='rgba(0,180,255,0.1)'">❯</button>
+
         </section>
 
         <!-- PROFILE PAGE -->
@@ -1416,6 +1858,18 @@
                             <button id="btn-reset" style="background:linear-gradient(90deg,#d4a843,#a17e2e); color:#0a0e17; border:none; border-radius:8px; padding:14px; font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; letter-spacing:1px;" data-i18n="settings.btn_reset">🔑 Trimite Email de Resetare</button>
                         </div>
                     </div>
+
+                    <!-- Support Us Section -->
+                    <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;">
+                        <h3 style="color:white; font-family:'Orbitron',sans-serif; margin: 0 0 15px; font-size:1.1rem; display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.3rem;">❤️</span> Susține Platforma
+                        </h3>
+                        <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom: 15px;">Dacă îți place platforma GeoInformatica, ne poți susține urmărindu-ne pe rețelele sociale.</p>
+                        <a href="https://instagram.com" id="support-instagram-btn" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color:white; text-decoration:none; padding:10px 20px; border-radius:8px; font-family:'Orbitron',sans-serif; font-weight:bold; font-size:0.85rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            Support Us on Instagram
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1435,20 +1889,24 @@
                 <div class="ai-chat-history" id="ai-chat-history">
                     <div class="ai-msg bot-msg" data-i18n="ai.greeting">Hello! I am your GeoAI assistant. Ask me anything about political geography!</div>
                 </div>
-                <div class="ai-controls-bar">
+                <div class="ai-controls-bar" style="background:rgba(8,14,26,0.95);padding:10px 18px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;border-top:1px solid rgba(0,212,255,0.12);">
                     <div class="ai-control-group">
-                        <label for="ai-mode-select" data-i18n="ai.mode_label">Mode:</label>
-                        <select id="ai-mode-select" class="ai-select">
-                            <option value="normal" data-i18n="ai.mode_normal">Normal</option>
-                            <option value="learning" data-i18n="ai.mode_learning">Learning</option>
-                            <option value="assistant" data-i18n="ai.mode_assistant">Assistant</option>
-                            <option value="test" data-i18n="ai.mode_test">Test</option>
+                        <label for="ai-mode-select" data-i18n="ai.mode_label" style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:'JetBrains Mono',monospace;">Mode:</label>
+                        <select id="ai-mode-select" class="ai-select" style="background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.3);color:white;padding:6px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;cursor:pointer;">
+                            <option value="normal" data-i18n="ai.mode_normal" style="background:#0a0e17;color:white;">Normal</option>
+                            <option value="learning" data-i18n="ai.mode_learning" style="background:#0a0e17;color:white;">Learning</option>
+                            <option value="assistant" data-i18n="ai.mode_assistant" style="background:#0a0e17;color:white;">Assistant</option>
+                            <option value="test" data-i18n="ai.mode_test" style="background:#0a0e17;color:white;">Test</option>
                         </select>
                     </div>
                     <div class="ai-control-group">
-                        <label for="ai-voice-select" data-i18n="ai.voice_label">Voice:</label>
-                        <select id="ai-voice-select" class="ai-select">
-                            <option value="default">Default System Voice</option>
+                        <label for="ai-voice-select" data-i18n="ai.voice_label" style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:'JetBrains Mono',monospace;">Voice:</label>
+                        <select id="ai-voice-select" class="ai-select" style="background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.3);color:white;padding:6px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;cursor:pointer;">
+                            <option value="default" style="background:#0a0e17;color:white;">Default System Voice</option>
+                            <option value="female-ro" style="background:#0a0e17;color:white;">Română (Femeie)</option>
+                            <option value="male-ro" style="background:#0a0e17;color:white;">Română (Bărbat)</option>
+                            <option value="female-en" style="background:#0a0e17;color:white;">English (Female)</option>
+                            <option value="male-en" style="background:#0a0e17;color:white;">English (Male)</option>
                         </select>
                     </div>
                 </div>
@@ -1490,6 +1948,7 @@
                         <div class="legend-item" data-type="One-Party State"><span class="legend-dot" style="background:#cc3355"></span><span data-i18n="worldmap.types.one_party">One-Party State</span></div>
                         <div class="legend-item" data-type="Territory / Disputed"><span class="legend-dot" style="background:#888"></span><span data-i18n="worldmap.types.territory">Territory / Disputed</span></div>
                         <div class="legend-item" data-type="Federal Republic"><span class="legend-dot" style="background:#ff6b35"></span><span data-i18n="worldmap.types.federal">Federal Republic</span></div>
+                        <div class="legend-item" data-type="Altele / Neclasificate"><span class="legend-dot" style="background:#556677"></span><span data-i18n="worldmap.types.other">Altele / Neclasificate</span></div>
                     </div>
                     <div style="margin-top:10px;font-size:0.72rem;color:var(--text-muted);font-style:italic;" data-i18n="worldmap.click_filter">👆 Click a type to filter the map</div>
                 </div>

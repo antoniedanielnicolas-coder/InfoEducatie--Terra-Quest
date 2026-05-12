@@ -192,7 +192,13 @@
     "subtitle": "Your personal political geography assistant",
     "greeting": "Hello! I am your GeoAI assistant. Ask me anything about political geography!",
     "placeholder": "Type your geography question here...",
-    "btn_send": "Send"
+    "btn_send": "Send",
+    "mode_label": "Mode",
+    "voice_label": "Voice",
+    "mode_normal": "Normal",
+    "mode_learning": "Learning",
+    "mode_assistant": "Assistant",
+    "mode_test": "Test"
   },
   "common": {
     "level": "Level",
@@ -218,7 +224,8 @@
       "semi_pres": "Semi-Presidential Republic",
       "one_party": "One-Party State",
       "territory": "Territory / Disputed",
-      "federal": "Federal Republic"
+      "federal": "Federal Republic",
+      "other": "Other / Unclassified"
     },
     "current_map": "🌍 Current Map",
     "historic_map": "📜 Historical Map",

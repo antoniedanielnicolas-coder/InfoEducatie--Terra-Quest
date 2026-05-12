@@ -1014,6 +1014,119 @@ async function initApp() {
         });
     }
 
+    // ── COACHING LOGIC ──────────────────────────────────────────
+    const coachingSubmitBtn = document.getElementById('coaching-submit-btn');
+    const coachingQuestionnaire = document.getElementById('coaching-questionnaire');
+    const coachingDashboard = document.getElementById('coaching-dashboard');
+    const coachingResetBtn = document.getElementById('coaching-reset-btn');
+    const mentorGrid = document.getElementById('mentor-grid');
+
+    // If coaching was already done, show dashboard
+    if (localStorage.getItem('coachingInterests') && coachingQuestionnaire && coachingDashboard) {
+        coachingQuestionnaire.style.display = 'none';
+        coachingDashboard.classList.remove('hidden');
+        filterMentors(JSON.parse(localStorage.getItem('coachingInterests')));
+    }
+
+    if (coachingSubmitBtn) {
+        coachingSubmitBtn.addEventListener('click', () => {
+            const selected = Array.from(document.querySelectorAll('input[name="interest"]:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                showToast('Selectează cel puțin un interes!', 'error');
+                return;
+            }
+            localStorage.setItem('coachingInterests', JSON.stringify(selected));
+            // Animate out questionnaire
+            coachingQuestionnaire.style.transition = 'opacity 0.5s, transform 0.5s';
+            coachingQuestionnaire.style.opacity = '0';
+            coachingQuestionnaire.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                coachingQuestionnaire.style.display = 'none';
+                coachingDashboard.classList.remove('hidden');
+                coachingDashboard.style.opacity = '0';
+                coachingDashboard.style.transform = 'translateY(20px)';
+                coachingDashboard.style.transition = 'opacity 0.5s, transform 0.5s';
+                filterMentors(selected);
+                requestAnimationFrame(() => {
+                    coachingDashboard.style.opacity = '1';
+                    coachingDashboard.style.transform = 'translateY(0)';
+                });
+            }, 500);
+            playSound('correct');
+        });
+    }
+
+    if (coachingResetBtn) {
+        coachingResetBtn.addEventListener('click', () => {
+            localStorage.removeItem('coachingInterests');
+            coachingDashboard.classList.add('hidden');
+            coachingQuestionnaire.style.display = '';
+            coachingQuestionnaire.style.opacity = '1';
+            coachingQuestionnaire.style.transform = '';
+            // Uncheck all
+            document.querySelectorAll('input[name="interest"]').forEach(cb => {
+                cb.checked = false;
+                const span = cb.nextElementSibling;
+                if (span) { span.style.background = 'transparent'; span.style.borderColor = 'rgba(0,212,255,0.25)'; span.style.color = 'rgba(255,255,255,0.55)'; }
+            });
+        });
+    }
+
+    function filterMentors(selected) {
+        if (!mentorGrid) return;
+        const allCards = mentorGrid.querySelectorAll('.mentor-card');
+        let shown = 0;
+        allCards.forEach(card => {
+            const cardInterests = card.getAttribute('data-interests').split(',');
+            const matches = selected.length === 0 || selected.some(s => cardInterests.includes(s));
+            card.style.display = matches ? '' : 'none';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(15px)';
+            card.style.transition = 'opacity 0.4s, transform 0.4s';
+            if (matches) {
+                shown++;
+                const delay = shown * 80;
+                setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, delay);
+            }
+        });
+        const titleEl = document.getElementById('coaching-result-title');
+        if (titleEl) titleEl.textContent = `${shown} Mentor${shown !== 1 ? 'i' : ''} Recomandat${shown !== 1 ? 'i' : ''}`;
+    }
+
+    // ── SHOP DOTS ────────────────────────────────────────────────
+    const shopDotsEl = document.getElementById('shop-dots');
+    if (shopDotsEl && shopContainer) {
+        const cats = shopContainer.querySelectorAll('.shop-category-view');
+        cats.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${i===0?'#00d4ff':'rgba(255,255,255,0.2)'};transition:all 0.3s;cursor:pointer;`;
+            dot.addEventListener('click', () => { currentShopShelfIndex = i; updateShopViewGlobal(); });
+            shopDotsEl.appendChild(dot);
+        });
+    }
+
+    function updateShopViewGlobal() {
+        if (!shopContainer) return;
+        const cats = shopContainer.querySelectorAll('.shop-category-view');
+        shopContainer.style.transform = `translateX(-${currentShopShelfIndex * 100}%)`;
+        if (shopCategoryTitle) shopCategoryTitle.textContent = cats[currentShopShelfIndex]?.getAttribute('data-title') || '';
+        if (shopPrevBtn) shopPrevBtn.style.display = currentShopShelfIndex > 0 ? 'block' : 'none';
+        if (shopNextBtn) shopNextBtn.style.display = currentShopShelfIndex < cats.length - 1 ? 'block' : 'none';
+        // Update dots
+        if (shopDotsEl) {
+            shopDotsEl.querySelectorAll('div').forEach((d, i) => {
+                d.style.background = i === currentShopShelfIndex ? '#00d4ff' : 'rgba(255,255,255,0.2)';
+                d.style.width = i === currentShopShelfIndex ? '22px' : '8px';
+                d.style.borderRadius = '4px';
+            });
+        }
+    }
+
+    // Override the previous shopPrevBtn/shopNextBtn listeners with the new dot-aware version
+    if (shopPrevBtn) { shopPrevBtn.onclick = () => { if(currentShopShelfIndex>0){currentShopShelfIndex--;updateShopViewGlobal();playSound('click');} }; }
+    if (shopNextBtn) { shopNextBtn.onclick = () => { const cats=shopContainer?.querySelectorAll('.shop-category-view'); if(cats&&currentShopShelfIndex<cats.length-1){currentShopShelfIndex++;updateShopViewGlobal();playSound('click');} }; }
+    updateShopViewGlobal();
+
     // 3D Globe
     function initGlobe() {
         const globeContainer = document.getElementById('globe-container');
@@ -1038,6 +1151,114 @@ async function initApp() {
         });
     }
 }
+
+// ── GLOBAL handleBuy (called from inline onclick in shop items) ──
+window.handleBuy = function(btn) {
+    const item = btn.closest('.shop-item');
+    if (!item) return;
+    const price = parseInt(btn.getAttribute('data-price') || item.getAttribute('data-price') || 0);
+    const itemId = btn.getAttribute('data-id') || item.getAttribute('data-id') || '';
+    const nameEl = item.querySelector('h4');
+    const itemName = nameEl ? nameEl.innerText : itemId;
+
+    let compassCoins = parseInt(localStorage.getItem('compassCoins')) || 0;
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+    if (inventory.includes(itemId)) {
+        btn.textContent = '✓ Deja deții';
+        btn.style.background = 'rgba(0,230,118,0.2)';
+        btn.style.color = '#00e676';
+        btn.style.borderColor = '#00e676';
+        return;
+    }
+    if (compassCoins >= price) {
+        compassCoins -= price;
+        inventory.push(itemId);
+        localStorage.setItem('compassCoins', compassCoins);
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+        // Update all coin displays
+        document.querySelectorAll('#shop-balance, .coin-count').forEach(el => el.textContent = compassCoins);
+        btn.textContent = '✓ Cumpărat!';
+        btn.style.background = 'rgba(0,230,118,0.2)';
+        btn.style.color = '#00e676';
+        btn.style.borderColor = '#00e676';
+        btn.disabled = true;
+        // Particle burst effect
+        item.style.transition = 'box-shadow 0.3s';
+        item.style.boxShadow = '0 0 40px rgba(0,230,118,0.6)';
+        setTimeout(() => { item.style.boxShadow = ''; }, 800);
+        // Show toast
+        const toast = document.createElement('div');
+        toast.textContent = `✅ Ai cumpărat: ${itemName}`;
+        toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#00e676;color:#07101d;padding:12px 24px;border-radius:12px;font-family:Orbitron,sans-serif;font-weight:bold;font-size:0.85rem;z-index:9999;box-shadow:0 0 25px rgba(0,230,118,0.5);animation:fadeIn 0.3s ease;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    } else {
+        item.style.animation = 'shake 0.4s ease';
+        setTimeout(() => item.style.animation = '', 500);
+        const toast = document.createElement('div');
+        toast.textContent = '❌ Coins insuficienți!';
+        toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#ff4466;color:white;padding:12px 24px;border-radius:12px;font-family:Orbitron,sans-serif;font-weight:bold;font-size:0.85rem;z-index:9999;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+};
+
+// ── GLOBAL SHOP NAV (used by inline onclick in shop HTML) ───────────────
+let _shopCatIndex = 0;
+const _shopCatLabels = ['BANNERE', 'AVATARE', 'UPGRADES'];
+
+window.switchShopCat = function(idx, btn) {
+    _shopCatIndex = idx;
+    _updateShopTrack();
+    // Update tab buttons
+    document.querySelectorAll('.shop-tab-btn').forEach((b, i) => {
+        if (i === idx) {
+            b.style.background = 'rgba(0,212,255,0.15)';
+            b.style.borderColor = 'rgba(0,212,255,0.5)';
+            b.style.color = '#00d4ff';
+        } else {
+            b.style.background = 'transparent';
+            b.style.borderColor = 'rgba(255,255,255,0.1)';
+            b.style.color = 'rgba(255,255,255,0.4)';
+        }
+    });
+};
+
+window.shopNav = function(dir) {
+    const panels = document.querySelectorAll('.shop-cat-panel');
+    _shopCatIndex = Math.max(0, Math.min(panels.length - 1, _shopCatIndex + dir));
+    _updateShopTrack();
+    // Sync tab buttons
+    document.querySelectorAll('.shop-tab-btn').forEach((b, i) => {
+        if (i === _shopCatIndex) {
+            b.style.background = 'rgba(0,212,255,0.15)';
+            b.style.borderColor = 'rgba(0,212,255,0.5)';
+            b.style.color = '#00d4ff';
+        } else {
+            b.style.background = 'transparent';
+            b.style.borderColor = 'rgba(255,255,255,0.1)';
+            b.style.color = 'rgba(255,255,255,0.4)';
+        }
+    });
+};
+
+function _updateShopTrack() {
+    const track = document.getElementById('shop-shelf-track');
+    const prevBtn = document.getElementById('shop-prev-btn');
+    const nextBtn = document.getElementById('shop-next-btn');
+    const label   = document.getElementById('shop-cat-label');
+    const panels  = document.querySelectorAll('.shop-cat-panel');
+
+    if (!track) return;
+    track.style.transform = `translateX(-${_shopCatIndex * 100}%)`;
+    if (prevBtn) prevBtn.style.display = _shopCatIndex > 0 ? 'block' : 'none';
+    if (nextBtn) nextBtn.style.display = _shopCatIndex < panels.length - 1 ? 'block' : 'none';
+    if (label)   label.textContent = _shopCatLabels[_shopCatIndex] || '';
+}
+
+// Initialise on page load
+document.addEventListener('DOMContentLoaded', () => { _updateShopTrack(); });
 
 // Entry Point
 console.log("APP.JS MODULE EXECUTING...");
