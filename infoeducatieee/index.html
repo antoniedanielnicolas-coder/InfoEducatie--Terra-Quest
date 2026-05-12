@@ -240,7 +240,6 @@
                 </div>
 
                 <div class="hero-content" style="position:relative;z-index:2;">
-                    <div class="hero-badge" data-i18n="home.badge" style="animation:slideInDown 0.8s ease;">🌍 Political Geography Olympiad</div>
                     <h1 class="hero-title">
                         <span class="title-line" data-i18n="home.title_line1" style="animation:slideInLeft 0.8s ease 0.1s both;">Master the</span>
                         <span class="title-line gradient-text" data-i18n="home.title_line2" style="animation:slideInLeft 0.8s ease 0.2s both;font-size:clamp(2.5rem,6vw,4.5rem);">Geopolitical</span>
@@ -282,9 +281,8 @@
                 </div>
 
                 <div class="hero-visual" style="border-radius:20px;overflow:hidden;box-shadow:0 0 60px rgba(0,212,255,0.3);border:1px solid rgba(0,212,255,0.4);animation:fadeInRight 1s ease 0.3s both;transform-style:preserve-3d;" id="hero-visual-card">
-                    <img src="assets/hero-image-new.png" alt="TerraQuest" style="width:100%;height:100%;object-fit:cover;filter:contrast(1.1) saturate(1.2);" />
+                    <img src="assets/hero-infoeducatie-2026.png" alt="Olimpiada InfoEducatie 2026" style="width:100%;height:100%;object-fit:cover;" />
                 </div>
-                <div class="orbit-badge ob-2">⚔️ 47 Active Conflicts</div>
             </div>
 
             <!-- QUICK ACCESS DASHBOARD — 3D Floating Cards -->
@@ -420,40 +418,17 @@
                 </div>
             </div>
 
-            <!-- Timeline Section -->
-            <div class="section timeline-section">
-                <h2 class="section-title"><span data-i18n="home.timeline_title">Political Geography</span> <span class="gradient-text" data-i18n="home.timeline_title_gradient">Through Time</span></h2>
-                <div class="timeline">
-                    <div class="timeline-item" data-year="1648">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl1_title">Treaty of Westphalia</h3>
-                            <p data-i18n="home.tl1_desc">Birth of the modern state system and concept of national sovereignty.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="1884">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl2_title">Berlin Conference</h3>
-                            <p data-i18n="home.tl2_desc">European powers partition Africa, reshaping the political map of an entire continent.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="1945">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl3_title">United Nations Founded</h3>
-                            <p data-i18n="home.tl3_desc">A new world order emerges from the ashes of WWII, establishing global governance.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="1991">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl4_title">Fall of the USSR</h3>
-                            <p data-i18n="home.tl4_desc">The collapse creates 15 new nations and ends the bipolar world order.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="2024">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl5_title">Multipolar World</h3>
-                            <p data-i18n="home.tl5_desc">Rise of China, Ukraine war, BRICS expansion — a new geopolitical era emerges.</p>
-                        </div>
-                    </div>
+            <!-- App Updates / News Section -->
+            <div class="section" id="home-news-section" style="padding:40px 0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h2 class="section-title" style="margin:0;"><span data-i18n="home.news_title">App</span> <span class="gradient-text" data-i18n="home.news_title_gradient">Updates</span></h2>
+                    <span style="background:rgba(0,230,118,0.15);border:1px solid rgba(0,230,118,0.4);color:#00e676;padding:5px 14px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;letter-spacing:1px;display:flex;align-items:center;gap:6px;">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#00e676;display:inline-block;animation:pulse 2s infinite;"></span> LIVE
+                    </span>
+                </div>
+                <p style="color:var(--text-secondary);margin:0 0 20px;font-size:0.85rem;" data-i18n="home.news_subtitle">Track the latest improvements made to the platform.</p>
+                <div id="news-feed-container" style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="text-align:center;color:#555;font-size:0.8rem;font-family:'JetBrains Mono',monospace;padding:20px;">Se încarcă noutățile...</div>
                 </div>
             </div>
         </section>
@@ -462,8 +437,8 @@
 
         <section id="page-lessons" class="page">
             <div class="page-header">
-                <h1 class="page-title">Lesson <span class="gradient-text">Modules</span></h1>
-                <p class="page-subtitle">Deep-dive into the core pillars of Political Geography</p>
+                <h1 class="page-title"><span data-i18n="lessons.title">Lesson</span> <span class="gradient-text" data-i18n="lessons.title_gradient">Modules</span></h1>
+                <p class="page-subtitle" data-i18n="lessons.subtitle">Deep-dive into the core pillars of Political Geography</p>
             </div>
 
             <!-- 🔴 LIVE GEO FEED TICKER -->
@@ -483,8 +458,8 @@
             </div>
 
             <div class="year-selector" id="year-selector">
-                <button class="year-tab active" data-year="10" data-i18n="lessons.grade10">Clasa a 10-a</button>
                 <button class="year-tab" data-year="9" data-i18n="lessons.grade9">Clasa a 9-a</button>
+                <button class="year-tab active" data-year="10" data-i18n="lessons.grade10">Clasa a 10-a</button>
                 <button class="year-tab" data-year="11" data-i18n="lessons.grade11">Clasa a 11-a</button>
                 <button class="year-tab" data-year="12" data-i18n="lessons.grade12">Clasa a 12-a</button>
             </div>
