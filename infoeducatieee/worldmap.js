@@ -1,11 +1,8 @@
-// =====================================================
-// World Political Map — Leaflet + GeoJSON Colored
-// Expanded Database & Enhanced Interactivity
-// =====================================================
+﻿
+
 import { t } from './i18n.js';
 
 const countryData = {
-    // Constitutional Monarchies (blue)
     'GBR': { type: 'Constitutional Monarchy', color: '#4a90d9', flag: '🇬🇧', name: 'United Kingdom' },
     'ESP': { type: 'Constitutional Monarchy', color: '#4a90d9', flag: '🇪🇸', name: 'Spain' },
     'SWE': { type: 'Constitutional Monarchy', color: '#4a90d9', flag: '🇸🇪', name: 'Sweden' },
@@ -32,7 +29,6 @@ const countryData = {
     'BHS': { type: 'Constitutional Monarchy', color: '#4a90d9', flag: '🇧🇸', name: 'Bahamas' },
     'PNG': { type: 'Constitutional Monarchy', color: '#4a90d9', flag: '🇵🇬', name: 'Papua New Guinea' },
 
-    // Absolute Monarchies (purple)
     'SAU': { type: 'Absolute Monarchy', color: '#8b44cc', flag: '🇸🇦', name: 'Saudi Arabia' },
     'ARE': { type: 'Absolute Monarchy', color: '#8b44cc', flag: '🇦🇪', name: 'UAE' },
     'QAT': { type: 'Absolute Monarchy', color: '#8b44cc', flag: '🇶🇦', name: 'Qatar' },
@@ -41,7 +37,6 @@ const countryData = {
     'SWZ': { type: 'Absolute Monarchy', color: '#8b44cc', flag: '🇸🇿', name: 'Eswatini' },
     'VAT': { type: 'Absolute Monarchy', color: '#8b44cc', flag: '🇻🇦', name: 'Vatican City' },
 
-    // Presidential Republics (red-orange)
     'USA': { type: 'Presidential Republic', color: '#e05c3a', flag: '🇺🇸', name: 'United States' },
     'BRA': { type: 'Presidential Republic', color: '#e05c3a', flag: '🇧🇷', name: 'Brazil' },
     'MEX': { type: 'Presidential Republic', color: '#e05c3a', flag: '🇲🇽', name: 'Mexico' },
@@ -75,7 +70,6 @@ const countryData = {
     'AFG': { type: 'Theocratic Republic', color: '#e05c3a', flag: '🇦🇫', name: 'Afghanistan' },
     'IRN': { type: 'Theocratic Republic', color: '#e05c3a', flag: '🇮🇷', name: 'Iran' },
 
-    // Parliamentary Republics (green)
     'DEU': { type: 'Parliamentary Republic', color: '#2eaa6e', flag: '🇩🇪', name: 'Germany' },
     'ITA': { type: 'Parliamentary Republic', color: '#2eaa6e', flag: '🇮🇹', name: 'Italy' },
     'IND': { type: 'Parliamentary Republic', color: '#2eaa6e', flag: '🇮🇳', name: 'India' },
@@ -99,7 +93,6 @@ const countryData = {
     'NPL': { type: 'Parliamentary Republic', color: '#2eaa6e', flag: '🇳🇵', name: 'Nepal' },
     'SOM': { type: 'Parliamentary Republic', color: '#2eaa6e', flag: '🇸🇴', name: 'Somalia' },
 
-    // Semi-Presidential (gold)
     'ROM': { type: 'Semi-Presidential Republic', color: '#d4a843', flag: '🇷🇴', name: 'Romania' },
     'ROU': { type: 'Semi-Presidential Republic', color: '#d4a843', flag: '🇷🇴', name: 'Romania' },
     'FRA': { type: 'Semi-Presidential Republic', color: '#d4a843', flag: '🇫🇷', name: 'France' },
@@ -118,7 +111,6 @@ const countryData = {
     'NER': { type: 'Semi-Presidential Republic', color: '#d4a843', flag: '🇳🇪', name: 'Niger' },
     'COD': { type: 'Semi-Presidential Republic', color: '#d4a843', flag: '🇨🇩', name: 'DR Congo' },
 
-    // One-Party States (red)
     'CHN': { type: 'One-Party State', color: '#cc3355', flag: '🇨🇳', name: 'China' },
     'PRK': { type: 'One-Party State', color: '#cc3355', flag: '🇰🇵', name: 'North Korea' },
     'CUB': { type: 'One-Party State', color: '#cc3355', flag: '🇨🇺', name: 'Cuba' },
@@ -126,7 +118,6 @@ const countryData = {
     'LAO': { type: 'One-Party State', color: '#cc3355', flag: '🇱🇦', name: 'Laos' },
     'ERI': { type: 'One-Party State', color: '#cc3355', flag: '🇪🇷', name: 'Eritrea' },
 
-    // Federal Republics (orange)
     'CHE': { type: 'Federal Republic', color: '#ff6b35', flag: '🇨🇭', name: 'Switzerland' },
     'PAK': { type: 'Federal Republic', color: '#ff6b35', flag: '🇵🇰', name: 'Pakistan' },
     'ETH': { type: 'Federal Republic', color: '#ff6b35', flag: '🇪🇹', name: 'Ethiopia' },
@@ -136,7 +127,6 @@ const countryData = {
     'SDN': { type: 'Federal Republic', color: '#ff6b35', flag: '🇸🇩', name: 'Sudan' },
     'SSD': { type: 'Federal Republic', color: '#ff6b35', flag: '🇸🇸', name: 'South Sudan' },
 
-    // Others (Grey/Neutral)
     'GRL': { type: 'Autonomous Territory', color: '#888888', flag: '🇬🇱', name: 'Greenland' },
     'ESH': { type: 'Disputed Territory', color: '#888888', flag: '🇪🇭', name: 'Western Sahara' }
 };
@@ -147,7 +137,6 @@ let geoJsonLayer = null;
 window.activeFilter = null;
 
 export function initWorldMap() {
-    // Reset initialization flag when navigating to other pages
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -170,7 +159,6 @@ function renderWorldMap() {
     if (!container || mapInitialized) return;
     mapInitialized = true;
 
-    // Remove existing map if any
     if (worldMapInstance) {
         worldMapInstance.remove();
     }
@@ -214,7 +202,6 @@ function renderWorldMap() {
                             flag: '🏳️',
                             name: feature.properties.ADMIN || feature.properties.name || feature.properties.SOVEREIGN || 'Unknown'
                         };
-                        // Caching it by whatever ID we have so it's fast next time
                         const id = feature.properties['ISO3166-1-Alpha-3'] || feature.properties.name;
                         if (id) countryData[id] = info;
                     }
@@ -249,7 +236,6 @@ function renderWorldMap() {
                                 this.setStyle({ fillColor: originalFill, fillOpacity: 0.95, weight: 2.5 });
                             }, 400);
                             
-                            // Dispatch XP and show toast
                             const xpEvent = new CustomEvent('xpGained', { detail: { amount: 5 } });
                             document.dispatchEvent(xpEvent);
                             try {
@@ -263,7 +249,6 @@ function renderWorldMap() {
                 }
             }).addTo(worldMapInstance);
 
-            // Add Legend Filter Logic
             document.querySelectorAll('.legend-item').forEach(item => {
                 item.style.cursor = 'pointer';
                 item.style.transition = 'all 0.3s ease';
@@ -271,7 +256,7 @@ function renderWorldMap() {
                     const type = item.getAttribute('data-type');
                     
                     if (window.activeFilter === type) {
-                        window.activeFilter = null; // Toggle off
+                        window.activeFilter = null;
                         document.querySelectorAll('.legend-item').forEach(li => {
                             li.style.opacity = '1';
                             li.style.transform = 'scale(1)';

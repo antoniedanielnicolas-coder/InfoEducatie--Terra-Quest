@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 
 let html = fs.readFileSync('index.html', 'utf8');
 
@@ -99,9 +99,7 @@ const shopSection = `        <!-- SHOP PAGE -->
 
         </section>`;
 
-// ──────────────────────────────────────────────────────────
 function makeShelf(items) {
-  // 3 shelves of 3 items each
   let out = '';
   for (let s = 0; s < 3; s++) {
     const row = items.slice(s * 3, s * 3 + 3);
@@ -146,9 +144,7 @@ function makeItem(o) {
     </div>
   </div>`;
 }
-// ──────────────────────────────────────────────────────────
 
-// Replace shop section
 html = html.replace(/<section id="page-shop"[\s\S]*?<\/section>/, shopSection);
 
 fs.writeFileSync('index.html', html, 'utf8');

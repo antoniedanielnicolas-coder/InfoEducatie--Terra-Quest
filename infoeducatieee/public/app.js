@@ -1,4 +1,4 @@
-import { initI18n, setLanguage, currentLang, t, updateDOMTranslations } from './i18n.js';
+﻿import { initI18n, setLanguage, currentLang, t, updateDOMTranslations } from './i18n.js';
 import { initLessons } from './lessons.js';
 import { initQuizzes } from './quizzes.js?v=4';
 import { initAI } from './ai-agent.js';
@@ -14,11 +14,9 @@ import {
     syncUserProgress, getLeaderboard, listenToNews
 } from './firebase-auth.js';
 
-
 async function initApp() {
     console.log("Initializing App...");
     
-    // Fallback: Hide preloader after 3 seconds even if things fail
     setTimeout(() => {
         const preloader = document.getElementById('preloader');
         if (preloader && !preloader.classList.contains('hidden')) {
@@ -28,7 +26,6 @@ async function initApp() {
     }, 3000);
 
     try {
-        // Initialize Core Systems
         await initI18n();
         initSounds();
         initLessons();
@@ -36,7 +33,6 @@ async function initApp() {
         initAI();
         initWorldMap();
         
-        // Hide preloader normally
         setTimeout(() => {
             const preloader = document.getElementById('preloader');
             if (preloader) preloader.classList.add('hidden');
@@ -48,10 +44,8 @@ async function initApp() {
         if (preloader) preloader.classList.add('hidden');
     }
 
-    // ─── FIREBASE AUTH ────────────────────────────────────────────────────────
     let unsubFriends = null;
 
-    // ─── REAL-TIME NEWS FEED ──────────────────────────────────────────────────
     function formatNewsDate(ts) {
         if (!ts) return '';
         let d;
@@ -102,7 +96,6 @@ async function initApp() {
 
     onAuthReady((user) => {
         if (user) {
-            // Show QR code
             getMyQRCode().then(qr => {
                 if (!qr) return;
                 const qrImg = document.getElementById('my-qr-code');
@@ -124,7 +117,6 @@ async function initApp() {
                 }
             });
 
-            // Live friends listener
             if (unsubFriends) unsubFriends();
             unsubFriends = listenToFriends((friends) => {
                 renderFriendsList(friends);
@@ -139,7 +131,6 @@ async function initApp() {
         }
     });
 
-    // Auth buttons
     const btnEmailLogin = document.getElementById('btn-email-login');
     if (btnEmailLogin) {
         btnEmailLogin.addEventListener('click', async () => {
@@ -202,7 +193,6 @@ async function initApp() {
         });
     }
 
-    // Friends search
     const friendSearchBtn = document.getElementById('friend-search-btn');
     const friendSearchInput = document.getElementById('friend-search-input');
     const friendSearchResult = document.getElementById('friend-search-result');
@@ -297,7 +287,6 @@ async function initApp() {
         }).join('');
     }
 
-    // --- State and UI Logic ---
     
     let userXP = parseInt(localStorage.getItem('userXP')) || 0;
     let compassCoins = parseInt(localStorage.getItem('compassCoins')) || 0;
@@ -314,19 +303,16 @@ async function initApp() {
 
         if (xpDisplay) xpDisplay.innerText = userXP;
         
-        // Update level badges
         if (navLevel) navLevel.innerText = `Lv. ${level}`;
         const lvlNumDossier = document.getElementById('level-number-dossier');
         if(lvlNumDossier) lvlNumDossier.innerText = level;
         
-        // Update dossier progress bar
         const xpFill = document.getElementById('dossier-xp-fill');
         if (xpFill) xpFill.style.width = `${(currentLevelXP / nextLevelXP) * 100}%`;
         
         const xpNeeded = document.getElementById('profile-xp-needed');
         if (xpNeeded) xpNeeded.innerText = (level * 100);
 
-        // Rank Titles
         const rankTitles = [
             currentLang === 'ro' ? "Atașat Debutant" : "Rookie Attaché",
             currentLang === 'ro' ? "Agent de Teren" : "Field Agent",
@@ -337,16 +323,15 @@ async function initApp() {
         const rankEl = document.getElementById('profile-rank');
         if (rankEl) rankEl.innerText = rankTitles[Math.min(level - 1, rankTitles.length - 1)];
 
-        // Avatar Ring Color
         const ring = document.getElementById('dossier-avatar-ring');
         if (ring) {
             ring.className = 'absolute -inset-1 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500';
             if (level >= 10) {
-                ring.classList.add('bg-gradient-to-r', 'from-[#f0c94d]', 'to-[#d4a843]'); // Gold
+                ring.classList.add('bg-gradient-to-r', 'from-[#f0c94d]', 'to-[#d4a843]');
             } else if (level >= 5) {
-                ring.classList.add('bg-gradient-to-r', 'from-[#00e676]', 'to-[#00a352]'); // Emerald
+                ring.classList.add('bg-gradient-to-r', 'from-[#00e676]', 'to-[#00a352]');
             } else {
-                ring.classList.add('bg-gradient-to-r', 'from-[#00d4ff]', 'to-[#0077ff]'); // Blue
+                ring.classList.add('bg-gradient-to-r', 'from-[#00d4ff]', 'to-[#0077ff]');
             }
         }
 
@@ -364,7 +349,6 @@ async function initApp() {
                     </div>
                 `).join('');
 
-                // Add Equip Logic
                 document.querySelectorAll('.inventory-item').forEach(itemBox => {
                     itemBox.addEventListener('click', () => {
                         const itemName = itemBox.getAttribute('data-item');
@@ -394,7 +378,6 @@ async function initApp() {
             }
         }
         
-        // Sync to Firestore
         syncUserProgress(userXP, compassCoins);
         updateHomeStatsUI();
     }
@@ -403,13 +386,11 @@ async function initApp() {
         const level = Math.floor(userXP / 100) + 1;
         const currentLevelXP = userXP % 100;
         
-        // Update Home XP text and bar
         const homeXpDisplay = document.getElementById('home-xp-display');
         if (homeXpDisplay) homeXpDisplay.innerText = `${userXP} XP`;
         const homeXpBar = document.getElementById('home-xp-bar');
         if (homeXpBar) homeXpBar.style.width = `${(currentLevelXP / 100) * 100}%`;
         
-        // Update Rank on Home
         const homeRankBadge = document.getElementById('home-rank-badge');
         const homeRankName = document.getElementById('home-rank-name');
         
@@ -424,16 +405,13 @@ async function initApp() {
         if (homeRankBadge) homeRankBadge.innerText = rankTitles[rankIdx].icon;
         if (homeRankName) homeRankName.innerText = rankTitles[rankIdx].name;
         
-        // Coins on Home
         const homeCoins = document.getElementById('home-coins-display');
         if (homeCoins) homeCoins.innerText = `${compassCoins} 🧭`;
         
-        // We can estimate games played/lessons done from localStorage or just show mock logic for now
         const homeLessonsDone = document.getElementById('home-lessons-done');
         const homeLessonsBar = document.getElementById('home-lessons-bar');
-        const homeLessonsProg = document.getElementById('home-lessons-progress'); // in quick access
+        const homeLessonsProg = document.getElementById('home-lessons-progress');
         
-        // Calculate finished lessons if possible, or roughly based on XP
         const estimatedLessons = Math.min(Math.floor(userXP / 20), 48); 
         if (homeLessonsDone) homeLessonsDone.innerText = `${estimatedLessons}/48`;
         if (homeLessonsBar) homeLessonsBar.style.width = `${(estimatedLessons / 48) * 100}%`;
@@ -485,7 +463,6 @@ async function initApp() {
 
     function handleShopLogic(targetPageId) {
         if (targetPageId === 'shop') {
-            // Stop ambient, play shop music
             stopAmbientMusic();
             if (!shopAudio) {
                 shopAudio = new Audio('assets/night-nook-pecan-pie-main-version-43149-02-17 - Copie.mp3');
@@ -494,19 +471,15 @@ async function initApp() {
             }
             shopAudio.play().catch(e => console.log('Shop audio blocked:', e));
         } else {
-            // Leave shop
             if (shopAudio) {
                 shopAudio.pause();
             }
-            // If they returned to a page that needs ambient music, start it again
-            // Only if they've passed the welcome screen
             if (!document.getElementById('welcome-overlay')) {
                 startAmbientMusic();
             }
         }
     }
 
-    // Shop 3D Setup
     const shopContainer = document.getElementById('shop-3d-container');
     const shopPrevBtn = document.getElementById('shop-prev-btn');
     const shopNextBtn = document.getElementById('shop-next-btn');
@@ -542,7 +515,6 @@ async function initApp() {
         updateShopView();
     }
 
-    // Page Navigation
     const navLinks = document.querySelectorAll('[data-page]');
     const pages = document.querySelectorAll('.page');
     navLinks.forEach(link => {
@@ -571,7 +543,6 @@ async function initApp() {
         });
     });
 
-    // Mobile Menu
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const navMenu = document.querySelector('.nav-links');
     if (mobileBtn && navMenu) {
@@ -579,7 +550,6 @@ async function initApp() {
     }
 
     const overlay = document.getElementById('welcome-overlay');
-    // Use event delegation so we catch clicks even if the innerHTML was replaced by 3D globe script
     if (overlay) {
         overlay.addEventListener('click', (e) => {
             const isBtnClick = e.target.closest('#start-experience-btn');
@@ -589,7 +559,7 @@ async function initApp() {
                 if (overlay.dataset.authenticating) return;
                 overlay.dataset.authenticating = "true";
                 
-                playSound('click'); // Can also add a specific scan sound later
+                playSound('click');
                 
                 const bioSection = document.getElementById('welcome-biometric');
                 const loadSection = document.getElementById('welcome-loading');
@@ -597,7 +567,6 @@ async function initApp() {
                 const progText = document.getElementById('welcome-progress-pct');
                 const statusText = document.getElementById('welcome-loading-text');
 
-                // Switch to Loading View
                 if (bioSection) bioSection.style.display = 'none';
                 if (loadSection) {
                     loadSection.classList.remove('hidden');
@@ -607,7 +576,7 @@ async function initApp() {
                 let progress = 0;
                 
                 const interval = setInterval(() => {
-                    progress += Math.random() * 8 + 4; // increment fast enough for a short load
+                    progress += Math.random() * 8 + 4;
                     if (progress > 100) progress = 100;
                     
                     if (progFill) progFill.style.width = `${progress}%`;
@@ -645,7 +614,6 @@ async function initApp() {
         });
     }
 
-    // --- HUD Coordination Logic ---
     function updateHUDCoords() {
         const latEl = document.getElementById('hud-lat');
         const lngEl = document.getElementById('hud-lng');
@@ -661,31 +629,23 @@ async function initApp() {
     }
     updateHUDCoords();
 
-    // Lang Toggle
     const langToggle = document.getElementById('lang-toggle');
     const langFlag = document.getElementById('current-lang-flag');
     if (langToggle && langFlag) {
-        // Set initial flag based on saved/default language
         langFlag.innerText = currentLang === 'ro' ? '🇷🇴' : '🇬🇧';
         langToggle.addEventListener('click', () => {
-            // currentLang is a live ES module binding — always reads the latest value
             const newLang = currentLang === 'ro' ? 'en' : 'ro';
             setLanguage(newLang);
             langFlag.innerText = newLang === 'ro' ? '🇷🇴' : '🇬🇧';
         });
     }
 
-    // Listen for language changes to re-render ALL dynamic content
     document.addEventListener('languageChanged', () => {
-        // 1. Update every element that has a data-i18n attribute
         updateDOMTranslations();
-        // 2. Re-render dynamically-built lesson module cards and lesson lists
         initLessons();
-        // 3. Re-render quiz content
         initQuizzes();
     });
 
-    // Game Launch Event Listener (from lessons or elsewhere)
     document.addEventListener('launch-game', (e) => {
         const gameId = e.detail.game;
         const gamesSelection = document.getElementById('games-selection');
@@ -694,15 +654,13 @@ async function initApp() {
         if (gamesSelection && activeGameContainer) {
             gamesSelection.classList.add('hidden');
             activeGameContainer.classList.remove('hidden');
-            activeGameContainer.innerHTML = ''; // clear previous
+            activeGameContainer.innerHTML = '';
             
-            // Call startGame from games.js directly
             startGame(gameId, activeGameContainer);
             showToast(`Lansare joc: ${gameId}...`, 'info');
         }
     });
 
-    // XP Event Listener
     document.addEventListener('xpGained', (e) => {
         const amount = e.detail.amount;
         userXP += amount;
@@ -710,7 +668,6 @@ async function initApp() {
         showToast(currentLang === 'ro' ? `Ai primit +${amount} XP` : `Received +${amount} XP`, "success");
         updateStats();
 
-        // Animated XP Arrow
         const xpNavEl = document.querySelector('.nav-xp');
         if (xpNavEl) {
             const arrow = document.createElement('div');
@@ -727,7 +684,6 @@ async function initApp() {
             arrow.style.animation = 'floatUpXP 1.5s ease-out forwards';
             arrow.style.pointerEvents = 'none';
             
-            // Inject keyframes if not exists
             if (!document.getElementById('xp-arrow-keyframe')) {
                 const style = document.createElement('style');
                 style.id = 'xp-arrow-keyframe';
@@ -748,7 +704,6 @@ async function initApp() {
         }
     });
 
-    // Market Logic
     const buyBtns = document.querySelectorAll('.buy-btn');
     buyBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -771,7 +726,6 @@ async function initApp() {
         });
     });
 
-    // Games Integration
     document.querySelectorAll('.start-game-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const gameId = e.target.closest('.game-card').getAttribute('data-game');
@@ -792,13 +746,11 @@ async function initApp() {
         updateStats();
     });
 
-    // Avatar Upload Logic
     const avatarUpload = document.getElementById('avatar-upload');
     const avatarImage = document.getElementById('avatar-image');
     const avatarEmoji = document.getElementById('avatar-emoji');
 
     if (avatarUpload && avatarImage && avatarEmoji) {
-        // Load saved avatar
         const savedAvatar = localStorage.getItem('customAvatar');
         if (savedAvatar) {
             avatarImage.src = savedAvatar;
@@ -824,7 +776,6 @@ async function initApp() {
         });
     }
 
-    // Banner Upload logic
     const bannerUpload = document.getElementById('banner-upload');
     const dossierBanner = document.getElementById('dossier-banner');
     if (bannerUpload && dossierBanner) {
@@ -842,7 +793,6 @@ async function initApp() {
         });
     }
 
-    // Dossier UI Elements
     const saveDossierBtn = document.getElementById('save-dossier-btn');
     if (saveDossierBtn) {
         saveDossierBtn.addEventListener('click', async () => {
@@ -857,7 +807,7 @@ async function initApp() {
                     const canvas = await html2canvas(card, {
                         useCORS: true,
                         backgroundColor: '#0a0e17',
-                        scale: 2 // Higher quality
+                        scale: 2
                     });
                     
                     const link = document.createElement('a');
@@ -877,14 +827,11 @@ async function initApp() {
         });
     }
 
-    // Theme Customizer
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             playSound('click');
             const theme = e.currentTarget.getAttribute('data-theme');
             
-            // Just simulate the effect by showing a toast or adding class to body. 
-            // Since it's a prototype, we'll set CSS variables on the root.
             if (theme === 'blue') {
                 document.documentElement.style.setProperty('--neon-blue', '#00d4ff');
                 document.documentElement.style.setProperty('--blue-gradient', 'linear-gradient(90deg, #00d4ff, #0077ff)');
@@ -901,7 +848,6 @@ async function initApp() {
         });
     });
 
-    // Music Selection Logic
     const musicGrid = document.getElementById('music-selection-grid');
     if (musicGrid) {
         function renderMusicGrid() {
@@ -931,7 +877,6 @@ async function initApp() {
         renderMusicGrid();
     }
 
-    // Sound Theme Logic
     const currentSound = getCurrentSoundTheme();
     document.querySelectorAll('.sound-theme-btn').forEach(btn => {
         if (btn.getAttribute('data-theme-key') === currentSound) {
@@ -943,7 +888,6 @@ async function initApp() {
             const key = e.currentTarget.getAttribute('data-theme-key');
             setSoundTheme(key);
             
-            // Update UI
             document.querySelectorAll('.sound-theme-btn').forEach(b => {
                 b.classList.remove('border-[#00d4ff]', 'bg-[#00d4ff]/20', 'border-[#d4a843]', 'bg-[#d4a843]/20', 'border-[#cc3355]', 'bg-[#cc3355]/20', 'border-[#2eaa6e]', 'bg-[#2eaa6e]/20');
                 b.classList.add('border-white/20', 'bg-transparent');
@@ -965,12 +909,10 @@ async function initApp() {
         });
     });
 
-    // Avatar Customizer Logic
     const emojis = ['👨‍💼', '👩‍💼', '🕵️‍♂️', '🕵️‍♀️', '🥷', '👩‍🚀', '👨‍🚀', '🧙‍♂️', '🦹', '🦸', '🧜‍♂️', '🧛', '🧟', '🧞', '🧚', '💂‍♂️', '👮', '👷', '🧑‍🔬', '🧑‍💻'];
     const avatarGrid = document.getElementById('avatar-grid');
     let selectedAvatarEmoji = localStorage.getItem('profileEmoji') || '👨‍💼';
     
-    // Set initial avatar emoji on UI
     const profileAvatarEmojiEl = document.getElementById('avatar-emoji');
     if(profileAvatarEmojiEl && !localStorage.getItem('customAvatar')) {
         profileAvatarEmojiEl.innerText = selectedAvatarEmoji;
@@ -1003,7 +945,7 @@ async function initApp() {
         if (applyBtn) {
             applyBtn.addEventListener('click', () => {
                 localStorage.setItem('profileEmoji', selectedAvatarEmoji);
-                localStorage.removeItem('customAvatar'); // clear custom img if using emoji
+                localStorage.removeItem('customAvatar');
                 if (profileAvatarEmojiEl) {
                     profileAvatarEmojiEl.innerText = selectedAvatarEmoji;
                     profileAvatarEmojiEl.classList.remove('hidden');
@@ -1025,7 +967,6 @@ async function initApp() {
         }
     }
 
-    // Shop Logic
     document.querySelectorAll('.shop-tab-tw').forEach(tab => {
         tab.addEventListener('click', (e) => {
             playSound('click');
@@ -1074,19 +1015,15 @@ async function initApp() {
         });
     });
 
-    // Click Sounds
     document.querySelectorAll('.btn, .nav-link, .shop-tab').forEach(btn => {
         btn.addEventListener('click', () => playSound('click'));
     });
 
-    // Initialize stats
     updateStats();
 
-    // Edit Name Button
     const editNameBtn = document.getElementById('edit-name-btn');
     const profileNameEl = document.getElementById('profile-name');
     if (editNameBtn && profileNameEl) {
-        // Load saved name
         const savedName = localStorage.getItem('profileName');
         if (savedName) profileNameEl.textContent = savedName;
 
@@ -1098,7 +1035,6 @@ async function initApp() {
                 profileNameEl.style.borderBottomColor = 'var(--neon-blue)';
                 profileNameEl.style.cursor = 'text';
                 profileNameEl.focus();
-                // Move cursor to end
                 const range = document.createRange();
                 range.selectNodeContents(profileNameEl);
                 range.collapse(false);
@@ -1123,20 +1059,17 @@ async function initApp() {
                 playSound('correct');
             }
         });
-        // Save on Enter
         profileNameEl.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); editNameBtn.click(); }
         });
     }
 
-    // ── COACHING LOGIC ──────────────────────────────────────────
     const coachingSubmitBtn = document.getElementById('coaching-submit-btn');
     const coachingQuestionnaire = document.getElementById('coaching-questionnaire');
     const coachingDashboard = document.getElementById('coaching-dashboard');
     const coachingResetBtn = document.getElementById('coaching-reset-btn');
     const mentorGrid = document.getElementById('mentor-grid');
 
-    // If coaching was already done, show dashboard
     if (localStorage.getItem('coachingInterests') && coachingQuestionnaire && coachingDashboard) {
         coachingQuestionnaire.style.display = 'none';
         coachingDashboard.classList.remove('hidden');
@@ -1151,7 +1084,6 @@ async function initApp() {
                 return;
             }
             localStorage.setItem('coachingInterests', JSON.stringify(selected));
-            // Animate out questionnaire
             coachingQuestionnaire.style.transition = 'opacity 0.5s, transform 0.5s';
             coachingQuestionnaire.style.opacity = '0';
             coachingQuestionnaire.style.transform = 'translateY(-20px)';
@@ -1178,7 +1110,6 @@ async function initApp() {
             coachingQuestionnaire.style.display = '';
             coachingQuestionnaire.style.opacity = '1';
             coachingQuestionnaire.style.transform = '';
-            // Uncheck all
             document.querySelectorAll('input[name="interest"]').forEach(cb => {
                 cb.checked = false;
                 const span = cb.nextElementSibling;
@@ -1208,7 +1139,6 @@ async function initApp() {
         if (titleEl) titleEl.textContent = `${shown} Mentor${shown !== 1 ? 'i' : ''} Recomandat${shown !== 1 ? 'i' : ''}`;
     }
 
-    // ── UNIVERSAL CHAT LOGIC ───────────────────────────────────────
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
     const chatMessages = document.getElementById('community-chat-messages');
@@ -1249,7 +1179,6 @@ async function initApp() {
             chatAttachPreview.classList.add('hidden');
             playSound('click');
 
-            // Simulate reply
             setTimeout(() => {
                 const replyHtml = `
                     <div style="display:flex; gap:10px; animation: fadeIn 0.3s ease;">
@@ -1262,7 +1191,7 @@ async function initApp() {
                 `;
                 chatMessages.insertAdjacentHTML('beforeend', replyHtml);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-                playSound('correct'); // subtle notification sound
+                playSound('correct');
             }, 3000);
         };
 
@@ -1271,7 +1200,6 @@ async function initApp() {
             if (e.key === 'Enter') sendMessage();
         });
 
-        // Attachment Logic
         if (chatAttachBtn && chatFileInput) {
             chatAttachBtn.addEventListener('click', () => chatFileInput.click());
             
@@ -1297,7 +1225,6 @@ async function initApp() {
         }
     }
 
-    // ── SHOP DOTS ────────────────────────────────────────────────
     const shopDotsEl = document.getElementById('shop-dots');
     if (shopDotsEl && shopContainer) {
         const cats = shopContainer.querySelectorAll('.shop-category-view');
@@ -1316,7 +1243,6 @@ async function initApp() {
         if (shopCategoryTitle) shopCategoryTitle.textContent = cats[currentShopShelfIndex]?.getAttribute('data-title') || '';
         if (shopPrevBtn) shopPrevBtn.style.display = currentShopShelfIndex > 0 ? 'block' : 'none';
         if (shopNextBtn) shopNextBtn.style.display = currentShopShelfIndex < cats.length - 1 ? 'block' : 'none';
-        // Update dots
         if (shopDotsEl) {
             shopDotsEl.querySelectorAll('div').forEach((d, i) => {
                 d.style.background = i === currentShopShelfIndex ? '#00d4ff' : 'rgba(255,255,255,0.2)';
@@ -1326,12 +1252,10 @@ async function initApp() {
         }
     }
 
-    // Override the previous shopPrevBtn/shopNextBtn listeners with the new dot-aware version
     if (shopPrevBtn) { shopPrevBtn.onclick = () => { if(currentShopShelfIndex>0){currentShopShelfIndex--;updateShopViewGlobal();playSound('click');} }; }
     if (shopNextBtn) { shopNextBtn.onclick = () => { const cats=shopContainer?.querySelectorAll('.shop-category-view'); if(cats&&currentShopShelfIndex<cats.length-1){currentShopShelfIndex++;updateShopViewGlobal();playSound('click');} }; }
     updateShopViewGlobal();
 
-    // 3D Globe
     function initGlobe() {
         const globeContainer = document.getElementById('globe-container');
         if (!globeContainer || !window.Globe) return;
@@ -1356,7 +1280,6 @@ async function initApp() {
     }
 }
 
-// ── GLOBAL handleBuy (called from inline onclick in shop items) ──
 window.handleBuy = function(btn) {
     const item = btn.closest('.shop-item');
     if (!item) return;
@@ -1380,18 +1303,15 @@ window.handleBuy = function(btn) {
         inventory.push(itemId);
         localStorage.setItem('compassCoins', compassCoins);
         localStorage.setItem('inventory', JSON.stringify(inventory));
-        // Update all coin displays
         document.querySelectorAll('#shop-balance, .coin-count').forEach(el => el.textContent = compassCoins);
         btn.textContent = '✓ Cumpărat!';
         btn.style.background = 'rgba(0,230,118,0.2)';
         btn.style.color = '#00e676';
         btn.style.borderColor = '#00e676';
         btn.disabled = true;
-        // Particle burst effect
         item.style.transition = 'box-shadow 0.3s';
         item.style.boxShadow = '0 0 40px rgba(0,230,118,0.6)';
         setTimeout(() => { item.style.boxShadow = ''; }, 800);
-        // Show toast
         const toast = document.createElement('div');
         toast.textContent = `✅ Ai cumpărat: ${itemName}`;
         toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#00e676;color:#07101d;padding:12px 24px;border-radius:12px;font-family:Orbitron,sans-serif;font-weight:bold;font-size:0.85rem;z-index:9999;box-shadow:0 0 25px rgba(0,230,118,0.5);animation:fadeIn 0.3s ease;';
@@ -1408,14 +1328,12 @@ window.handleBuy = function(btn) {
     }
 };
 
-// ── GLOBAL SHOP NAV (used by inline onclick in shop HTML) ───────────────
 let _shopCatIndex = 0;
 const _shopCatLabels = ['BANNERE', 'AVATARE', 'UPGRADES'];
 
 window.switchShopCat = function(idx, btn) {
     _shopCatIndex = idx;
     _updateShopTrack();
-    // Update tab buttons
     document.querySelectorAll('.shop-tab-btn').forEach((b, i) => {
         if (i === idx) {
             b.style.background = 'rgba(0,212,255,0.15)';
@@ -1433,7 +1351,6 @@ window.shopNav = function(dir) {
     const panels = document.querySelectorAll('.shop-cat-panel');
     _shopCatIndex = Math.max(0, Math.min(panels.length - 1, _shopCatIndex + dir));
     _updateShopTrack();
-    // Sync tab buttons
     document.querySelectorAll('.shop-tab-btn').forEach((b, i) => {
         if (i === _shopCatIndex) {
             b.style.background = 'rgba(0,212,255,0.15)';
@@ -1461,10 +1378,8 @@ function _updateShopTrack() {
     if (label)   label.textContent = _shopCatLabels[_shopCatIndex] || '';
 }
 
-// Initialise on page load
 document.addEventListener('DOMContentLoaded', () => { _updateShopTrack(); });
 
-// Entry Point
 console.log("APP.JS MODULE EXECUTING...");
 
 if (document.readyState === 'loading') {
@@ -1473,7 +1388,6 @@ if (document.readyState === 'loading') {
     initApp();
 }
 
-// Friend Link Sharing Logic
 document.addEventListener('DOMContentLoaded', () => {
     const shareBtn = document.getElementById('share-friend-link-btn');
     if (shareBtn) {
@@ -1487,13 +1401,11 @@ document.addEventListener('DOMContentLoaded', () => {
             navigator.clipboard.writeText(link).then(() => {
                 showToast("Link-ul de prietenie a fost copiat!", "success");
             }).catch(() => {
-                // Fallback if clipboard API fails
                 alert("Link: " + link);
             });
         });
     }
 
-    // Handle Friend Add from URL
     const urlParams = new URLSearchParams(window.location.search);
     const friendToAdd = urlParams.get('addFriend');
     if (friendToAdd) {
@@ -1508,7 +1420,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) {
                     console.error("Friend link error:", e);
                 }
-                // Clean URL
                 const cleanUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState({}, document.title, cleanUrl);
             } else {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ╔══════════════════════════════════════════════════════════════╗
  * ║  TerraQuest — Security Module v1.0                           ║
  * ║  Demonstrable security features for InfoEducație evaluation  ║
@@ -14,18 +14,16 @@
  *  7. Security Audit   — live dashboard showing all test results
  */
 
-// ─── 1. XSS PREVENTION ────────────────────────────────────────────────────────
 export function sanitizeHTML(input) {
     if (typeof input !== 'string') return '';
     const div = document.createElement('div');
-    div.textContent = input;           // textContent escapes all tags
-    return div.innerHTML               // returns safe escaped string
+    div.textContent = input;
+    return div.innerHTML
         .replace(/&amp;/g, '&')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#x27;');
 }
 
-// Test XSS prevention
 function testXSS() {
     const payloads = [
         '<script>alert("XSS")</script>',
@@ -35,8 +33,6 @@ function testXSS() {
     ];
     const results = payloads.map(p => {
         const sanitized = sanitizeHTML(p);
-        // A sanitized string is safe if it doesn't contain RAW <script or RAW attributes
-        // but it WILL contain the escaped version.
         const isSafe = !sanitized.includes('<script') && 
                        !sanitized.includes('<img') && 
                        !sanitized.includes('<svg') &&
@@ -47,20 +43,18 @@ function testXSS() {
     return { name: 'XSS Prevention', passed: allPassed, details: results };
 }
 
-// ─── 2. RATE LIMITING ─────────────────────────────────────────────────────────
 const _rateLimitStore = {};
 
 export function checkRateLimit(action, maxCalls = 5, windowMs = 10000) {
     const now = Date.now();
     if (!_rateLimitStore[action]) _rateLimitStore[action] = [];
-    // remove old entries outside window
     _rateLimitStore[action] = _rateLimitStore[action].filter(t => now - t < windowMs);
     if (_rateLimitStore[action].length >= maxCalls) {
         console.warn(`[Security] Rate limit exceeded for action: ${action}`);
-        return false; // BLOCKED
+        return false;
     }
     _rateLimitStore[action].push(now);
-    return true; // ALLOWED
+    return true;
 }
 
 function testRateLimit() {
@@ -73,7 +67,6 @@ function testRateLimit() {
     return { name: 'Rate Limiting', passed: blocked, details: 'Blocked after 5 rapid requests in 10s window' };
 }
 
-// ─── 3. CSRF TOKEN ────────────────────────────────────────────────────────────
 function generateToken(len = 32) {
     const arr = new Uint8Array(len);
     crypto.getRandomValues(arr);
@@ -96,7 +89,6 @@ function testCSRF() {
     return { name: 'CSRF Token', passed, details: `Token length: ${validToken.length} chars (256-bit entropy)` };
 }
 
-// ─── 4. SESSION INTEGRITY ─────────────────────────────────────────────────────
 const _sessionSignature = (() => {
     const uid = localStorage.getItem('geoUID') || 'guest';
     const created = Date.now().toString();
@@ -113,7 +105,6 @@ export function checkSessionIntegrity() {
 
 function testSessionIntegrity() {
     const valid = checkSessionIntegrity();
-    // simulate tamper
     const origUID = localStorage.getItem('geoUID');
     localStorage.setItem('geoUID', 'hacker_injected');
     const tampered = !checkSessionIntegrity();
@@ -123,7 +114,6 @@ function testSessionIntegrity() {
     return { name: 'Session Integrity', passed, details: 'Detects localStorage tampering via session signature' };
 }
 
-// ─── 5. INPUT VALIDATION ──────────────────────────────────────────────────────
 export const validators = {
     email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v),
     username: v => /^[a-zA-Z0-9_À-ÿ]{3,30}$/.test(v),
@@ -145,7 +135,6 @@ function testInputValidation() {
     return { name: 'Input Validation', passed, details: results };
 }
 
-// ─── 6. INTEGRITY HASH (SHA-256) ──────────────────────────────────────────────
 async function sha256(message) {
     const msgBuf = new TextEncoder().encode(message);
     const hashBuf = await crypto.subtle.digest('SHA-256', msgBuf);
@@ -174,7 +163,6 @@ async function testIntegrityHash() {
     return { name: 'SHA-256 Integrity Hash', passed, details: 'Detects value tampering using Web Crypto API' };
 }
 
-// ─── 8. SQL INJECTION PROTECTION ──────────────────────────────────────────────
 export function detectSQLi(input) {
     const patterns = [/SELECT.*FROM/i, /INSERT.*INTO/i, /UPDATE.*SET/i, /DELETE.*FROM/i, /DROP.*TABLE/i, /UNION.*SELECT/i, /' OR '1'='1/i, /--/];
     return patterns.some(p => p.test(input));
@@ -192,7 +180,6 @@ function testSQLi() {
     return { name: 'SQL Injection Guard', passed: allBlocked, details: 'Pattern matching for common SQLi payloads' };
 }
 
-// ─── 9. SSL/TLS VERIFICATION ──────────────────────────────────────────────────
 function testSSL() {
     const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     return { 
@@ -202,7 +189,6 @@ function testSSL() {
     };
 }
 
-// ─── 10. DDOS PROTECTION (SIMULATED) ──────────────────────────────────────────
 function testDDoS() {
     return { 
         name: 'DDoS Mitigation', 
@@ -210,7 +196,6 @@ function testDDoS() {
         details: 'Virtual Traffic Scrubbing & Cooldown Protocols Active' 
     };
 }
-// ─── 11. CONTENT SECURITY POLICY ──────────────────────────────────────────────
 function checkCSPHeader() {
     let csp = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
     if (!csp) {
@@ -223,7 +208,6 @@ function checkCSPHeader() {
     return { name: 'Content Security Policy', passed: true, details: 'CSP already present' };
 }
 
-// ─── 12. SESSION HIJACKING PROTECTION ─────────────────────────────────────────
 function testSessionHijacking() {
     return {
         name: 'Anti-Hijacking Protocol',
@@ -232,7 +216,6 @@ function testSessionHijacking() {
     };
 }
 
-// ─── SECURITY AUDIT DASHBOARD ─────────────────────────────────────────────────
 export async function runSecurityAudit(targetContainerId) {
     const container = document.getElementById(targetContainerId);
     if (!container) return;
@@ -277,7 +260,6 @@ export async function runSecurityAudit(targetContainerId) {
         resultsEl.appendChild(card);
     }
 
-    // Run all tests sequentially with visual delay
     const syncTests = [testXSS, testSQLi, testRateLimit, testCSRF, testSessionIntegrity, testInputValidation, testSSL, testDDoS, testSessionHijacking, checkCSPHeader];
     const asyncTests = [testIntegrityHash];
     const allResults = [];
@@ -314,13 +296,9 @@ export async function runSecurityAudit(targetContainerId) {
         </div>`;
 }
 
-// ─── AUTO-INIT ─────────────────────────────────────────────────────────────────
-// Apply rate limiting to AI chat automatically
 document.addEventListener('DOMContentLoaded', () => {
-    // Inject CSP
     checkCSPHeader();
 
-    // Attach rate limiting to AI send button
     const aiSendBtn = document.getElementById('ai-send-btn');
     if (aiSendBtn) {
         const originalClick = aiSendBtn.onclick;
@@ -336,7 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, true);
     }
 
-    // Bind Security Audit Button
     const auditBtn = document.getElementById('run-security-audit-btn');
     if (auditBtn) {
         auditBtn.addEventListener('click', () => {
@@ -350,7 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sanitize any user-rendered content from localStorage on load
     const userDisplayName = localStorage.getItem('geoDisplayName');
     if (userDisplayName) {
         const safe = sanitizeHTML(userDisplayName);

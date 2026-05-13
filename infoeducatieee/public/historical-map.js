@@ -1,7 +1,4 @@
-// =====================================================
-// TerraQuest — Historical World Map Module (Leaflet)
-// =====================================================
-
+﻿
 const historicalEras = [
     {
         year: 1914,
@@ -106,7 +103,6 @@ window.switchMapTab = function(tab) {
         btnCurrent.style.background = 'transparent';
         btnCurrent.style.color = 'var(--text-secondary)';
         
-        // Render current era map when tab is opened
         if (!historicalMap) {
             initHistoricalMap();
         } else {
@@ -124,7 +120,6 @@ function initHistoricalMap() {
         maxZoom: 6
     }).setView([20, 0], 2);
 
-    // Simple dark base tiles (physical or basic borders)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
         subdomains: 'abcd',
         maxZoom: 20
@@ -135,7 +130,6 @@ window.showHistoricalEra = function(eraIndex) {
     currentEra = eraIndex;
     const era = historicalEras[eraIndex];
 
-    // Build buttons if not exist
     const btnContainer = document.getElementById('era-buttons');
     if (btnContainer.children.length === 0) {
         btnContainer.innerHTML = historicalEras.map((e, i) => `
@@ -148,7 +142,6 @@ window.showHistoricalEra = function(eraIndex) {
             </button>
         `).join('');
     } else {
-        // Update styling
         Array.from(btnContainer.children).forEach((btn, i) => {
             const e = historicalEras[i];
             if (i === eraIndex) {
@@ -163,17 +156,14 @@ window.showHistoricalEra = function(eraIndex) {
         });
     }
 
-    // Update description
     const descEl = document.getElementById('era-description');
     if (descEl) {
         descEl.style.borderLeftColor = era.color;
         descEl.innerHTML = era.description;
     }
 
-    // Load GeoJSON for this era
     loadEraGeoJSON(era);
 
-    // Render event cards
     const eventsEl = document.getElementById('era-events');
     if (eventsEl) {
         eventsEl.innerHTML = era.events.map(ev => `
@@ -191,22 +181,19 @@ window.showHistoricalEra = function(eraIndex) {
 async function loadEraGeoJSON(era) {
     if (!historicalMap) return;
 
-    // Show loading state (could add a spinner in production)
     
     try {
         const response = await fetch(era.geojson);
         const data = await response.json();
 
-        // Remove old layer
         if (geojsonLayer) {
             historicalMap.removeLayer(geojsonLayer);
         }
 
-        // Add new GeoJSON layer
         geojsonLayer = L.geoJSON(data, {
             style: function (feature) {
                 return {
-                    color: era.color, // Border color
+                    color: era.color,
                     weight: 1.5,
                     opacity: 0.8,
                     fillColor: era.color,
@@ -214,7 +201,6 @@ async function loadEraGeoJSON(era) {
                 };
             },
             onEachFeature: function (feature, layer) {
-                // Determine country name depending on properties in GeoJSON
                 const name = feature.properties.NAME || feature.properties.name || feature.properties.ADMIN || "Unknown Territory";
                 layer.bindTooltip(name, {
                     className: 'geo-popup',
@@ -225,7 +211,6 @@ async function loadEraGeoJSON(era) {
         
     } catch (error) {
         console.error("Failed to load historical GeoJSON:", error);
-        // Fallback or error message could be shown to the user here
     }
 }
 
@@ -234,4 +219,3 @@ function hexToRgb(hex) {
     return result ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}` : '0,212,255';
 }
 
-// Map will be auto-initialized when tab is switched.

@@ -1,4 +1,4 @@
-export function showToast(message, type = 'info') {
+﻿export function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
     
@@ -20,4 +20,4 @@ export function showToast(message, type = 'info') {
     }, 3000);
 }
 
-window.showToast = showToast; // Failsafe for non-module scripts
+window.showToast = showToast;

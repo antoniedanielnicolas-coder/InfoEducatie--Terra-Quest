@@ -1,6 +1,4 @@
-// welcome-overlay-init.js
-// Initializes the 3D welcome overlay after DOM is ready
-import { initWelcomeOverlay } from './welcome-overlay.js';
+﻿import { initWelcomeOverlay } from './welcome-overlay.js';
 
 function init() {
   initWelcomeOverlay();

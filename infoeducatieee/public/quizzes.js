@@ -1,4 +1,4 @@
-import { gradesData, testSets } from './data/quizzes.js?v=4';
+﻿import { gradesData, testSets } from './data/quizzes.js?v=4';
 import { currentLang, t } from './i18n.js';
 import { playSound } from './sounds.js';
 
@@ -58,7 +58,6 @@ export function initQuizzes() {
     document.getElementById('results-retry-btn')?.addEventListener('click', () => {
         document.getElementById('test-results').classList.add('hidden');
         document.getElementById('test-container').classList.remove('hidden');
-        // Restart the current test
         const testId = document.getElementById('test-container').getAttribute('data-current-test');
         if(testId) startTest(testId);
     });
@@ -77,7 +76,7 @@ function renderGradeIslands() {
     if (!container) return;
     
     container.innerHTML = '';
-    container.className = 'games-selection'; // Keep using games-selection class for grid layout
+    container.className = 'games-selection';
 
     gradesData.forEach(grade => {
         const card = document.createElement('div');
@@ -111,7 +110,6 @@ function renderGradeIslands() {
 
         card.addEventListener('click', () => {
             playSound('click');
-            // Zoom animation
             card.style.transform = 'scale(2)';
             card.style.opacity = '0';
             setTimeout(() => {
@@ -137,35 +135,27 @@ function openIsland(grade) {
     }
     islandView.classList.remove('hidden');
     
-    // Play custom ambient music for the island
     playIslandMusic(grade.id);
 
-    // Get tests for this grade (should be 10 levels)
     const gradeTests = testSets.filter(t => t.grade === grade.id);
     
-    // Set background image based on grade
     let bgImage = '';
     if(grade.id === 9) bgImage = 'assets/tropical_map.png';
     else if(grade.id === 10) bgImage = 'assets/desert_map.png';
     else if(grade.id === 11) bgImage = 'assets/arctic_map.png';
     else if(grade.id === 12) bgImage = 'assets/volcanic_map.png';
 
-    // Generate path points
     const points = [];
     for(let i=0; i<gradeTests.length; i++) {
-        // x goes from 10% to 90%
         let x = 10 + (i / (gradeTests.length - 1)) * 80;
-        // y is a sine wave
         let y = 50 + Math.sin(i * 1.2) * 30;
         points.push({x, y});
     }
 
-    // Generate SVG path connecting the points
     let svgPath = '';
     if (points.length > 0) {
         svgPath += `M ${points[0].x} ${points[0].y} `;
         for(let i=1; i<points.length; i++) {
-            // simple cubic bezier for smooth curves
             let prev = points[i-1];
             let curr = points[i];
             let cpX1 = prev.x + (curr.x - prev.x)/2;
@@ -197,7 +187,6 @@ function openIsland(grade) {
                 ${gradeTests.map((test, index) => {
                     let p = points[index];
                     let locked = index > 0 && !localStorage.getItem('quiz_score_' + gradeTests[index-1].id);
-                    // For demo, let's just leave them all unlocked or unlock first 2. Let's make them all unlocked for now.
                     let score = localStorage.getItem('quiz_score_' + test.id) || 0;
                     let stars = 0;
                     if (score >= 80) stars = 3;
@@ -352,7 +341,6 @@ function loadQuestion() {
     const prevBtn = document.getElementById('test-prev-btn');
     const nextBtn = document.getElementById('test-next-btn');
     
-    // Setup Previous button
     if (currentQuestionIndex > 0) {
         prevBtn.disabled = false;
         prevBtn.onclick = () => {
@@ -365,7 +353,6 @@ function loadQuestion() {
         prevBtn.onclick = null;
     }
 
-    // Determine if question was already answered
     const alreadyAnswered = typeof q.userSelectedIdx !== 'undefined';
     nextBtn.disabled = !alreadyAnswered;
 
@@ -441,7 +428,7 @@ function showExplanation(q, isCorrect) {
 }
 
 function selectOption(btn, q, selectedIdx) {
-    if (typeof q.userSelectedIdx !== 'undefined') return; // Already answered
+    if (typeof q.userSelectedIdx !== 'undefined') return;
 
     q.userSelectedIdx = selectedIdx;
     btn.classList.add('selected');
@@ -517,7 +504,6 @@ function finishQuiz() {
                 document.dispatchEvent(new CustomEvent('coinsGained', { detail: { amount: coinsEarned } }));
             }
             
-            // Show a visual "arrow" or transition back to island
             claimBtn.innerHTML = "COLLECTED ✅";
             claimBtn.style.background = "var(--success)";
             claimBtn.disabled = true;
@@ -525,9 +511,8 @@ function finishQuiz() {
             setTimeout(() => {
                 document.getElementById('test-results').classList.add('hidden');
                 document.getElementById('island-view').classList.remove('hidden');
-                // Set a flag to show an arrow in the island view
                 localStorage.setItem('last_completed_test', testId);
-                renderGradeIslands(); // Re-render to show updated scores/stars
+                renderGradeIslands();
             }, 1000);
         };
     }

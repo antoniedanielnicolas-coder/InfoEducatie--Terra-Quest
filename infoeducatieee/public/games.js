@@ -1,4 +1,4 @@
-import { playSound } from './sounds.js';
+﻿import { playSound } from './sounds.js';
 import { t, currentLang } from './i18n.js';
 import { showToast } from './utils.js';
 import { initSeterra, cleanupSeterra } from './seterra.js';
@@ -9,7 +9,6 @@ let gameData = {
     coins: 0
 };
 
-// --- GAME 1: MAP QUIZ ---
 const mapTargets = [
     { name: "Craiova, Romania", lat: 44.33, lng: 23.82, zoom: 6 },
     { name: "Brussels, Belgium (NATO HQ)", lat: 50.85, lng: 4.35, zoom: 6 },
@@ -71,7 +70,6 @@ function handleMapClick(clicked) {
         gameData.score++;
         updateGameStats();
         
-        // Show correct marker
         L.marker([target.lat, target.lng]).addTo(mapInstance)
             .bindPopup(`<b style="color:#00d4ff">✅ ${target.name}</b>`).openPopup();
         
@@ -91,13 +89,11 @@ function handleMapClick(clicked) {
         setTimeout(() => mapEl && mapEl.classList.remove('shake'), 500);
         showToast("❌ Too far! Try again.", "error");
         
-        // Show a hint circle
         L.circle(clicked, { radius: distance * 0.3, color: '#ff4466', fillOpacity: 0.1, weight: 1 })
             .addTo(mapInstance);
     }
 }
 
-// --- GAME 2: GEOPOLITICS SIMULATOR (HTML5 Drag & Drop) ---
 function getGeoSimItems() {
     return [
         {
@@ -240,11 +236,11 @@ function initGeoSimulator() {
                 <!-- Drop Zones -->
                 ${geoSimItems.map((item, i) => {
                     const positions = [
-                        { top: '28%', left: '42%' },   // EU - Western Europe
-                        { top: '22%', left: '58%' },   // NATO Eastern Flank
-                        { top: '38%', left: '80%' },   // Korean DMZ
-                        { top: '22%', left: '14%' },   // 49th Parallel
-                        { top: '35%', left: '68%' }    // Belt & Road
+                        { top: '28%', left: '42%' },
+                        { top: '22%', left: '58%' },
+                        { top: '38%', left: '80%' },
+                        { top: '22%', left: '14%' },
+                        { top: '35%', left: '68%' }
                     ];
                     const pos = positions[i];
                     return `
@@ -286,7 +282,6 @@ function initGeoSimulator() {
         </div>
     `;
 
-    // Add drag listeners to items
     document.querySelectorAll('.geo-drag-item').forEach(item => {
         item.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', item.getAttribute('data-id'));
@@ -299,7 +294,6 @@ function initGeoSimulator() {
         });
     });
 
-    // Add drop listeners to zones
     document.querySelectorAll('.geo-drop-zone').forEach(zone => {
         zone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -326,7 +320,6 @@ function initGeoSimulator() {
 
 function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
     if (draggedId === zoneAccepts) {
-        // Correct!
         if (geoSimCompleted.has(draggedId)) return;
         geoSimCompleted.add(draggedId);
         
@@ -335,7 +328,6 @@ function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
         
         const item = getGeoSimItems().find(i => i.id === draggedId);
         
-        // Snap to zone - show success state
         zoneEl.style.background = `${item.color}33`;
         zoneEl.style.borderColor = item.color;
         zoneEl.style.borderStyle = 'solid';
@@ -346,7 +338,6 @@ function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
             <div style="font-size:0.9rem;color:var(--success);">✅</div>
         `;
         
-        // Hide dragged item from sidebar
         const dragEl = document.getElementById(`drag-item-${draggedId}`);
         if (dragEl) {
             dragEl.style.opacity = '0.3';
@@ -355,7 +346,6 @@ function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
             dragEl.innerHTML = `<span style="font-size:1.2rem;">✅</span><div style="font-size:0.8rem;color:var(--text-secondary);">${item.label} — ${t('geo_sim.placed')}</div>`;
         }
         
-        // Update score
         gameData.coins += 10;
         updateGameStats();
         document.getElementById('sim-score-display').innerText = `${geoSimScore}/${geoSimTotal}`;
@@ -370,7 +360,6 @@ function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
             }, 800);
         }
     } else {
-        // Wrong drop
         playSound('wrong');
         zoneEl.style.background = 'rgba(255,68,102,0.15)';
         zoneEl.style.borderColor = '#ff4466';
@@ -383,7 +372,6 @@ function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
     }
 }
 
-// --- GAME 3: REGIME GUESSER ---
 const regimeQuestions = [
     { name: "United Kingdom", img: "https://upload.wikimedia.org/wikipedia/commons/a/a4/United_Kingdom_on_the_globe_%28Europe_centered%29.svg", type: "Monarchy" },
     { name: "France", img: "https://upload.wikimedia.org/wikipedia/commons/1/1a/France_on_the_globe_%28Europe_centered%29.svg", type: "Republic" },
@@ -445,7 +433,6 @@ window.guessRegime = function(guess) {
     const stamp = document.getElementById('regime-stamp');
     const imgContainer = document.getElementById('regime-image-container');
     
-    // Disable buttons to prevent double clicks
     const btns = imgContainer.parentElement.querySelectorAll('button');
     btns.forEach(b => b.disabled = true);
     
@@ -468,7 +455,6 @@ window.guessRegime = function(guess) {
         stamp.style.opacity = "1";
         imgContainer.style.borderColor = "#ff4466";
         imgContainer.style.boxShadow = "0 0 40px rgba(255, 68, 102, 0.5)";
-        // shake animation
         imgContainer.animate([
             { transform: 'translateX(0)' },
             { transform: 'translateX(-10px)' },
@@ -485,8 +471,6 @@ window.guessRegime = function(guess) {
     }, 1500);
 }
 
-
-// --- UTILS ---
 function updateGameStats() {
     const xpEl = document.getElementById('game-xp-count');
     const coinEl = document.getElementById('game-coin-count');
@@ -495,7 +479,6 @@ function updateGameStats() {
     document.dispatchEvent(new CustomEvent('coinsGained', { detail: { amount: gameData.coins } }));
 }
 
-// --- GAME: SPY MAP ---
 function initSpyMap() {
     const container = document.getElementById('game-container');
     const layers = [
@@ -569,7 +552,6 @@ window.toggleSpyLayer = function(layerId, btn) {
     const userXP = parseInt(localStorage.getItem('userXP') || '0');
     if (userXP < layer.xp) { showToast(`🔒 Ai nevoie de ${layer.xp} XP pentru a debloca!`, 'error'); return; }
 
-    // toggle
     const isSame = window._activeSpyLayer === layerId;
     window._activeSpyLayer = isSame ? null : layerId;
 
@@ -597,7 +579,6 @@ window.toggleSpyLayer = function(layerId, btn) {
     }
 };
 
-// --- GAME: GEO-WARS ---
 const geoWarsCountries = [
     { name: 'România', flag: '🇷🇴', region: 'Europa', decisions: [
         { text: 'Extindeți infrastructura NATO în estul țării?', options: ['Da — securitate sporită', 'Nu — neutralitate'], correct: 0, xp: 15 },
@@ -741,7 +722,6 @@ export function endGame() {
     currentGame = null;
 }
 
-// --- GAME 4: TIMELINE CHALLENGE ---
 let timelineTimer = null;
 let timeLeft = 60;
 
@@ -758,7 +738,6 @@ function initTimelineChallenge() {
         { id: '5', year: 2020, text: currentLang === 'ro' ? "Ieșirea UK din UE (Brexit)" : "Brexit" }
     ];
     
-    // Shuffle events
     const shuffled = [...events].sort(() => Math.random() - 0.5);
     
     container.innerHTML = `
@@ -834,7 +813,6 @@ function initTimelineChallenge() {
     });
 }
 
-// --- GAME 5: CITY GUESSER ---
 const cityGuesserData = [
     { name: "Paris", img: "https://images.unsplash.com/photo-1502602898657-3e907fa0a586?q=80&w=1000", options: ["London", "Paris", "Berlin", "Madrid"] },
     { name: "New York", img: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1000", options: ["Chicago", "Toronto", "New York", "Los Angeles"] },
@@ -862,7 +840,6 @@ function renderCityGuesser() {
     const container = document.getElementById('game-container');
     const q = shuffledCities[cityGuesserIndex];
     
-    // Shuffle options
     const options = [...q.options].sort(() => Math.random() - 0.5);
     
     container.innerHTML = `
@@ -911,7 +888,6 @@ window.guessCity = function(guess, correct) {
     }, 1500);
 }
 
-// --- GAME 6: SHAPE GUESSER ---
 const shapeGuesserData = [
     { name: "Italy", shape: "M 30,10 L 40,20 L 50,40 L 60,60 L 70,80 L 60,90 L 50,80 L 40,70 L 30,50 Z", options: ["Italy", "Greece", "Spain", "France"] },
     { name: "Japan", shape: "M 80,10 L 70,30 L 60,50 L 50,70 L 40,90 L 30,80 L 40,60 L 50,40 Z", options: ["Japan", "Philippines", "New Zealand", "Madagascar"] },
@@ -938,7 +914,6 @@ function renderShapeGuesser() {
     const container = document.getElementById('game-container');
     const q = shuffledShapes[shapeGuesserIndex];
     
-    // Shuffle options
     const options = [...q.options].sort(() => Math.random() - 0.5);
     
     container.innerHTML = `

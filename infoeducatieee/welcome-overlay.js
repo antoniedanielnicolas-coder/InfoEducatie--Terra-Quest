@@ -1,7 +1,4 @@
-// =====================================================
-// GeoInformatica — Enhanced Welcome Overlay
-// Three.js 3D Globe + Advanced Intro Animations
-// =====================================================
+﻿
 
 export function initWelcomeOverlay() {
   buildOverlayHTML();
@@ -11,7 +8,6 @@ export function initWelcomeOverlay() {
   initTypingEffect();
 }
 
-// ---- Build the overlay HTML ----
 function buildOverlayHTML() {
   const overlay = document.getElementById('welcome-overlay');
   if (!overlay) return;
@@ -78,7 +74,6 @@ function buildOverlayHTML() {
   `;
 }
 
-// ---- Stars ----
 function initStars() {
   const container = document.getElementById('welcome-stars');
   if (!container) return;
@@ -98,7 +93,6 @@ function initStars() {
   }
 }
 
-// ---- Floating particles ----
 function initFloatingParticles() {
   const overlay = document.getElementById('welcome-overlay');
   if (!overlay) return;
@@ -120,7 +114,6 @@ function initFloatingParticles() {
   }
 }
 
-// ---- Three.js 3D Globe ----
 function initThreeGlobe() {
   const canvas = document.getElementById('welcome-globe-canvas');
   if (!canvas || !window.THREE) return;
@@ -136,7 +129,6 @@ function initThreeGlobe() {
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
   camera.position.set(0, 0, 3.2);
 
-  // ---- Globe Sphere ----
   const globeGeo = new THREE.IcosahedronGeometry(1, 5);
   const globeMat = new THREE.MeshPhongMaterial({
     color: 0x0a1530,
@@ -151,7 +143,6 @@ function initThreeGlobe() {
   const globe = new THREE.Mesh(globeGeo, globeMat);
   scene.add(globe);
 
-  // ---- Wireframe overlay ----
   const wireGeo = new THREE.IcosahedronGeometry(1.01, 3);
   const wireMat = new THREE.MeshBasicMaterial({
     color: 0x00d4ff,
@@ -162,7 +153,6 @@ function initThreeGlobe() {
   const wire = new THREE.Mesh(wireGeo, wireMat);
   scene.add(wire);
 
-  // ---- Glowing atmosphere shell ----
   const atmosGeo = new THREE.SphereGeometry(1.18, 32, 32);
   const atmosMat = new THREE.MeshBasicMaterial({
     color: 0x00d4ff,
@@ -173,7 +163,6 @@ function initThreeGlobe() {
   const atmos = new THREE.Mesh(atmosGeo, atmosMat);
   scene.add(atmos);
 
-  // ---- Outer glow ring ----
   const ringGeo = new THREE.TorusGeometry(1.35, 0.008, 8, 100);
   const ringMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.3 });
   const ring1 = new THREE.Mesh(ringGeo, ringMat);
@@ -187,10 +176,8 @@ function initThreeGlobe() {
   ring2.rotation.z = Math.PI / 6;
   scene.add(ring2);
 
-  // ---- Continent dots (random scatter to simulate landmasses) ----
   const dotsGeo = new THREE.BufferGeometry();
   const dotPositions = [];
-  // Approximate continent regions with clustered dots
   const continentCenters = [
     [45, 15], [10, 15], [-30, -10], [100, 35], [-90, 40], [-65, -15], [130, -25]
   ];
@@ -218,13 +205,12 @@ function initThreeGlobe() {
   const dots = new THREE.Points(dotsGeo, dotsMat);
   scene.add(dots);
 
-  // ---- Marker pins (key cities) ----
   const markerPositions = [
-    { lat: 44.43, lng: 26.1, color: 0xff4466, label: 'Bucharest' },    // Bucharest
-    { lat: 40.71, lng: -74.0, color: 0x00d4ff, label: 'New York' },   // NY
-    { lat: 50.85, lng: 4.35, color: 0xd4a843, label: 'Brussels' },    // Brussels
-    { lat: 39.9, lng: 116.4, color: 0xff8800, label: 'Beijing' },     // Beijing
-    { lat: 55.75, lng: 37.6, color: 0xff4466, label: 'Moscow' },      // Moscow
+    { lat: 44.43, lng: 26.1, color: 0xff4466, label: 'Bucharest' },
+    { lat: 40.71, lng: -74.0, color: 0x00d4ff, label: 'New York' },
+    { lat: 50.85, lng: 4.35, color: 0xd4a843, label: 'Brussels' },
+    { lat: 39.9, lng: 116.4, color: 0xff8800, label: 'Beijing' },
+    { lat: 55.75, lng: 37.6, color: 0xff4466, label: 'Moscow' },
   ];
 
   const markerGroup = new THREE.Group();
@@ -241,7 +227,6 @@ function initThreeGlobe() {
     const marker = new THREE.Mesh(markerGeo, markerMat);
     marker.position.set(x, y, z);
 
-    // Pulse ring around marker
     const pulseGeo = new THREE.RingGeometry(0.035, 0.05, 16);
     const pulseMat = new THREE.MeshBasicMaterial({ color: m.color, transparent: true, opacity: 0.4, side: THREE.DoubleSide });
     const pulse = new THREE.Mesh(pulseGeo, pulseMat);
@@ -255,7 +240,6 @@ function initThreeGlobe() {
   });
   scene.add(markerGroup);
 
-  // ---- Lights ----
   const sunLight = new THREE.DirectionalLight(0xffffff, 1.8);
   sunLight.position.set(5, 3, 5);
   scene.add(sunLight);
@@ -267,7 +251,6 @@ function initThreeGlobe() {
   blueLight.position.set(-3, 2, 2);
   scene.add(blueLight);
 
-  // ---- Animation loop ----
   let t = 0;
   let isDragging = false;
   let prevMouse = { x: 0, y: 0 };
@@ -310,7 +293,6 @@ function initThreeGlobe() {
     ring2.rotation.z -= 0.003;
     ring2.rotation.x += 0.002;
 
-    // Pulse markers
     markerGroup.children.forEach(child => {
       if (child.userData.pulsePhase !== undefined) {
         const pulse = (Math.sin(t * 2 + child.userData.pulsePhase) + 1) / 2;
@@ -320,7 +302,6 @@ function initThreeGlobe() {
       }
     });
 
-    // Atmosphere breathe
     const breathe = (Math.sin(t * 0.5) + 1) / 2;
     atmosMat.opacity = 0.03 + breathe * 0.04;
 
@@ -329,7 +310,6 @@ function initThreeGlobe() {
   animate();
 }
 
-// ---- Typing / Boot sequence effects ----
 function initTypingEffect() {
   const lines = [
     { el: 'agent-id-text', texts: ['SYS_BOOT: INITIALIZING...', 'KERNEL_LOAD: OK', 'GEO_DB: CONNECTED', 'AUTH_MODULE: READY', 'AGENT_ID: GEO-∞'] },
@@ -347,7 +327,6 @@ function initTypingEffect() {
     next();
   }
 
-  // Bio status sequence
   setTimeout(() => {
     const bioVal = document.getElementById('bio-value-text');
     if (bioVal) {
@@ -361,7 +340,6 @@ function initTypingEffect() {
     }
   }, 800);
 
-  // Count-up readouts
   setTimeout(() => {
     countUp('rd-states', 0, 195, 1800);
     countUp('rd-lessons', 0, 48, 1500);

@@ -1,37 +1,31 @@
-// =====================================================
-// TerraQuest - Lessons & Modules Data
-// Comprehensive Political Geography Curriculum (Grades 9-12)
-// =====================================================
+﻿
 
 import { playSound } from './sounds.js';
 import { showToast } from './utils.js';
 import { currentLang, t } from './i18n.js';
 
-let currentYear = "10"; // Default — matches the active tab in HTML
+let currentYear = "10";
 
 export const modulesData = [
-  // --- CLASA A 9-A ---
+
   { id: 101, year: "9", title: { en: "Module 1: Earth as a Planet", ro: "Modulul 1: Pământul ca Planetă" }, desc: { en: "The Universe, Solar System, and Earth's place in space.", ro: "Universul, Sistemul Solar și locul Pământului în spațiu." }, icon: "🌍", color: "#4a90d9" },
   { id: 102, year: "9", title: { en: "Module 2: Lithosphere", ro: "Modulul 2: Litosfera" }, desc: { en: "Plate tectonics, volcanoes, and earthquakes.", ro: "Tectonica plăcilor, vulcani și cutremure." }, icon: "🌋", color: "#e05c3a" },
   { id: 103, year: "9", title: { en: "Module 3: Atmosphere", ro: "Modulul 3: Atmosfera" }, desc: { en: "Climate, weather, and climate change.", ro: "Clima, vremea și schimbările climatice." }, icon: "🌪️", color: "#2eaa6e" },
   { id: 104, year: "9", title: { en: "Module 4: Hydrosphere", ro: "Modulul 4: Hidrosfera" }, desc: { en: "Oceans, rivers, and the global water crisis.", ro: "Oceanele, râurile și criza globală a apei." }, icon: "🌊", color: "#00d4ff" },
   { id: 105, year: "9", title: { en: "Module 5: Biosphere & Environment", ro: "Modulul 5: Biosfera și Mediul" }, desc: { en: "Biodiversity, biomes, and human impact.", ro: "Biodiversitate, biomi și impactul uman." }, icon: "🌳", color: "#d4a843" },
 
-  // --- CLASA A 10-A ---
   { id: 1, year: "10", title: { en: "Module 1: The Concept of State", ro: "Modulul 1: Conceptul de Stat" }, desc: { en: "Territory, population, sovereignty — fundamental pillars.", ro: "Teritoriu, populație, suveranitate — pilonii fundamentali." }, icon: "🏛️", color: "#00d4ff" },
   { id: 2, year: "10", title: { en: "Module 2: Borders & Territories", ro: "Modulul 2: Frontiere și Teritorii" }, desc: { en: "Natural and artificial borders, maritime zones.", ro: "Frontiere naturale și artificiale, zone maritime." }, icon: "🗺️", color: "#00e676" },
   { id: 3, year: "10", title: { en: "Module 3: Governance Systems", ro: "Modulul 3: Sisteme de Guvernare" }, desc: { en: "Monarchies vs. Republics, Unitary vs. Federal.", ro: "Monarhii vs. Republici, Unitar vs. Federal." }, icon: "⚖️", color: "#d4a843" },
   { id: 4, year: "10", title: { en: "Module 4: Geopolitical Power Centers", ro: "Modulul 4: Centre de Putere Geopolitice" }, desc: { en: "USA, EU, China, BRICS — forces shaping our world.", ro: "SUA, UE, China, BRICS — forțele lumii." }, icon: "🌐", color: "#ff4466" },
   { id: 5, year: "10", title: { en: "Module 5: International Organizations", ro: "Modulul 5: Organizații Internaționale" }, desc: { en: "UN, NATO, ASEAN — global governance architecture.", ro: "ONU, NATO, ASEAN — arhitectura globală." }, icon: "🤝", color: "#b829e3" },
 
-  // --- CLASA A 11-A ---
   { id: 201, year: "11", title: { en: "Module 1: EU Foundations", ro: "Modulul 1: Fundamentele UE" }, desc: { en: "History, institutions, and the common market.", ro: "Istoric, instituții și piața comună." }, icon: "🇪🇺", color: "#003399" },
   { id: 202, year: "11", title: { en: "Module 2: European Diversity", ro: "Modulul 2: Diversitatea Europeană" }, desc: { en: "North vs South, East vs West dynamics.", ro: "Dinamici Nord vs Sud, Est vs Vest." }, icon: "🌍", color: "#2eaa6e" },
   { id: 203, year: "11", title: { en: "Module 3: Romania in the EU", ro: "Modulul 3: România în UE" }, desc: { en: "Accession, funds, and diaspora.", ro: "Aderare, fonduri europene și diaspora." }, icon: "🇷🇴", color: "#d4a843" },
   { id: 204, year: "11", title: { en: "Module 4: Romania's Regions", ro: "Modulul 4: Regiunile României" }, desc: { en: "Economic and cultural geography of Romania.", ro: "Geografia economică și culturală a României." }, icon: "🗺️", color: "#00d4ff" },
   { id: 205, year: "11", title: { en: "Module 5: Romania's Geopolitics", ro: "Modulul 5: Geopolitica României" }, desc: { en: "Black Sea, NATO, and regional security.", ro: "Marea Neagră, NATO și securitatea regională." }, icon: "🛡️", color: "#ff4466" },
 
-  // --- CLASA A 12-A ---
   { id: 301, year: "12", title: { en: "Module 1: Contemporary World", ro: "Modulul 1: Lumea Contemporană" }, desc: { en: "Post-1989 world order, rise of Asia.", ro: "Ordinea post-1989, ascensiunea Asiei." }, icon: "🌐", color: "#ff4466" },
   { id: 302, year: "12", title: { en: "Module 2: European Environment", ro: "Modulul 2: Mediul European" }, desc: { en: "Climate change and green energy in Europe.", ro: "Schimbări climatice și energie verde în Europa." }, icon: "🍃", color: "#00e676" },
   { id: 303, year: "12", title: { en: "Module 3: UNESCO Heritage", ro: "Modulul 3: Patrimoniul UNESCO" }, desc: { en: "Cultural and natural heritage sites.", ro: "Situri de patrimoniu cultural și natural." }, icon: "🏛️", color: "#d4a843" },
@@ -2762,7 +2756,6 @@ export const lessonsData = [
   },
 ];
 
-// INITIALIZATION — year tabs set up on DOMContentLoaded only (translations init handled by app.js)
 document.addEventListener('DOMContentLoaded', () => {
     setupYearTabs();
 });
@@ -2871,16 +2864,13 @@ export function showLessonContent(lesson) {
     contentHTML += `<div class="lesson-rich-content">${lesson.content[currentLang] || lesson.content['en']}</div>`;
     body.innerHTML = contentHTML;
 
-    // Attach game launchers
     const launchers = body.querySelectorAll('.lesson-game-launcher');
     launchers.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const gameId = e.target.getAttribute('data-game');
             modal.classList.add('hidden');
-            // Trigger custom event to switch to games tab
             document.dispatchEvent(new CustomEvent('launch-game', { detail: { game: gameId } }));
             
-            // Also explicitly switch the UI view just in case
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             const gameTab = document.querySelector('[data-page="games"]');
             if (gameTab) gameTab.classList.add('active');
@@ -2907,7 +2897,6 @@ export function initLessons() {
         });
     }
 
-    // Modal close logic
     const modal = document.getElementById('lesson-modal') || document.getElementById('lesson-modal-overlay');
     const closeBtn = document.getElementById('lesson-modal-close');
     const completeBtn = document.getElementById('lesson-complete-btn');
@@ -2921,8 +2910,6 @@ export function initLessons() {
     if (completeBtn && modal) {
         completeBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
-            // Assuming the lesson object is passed and XP is awarded
-            // The XP logic is probably handled by app.js when custom events are fired
             document.dispatchEvent(new CustomEvent('xpGained', { detail: { amount: 50, reason: 'Lesson Completed!' } }));
             showToast('Lesson Completed! +50 XP', 'success');
         });

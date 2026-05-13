@@ -1,4 +1,4 @@
-import { currentLang, t } from './i18n.js';
+﻿import { currentLang, t } from './i18n.js';
 import { playSound } from './sounds.js';
 
 let chatHistory = [];
@@ -10,12 +10,10 @@ export function initAI() {
 
     if (!aiSendBtn || !aiInput || !aiChatHistory) return;
 
-    // Initial greeting
     aiChatHistory.innerHTML = `
         <div class="ai-msg bot-msg">${t('ai.greeting')}</div>
     `;
 
-    // Load history from local storage
     const savedHistory = localStorage.getItem('ai_chat_history');
     if (savedHistory) {
         chatHistory = JSON.parse(savedHistory);
@@ -26,16 +24,13 @@ export function initAI() {
         const msg = aiInput.value.trim();
         if (!msg) return;
 
-        // Add user message
         addMessage(msg, 'user');
         aiInput.value = '';
         playSound('click');
 
-        // Show typing indicator
         const typingId = showTypingIndicator();
 
         try {
-            // Send to proxy backend
             const response = await fetch('/api/ai-chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -44,7 +39,6 @@ export function initAI() {
             
             const data = await response.json();
             
-            // Remove typing indicator
             removeTypingIndicator(typingId);
             
             if (response.ok) {
@@ -55,7 +49,6 @@ export function initAI() {
         } catch (error) {
             removeTypingIndicator(typingId);
             
-            // Offline fallback responses
             const lowerMsg = msg.toLowerCase();
             let offlineReply = "I am currently offline, but I can still tell you that Political Geography is fascinating!";
             
@@ -73,7 +66,7 @@ export function initAI() {
             
             addMessage(offlineReply, 'bot');
         }
-        playSound('click'); // Play sound when bot replies
+        playSound('click');
     });
 
     aiInput.addEventListener('keypress', (e) => {
@@ -82,10 +75,8 @@ export function initAI() {
         }
     });
 
-    // Handle Mic Button
     initSpeechRecognition();
 
-    // Handle language change
     document.addEventListener('languageChanged', () => {
         aiInput.placeholder = t('ai.placeholder');
         aiSendBtn.innerText = t('ai.btn_send');
@@ -158,7 +149,6 @@ function removeTypingIndicator(id) {
     if(el) el.remove();
 }
 
-// ============ SPEECH TO TEXT ============
 function initSpeechRecognition() {
     const micBtn = document.getElementById('ai-mic-btn');
     const micStatus = document.getElementById('mic-status');
@@ -198,7 +188,6 @@ function initSpeechRecognition() {
     };
 }
 
-// ============ VOICE SYNTHESIS ============
 let currentUtterance = null;
 
 function speakText(text, lang) {
@@ -219,7 +208,6 @@ function speakText(text, lang) {
     if (voicePref === 'female-en') voice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Google')));
     if (voicePref === 'male-en') voice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google')));
     
-    // Fallback logic
     if (!voice) {
         voice = voices.find(v => v.lang.startsWith(lang === 'ro' ? 'ro' : 'en'));
     }
