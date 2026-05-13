@@ -1,4 +1,4 @@
-import { gradesData, testSets } from './data/quizzes.js?v=3';
+import { gradesData, testSets } from './data/quizzes.js?v=4';
 import { currentLang, t } from './i18n.js';
 import { playSound } from './sounds.js';
 
@@ -16,6 +16,13 @@ export function initQuizzes() {
         document.getElementById('test-results').classList.add('hidden');
         document.getElementById('island-view').classList.remove('hidden');
         playSound('click');
+    });
+
+    document.getElementById('test-exit-btn')?.addEventListener('click', () => {
+        playSound('click');
+        clearInterval(timerInterval);
+        document.getElementById('test-container').classList.add('hidden');
+        document.getElementById('island-view').classList.remove('hidden');
     });
 
     document.getElementById('results-certificate-btn')?.addEventListener('click', () => {
@@ -207,26 +214,30 @@ function openIsland(grade) {
                     }
 
                     return `
-                        <div class="island-node level-btn" data-test-id="${test.id}" style="
+                        <div class="island-node level-btn ${test.id === localStorage.getItem('last_completed_test') ? 'last-completed' : ''}" data-test-id="${test.id}" style="
                             pointer-events:auto;
                             position:absolute;
                             left:${p.x}%;
                             top:${p.y}%;
                             transform:translate(-50%, -50%);
-                            width:60px;
-                            height:60px;
+                            width:70px;
+                            height:70px;
                             background:radial-gradient(circle at 30% 30%, ${grade.color}, #111);
-                            border:3px solid white;
+                            border:4px solid white;
                             border-radius:50%;
                             display:flex;
                             justify-content:center;
                             align-items:center;
                             cursor:pointer;
-                            box-shadow:0 10px 15px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.5);
-                            transition:transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                        " onmouseenter="this.style.transform='translate(-50%, -50%) scale(1.2)'" onmouseleave="this.style.transform='translate(-50%, -50%) scale(1)'">
+                            box-shadow:0 10px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,255,255,0.3);
+                            transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                            z-index: 5;
+                        " onmouseenter="this.style.transform='translate(-50%, -50%) scale(1.15)'; this.style.zIndex='10';" onmouseleave="this.style.transform='translate(-50%, -50%) scale(1)'; this.style.zIndex='5';">
                             ${starHtml}
-                            <span style="font-family:'Orbitron',sans-serif;font-weight:900;color:white;font-size:1.5rem;text-shadow:2px 2px 0px rgba(0,0,0,0.5);">${index + 1}</span>
+                            <span style="font-family:'Orbitron',sans-serif;font-weight:900;color:white;font-size:1.8rem;text-shadow:2px 2px 0px rgba(0,0,0,0.5);">${index + 1}</span>
+                            ${(index > 0 && gradeTests[index-1].id === localStorage.getItem('last_completed_test')) ? `
+                                <div class="next-level-arrow" style="position:absolute; top:-60px; left:50%; transform:translateX(-50%); font-size:2rem; animation: bounceDown 1s infinite;">⬇️</div>
+                            ` : ''}
                         </div>
                     `;
                 }).join('')}
@@ -338,8 +349,25 @@ function loadQuestion() {
     qText.innerText = q.question[currentLang] || q.question.en;
     optsGrid.innerHTML = '';
     
+    const prevBtn = document.getElementById('test-prev-btn');
     const nextBtn = document.getElementById('test-next-btn');
-    nextBtn.disabled = true;
+    
+    // Setup Previous button
+    if (currentQuestionIndex > 0) {
+        prevBtn.disabled = false;
+        prevBtn.onclick = () => {
+            playSound('click');
+            currentQuestionIndex--;
+            loadQuestion();
+        };
+    } else {
+        prevBtn.disabled = true;
+        prevBtn.onclick = null;
+    }
+
+    // Determine if question was already answered
+    const alreadyAnswered = typeof q.userSelectedIdx !== 'undefined';
+    nextBtn.disabled = !alreadyAnswered;
 
     if (q.type === 'multiple_choice' || q.type === 'true_false') {
         const options = q.options[currentLang] || q.options.en;
@@ -348,13 +376,35 @@ function loadQuestion() {
             btn.className = 'option-btn';
             btn.innerText = optText;
             btn.dataset.idx = idx;
-            btn.onclick = () => selectOption(btn, q);
+            
+            if (alreadyAnswered) {
+                btn.disabled = true;
+                if (idx === q.userSelectedIdx) {
+                    btn.classList.add('selected');
+                    if (idx === q.correctIndex) {
+                        btn.classList.add('correct');
+                    } else {
+                        btn.classList.add('wrong');
+                    }
+                }
+                if (idx === q.correctIndex && q.userSelectedIdx !== q.correctIndex) {
+                    btn.classList.add('correct');
+                }
+            } else {
+                btn.onclick = () => selectOption(btn, q, idx);
+            }
+            
             optsGrid.appendChild(btn);
         });
     }
     
+    if (alreadyAnswered) {
+        showExplanation(q, q.userSelectedIdx === q.correctIndex);
+    }
+    
     const newNextBtn = nextBtn.cloneNode(true);
     nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+    
     
     newNextBtn.addEventListener('click', () => {
         playSound('click');
@@ -363,20 +413,38 @@ function loadQuestion() {
             finishQuiz();
         } else {
             loadQuestion();
-            if (currentQuestionIndex === currentQuizQuestions.length - 1) {
-                newNextBtn.innerText = currentLang === 'ro' ? 'Finalizare' : 'Submit';
-            } else {
-                newNextBtn.innerText = currentLang === 'ro' ? 'Următorul' : 'Next';
-            }
         }
     });
+
+    if (currentQuestionIndex === currentQuizQuestions.length - 1) {
+        newNextBtn.innerText = currentLang === 'ro' ? 'Finalizare' : 'Submit';
+    } else {
+        newNextBtn.innerText = currentLang === 'ro' ? 'Următorul' : 'Next';
+    }
 }
 
-function selectOption(btn, q) {
-    if (document.querySelector('.option-btn.selected')) return;
+function showExplanation(q, isCorrect) {
+    let expl = document.getElementById('explanation-text');
+    if (!expl) {
+        expl = document.createElement('p');
+        expl.id = 'explanation-text';
+        expl.style.marginTop = '15px';
+        expl.style.fontSize = '0.9rem';
+        expl.style.padding = '10px';
+        expl.style.borderRadius = '8px';
+        document.getElementById('options-grid').appendChild(expl);
+    }
+    expl.style.color = isCorrect ? 'var(--success)' : 'var(--warning)';
+    expl.style.background = 'rgba(255,255,255,0.05)';
+    expl.style.borderLeft = `3px solid ${isCorrect ? 'var(--success)' : 'var(--warning)'}`;
+    expl.innerText = q.explanation[currentLang] || q.explanation.en;
+}
 
+function selectOption(btn, q, selectedIdx) {
+    if (typeof q.userSelectedIdx !== 'undefined') return; // Already answered
+
+    q.userSelectedIdx = selectedIdx;
     btn.classList.add('selected');
-    const selectedIdx = parseInt(btn.dataset.idx);
     const isCorrect = selectedIdx === q.correctIndex;
 
     if (isCorrect) {
@@ -393,17 +461,9 @@ function selectOption(btn, q) {
         });
     }
 
-    const expl = document.createElement('p');
-    expl.style.marginTop = '15px';
-    expl.style.color = isCorrect ? 'var(--success)' : 'var(--warning)';
-    expl.style.fontSize = '0.9rem';
-    expl.style.background = 'rgba(255,255,255,0.05)';
-    expl.style.padding = '10px';
-    expl.style.borderRadius = '8px';
-    expl.style.borderLeft = `3px solid ${isCorrect ? 'var(--success)' : 'var(--warning)'}`;
-    expl.innerText = q.explanation[currentLang] || q.explanation.en;
-    document.getElementById('options-grid').appendChild(expl);
-
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    
+    showExplanation(q, isCorrect);
     document.getElementById('test-next-btn').disabled = false;
 }
 
@@ -421,21 +481,57 @@ function finishQuiz() {
     }
     
     document.getElementById('results-title').innerText = currentLang === 'ro' ? 'Test Finalizat!' : 'Test Complete!';
-    document.getElementById('results-stats').innerHTML = `
-        <p style="font-size: 3rem; font-weight:900; color: ${percentage >= 80 ? 'var(--success)' : (percentage >= 50 ? 'var(--gold-bright)' : 'var(--error)')}; margin-bottom: 15px; font-family:'Orbitron',sans-serif;">${percentage}%</p>
-        <p style="font-size:1.1rem; color:var(--text-secondary); margin-bottom:8px;">${currentLang === 'ro' ? 'Răspunsuri corecte' : 'Correct answers'}: <span style="color:white;font-weight:bold;">${score} / ${currentQuizQuestions.length}</span></p>
-        <p style="font-size:1.1rem; color:var(--text-secondary);">${currentLang === 'ro' ? 'Timp rămas' : 'Time left'}: <span style="color:white;font-weight:bold;">${Math.floor(timeLeft/60)}m ${timeLeft%60}s</span></p>
-    `;
-
+    
     const testData = testSets.find(t => t.id === testId);
     let multiplier = testData ? (testData.type === 'long' ? 3 : (testData.type === 'medium' ? 2 : 1)) : 1;
-    
     const xpEarned = score * 10 * multiplier;
-    if (xpEarned > 0) {
-        document.dispatchEvent(new CustomEvent('xpGained', { detail: { amount: xpEarned } }));
-        document.dispatchEvent(new CustomEvent('coinsGained', { detail: { amount: Math.floor(xpEarned / 5) } }));
+    const coinsEarned = Math.floor(xpEarned / 5);
+
+    document.getElementById('results-stats').innerHTML = `
+        <p style="font-size: 3.5rem; font-weight:900; color: ${percentage >= 80 ? 'var(--success)' : (percentage >= 50 ? 'var(--gold-bright)' : 'var(--error)')}; margin: 0 0 10px; font-family:'Orbitron',sans-serif; text-shadow: 0 0 20px rgba(0,0,0,0.5);">${percentage}%</p>
+        <p style="font-size:1.2rem; color:white; margin-bottom:20px; font-family:'JetBrains Mono',monospace;">${currentLang === 'ro' ? 'Răspunsuri corecte' : 'Correct answers'}: ${score} / ${currentQuizQuestions.length}</p>
+        
+        <div id="reward-claim-area" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; margin-bottom:25px; display:flex; flex-direction:column; align-items:center; gap:15px; animation: fadeInUp 0.6s ease both;">
+            <div style="display:flex; gap:20px;">
+                <div style="text-align:center;">
+                    <div style="font-size:0.7rem; color:rgba(255,255,255,0.4); margin-bottom:5px; font-family:'Orbitron',sans-serif;">XP REWARD</div>
+                    <div style="font-size:1.5rem; color:var(--neon-blue); font-weight:bold;">+${xpEarned}</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:0.7rem; color:rgba(255,255,255,0.4); margin-bottom:5px; font-family:'Orbitron',sans-serif;">COINS</div>
+                    <div style="font-size:1.5rem; color:var(--gold-bright); font-weight:bold;">+${coinsEarned}</div>
+                </div>
+            </div>
+            <button id="claim-rewards-btn" class="btn btn-primary" style="width:100%; padding:12px; font-family:'Orbitron',sans-serif; letter-spacing:2px; box-shadow: 0 0 20px rgba(0,212,255,0.3);">
+                ${currentLang === 'ro' ? 'COLECTEAZĂ RECOMPENSELE ⮕' : 'CLAIM REWARDS ⮕'}
+            </button>
+        </div>
+    `;
+
+    const claimBtn = document.getElementById('claim-rewards-btn');
+    if (claimBtn) {
+        claimBtn.onclick = () => {
+            playSound('correct');
+            if (xpEarned > 0) {
+                document.dispatchEvent(new CustomEvent('xpGained', { detail: { amount: xpEarned } }));
+                document.dispatchEvent(new CustomEvent('coinsGained', { detail: { amount: coinsEarned } }));
+            }
+            
+            // Show a visual "arrow" or transition back to island
+            claimBtn.innerHTML = "COLLECTED ✅";
+            claimBtn.style.background = "var(--success)";
+            claimBtn.disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('test-results').classList.add('hidden');
+                document.getElementById('island-view').classList.remove('hidden');
+                // Set a flag to show an arrow in the island view
+                localStorage.setItem('last_completed_test', testId);
+                renderGradeIslands(); // Re-render to show updated scores/stars
+            }, 1000);
+        };
     }
-    
+
     if (percentage >= 80) {
         if(typeof window.triggerConfetti === 'function') window.triggerConfetti();
     }

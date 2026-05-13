@@ -1,5 +1,5 @@
 // =====================================================
-// GeoInformatica — Advanced Sound System
+// TerraQuest — Advanced Sound System
 // Web Audio API powered — no external files needed
 // Supports multiple sound themes: Cyber, Classic, Retro, Minimal
 // =====================================================
@@ -462,6 +462,10 @@ export function startAmbientMusic() {
     if (!isMuted && audioCtx) {
         playMusic(currentMusicId);
     }
+}
+
+export function stopAmbientMusic() {
+    stopMusic();
 }
 
 export function setSoundTheme(themeKey) {

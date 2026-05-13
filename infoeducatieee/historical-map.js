@@ -1,5 +1,5 @@
 // =====================================================
-// GeoInformatica — Historical World Map Module (Leaflet)
+// TerraQuest — Historical World Map Module (Leaflet)
 // =====================================================
 
 const historicalEras = [

@@ -1,8 +1,8 @@
-import { initI18n, setLanguage, currentLang, t } from './i18n.js';
+import { initI18n, setLanguage, currentLang, t, updateDOMTranslations } from './i18n.js';
 import { initLessons } from './lessons.js';
-import { initQuizzes } from './quizzes.js?v=3';
+import { initQuizzes } from './quizzes.js?v=4';
 import { initAI } from './ai-agent.js';
-import { initSounds, playSound, startAmbientMusic, setSoundTheme, getCurrentSoundTheme, musicLibrary, setBackgroundMusic, getCurrentMusicId } from './sounds.js';
+import { initSounds, playSound, startAmbientMusic, stopAmbientMusic, setSoundTheme, getCurrentSoundTheme, musicLibrary, setBackgroundMusic, getCurrentMusicId } from './sounds.js';
 import { startGame, endGame } from './games.js';
 import { showToast } from './utils.js';
 import { initWorldMap } from './worldmap.js';
@@ -480,6 +480,68 @@ async function initApp() {
         }).join('');
     }
 
+    let shopAudio = null;
+    let currentShopShelfIndex = 0;
+
+    function handleShopLogic(targetPageId) {
+        if (targetPageId === 'shop') {
+            // Stop ambient, play shop music
+            stopAmbientMusic();
+            if (!shopAudio) {
+                shopAudio = new Audio('assets/night-nook-pecan-pie-main-version-43149-02-17 - Copie.mp3');
+                shopAudio.loop = true;
+                shopAudio.volume = 0.5;
+            }
+            shopAudio.play().catch(e => console.log('Shop audio blocked:', e));
+        } else {
+            // Leave shop
+            if (shopAudio) {
+                shopAudio.pause();
+            }
+            // If they returned to a page that needs ambient music, start it again
+            // Only if they've passed the welcome screen
+            if (!document.getElementById('welcome-overlay')) {
+                startAmbientMusic();
+            }
+        }
+    }
+
+    // Shop 3D Setup
+    const shopContainer = document.getElementById('shop-3d-container');
+    const shopPrevBtn = document.getElementById('shop-prev-btn');
+    const shopNextBtn = document.getElementById('shop-next-btn');
+    const shopCategoryTitle = document.getElementById('shop-category-title');
+    
+    if (shopContainer && shopPrevBtn && shopNextBtn && shopCategoryTitle) {
+        const categories = shopContainer.querySelectorAll('.shop-category-view');
+        const totalCategories = categories.length;
+
+        function updateShopView() {
+            shopContainer.style.transform = `translateX(-${currentShopShelfIndex * 100}vw)`;
+            shopCategoryTitle.textContent = categories[currentShopShelfIndex].getAttribute('data-title');
+            shopPrevBtn.style.display = currentShopShelfIndex > 0 ? 'block' : 'none';
+            shopNextBtn.style.display = currentShopShelfIndex < totalCategories - 1 ? 'block' : 'none';
+        }
+
+        shopPrevBtn.addEventListener('click', () => {
+            if (currentShopShelfIndex > 0) {
+                playSound('click');
+                currentShopShelfIndex--;
+                updateShopView();
+            }
+        });
+
+        shopNextBtn.addEventListener('click', () => {
+            if (currentShopShelfIndex < totalCategories - 1) {
+                playSound('click');
+                currentShopShelfIndex++;
+                updateShopView();
+            }
+        });
+
+        updateShopView();
+    }
+
     // Page Navigation
     const navLinks = document.querySelectorAll('[data-page]');
     const pages = document.querySelectorAll('.page');
@@ -504,6 +566,8 @@ async function initApp() {
                 updateHomeStatsUI();
                 populateLeaderboardUI();
             }
+
+            handleShopLogic(targetPageId);
         });
     });
 
@@ -519,21 +583,64 @@ async function initApp() {
     if (overlay) {
         overlay.addEventListener('click', (e) => {
             const isBtnClick = e.target.closest('#start-experience-btn');
-            const isFingerprintClick = e.target.closest('.fingerprint-wrap') || e.target.closest('.group'); // .group is from the static index.html fingerprint
+            const isFingerprintClick = e.target.closest('.fingerprint-wrap') || e.target.closest('.group'); 
             
             if (isBtnClick || isFingerprintClick) {
-                startAmbientMusic();
-                playSound('click');
+                if (overlay.dataset.authenticating) return;
+                overlay.dataset.authenticating = "true";
                 
-                // Animate overlay out
-                overlay.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
-                overlay.style.opacity = '0';
-                overlay.style.transform = 'scale(1.1)';
+                playSound('click'); // Can also add a specific scan sound later
                 
-                setTimeout(() => {
-                    overlay.remove();
-                    initGlobe();
-                }, 1000);
+                const bioSection = document.getElementById('welcome-biometric');
+                const loadSection = document.getElementById('welcome-loading');
+                const progFill = document.getElementById('welcome-progress-fill');
+                const progText = document.getElementById('welcome-progress-pct');
+                const statusText = document.getElementById('welcome-loading-text');
+
+                // Switch to Loading View
+                if (bioSection) bioSection.style.display = 'none';
+                if (loadSection) {
+                    loadSection.classList.remove('hidden');
+                    loadSection.style.display = 'flex';
+                }
+
+                let progress = 0;
+                
+                const interval = setInterval(() => {
+                    progress += Math.random() * 8 + 4; // increment fast enough for a short load
+                    if (progress > 100) progress = 100;
+                    
+                    if (progFill) progFill.style.width = `${progress}%`;
+                    if (progText) progText.innerText = `${Math.floor(progress)}%`;
+
+                    if (statusText) {
+                        if (progress > 30 && progress < 60) {
+                            statusText.innerText = "Loading Topographical Data...";
+                        } else if (progress > 60 && progress < 90) {
+                            statusText.innerText = "Decrypting Modules...";
+                        } else if (progress >= 100) {
+                            statusText.innerText = "Access Granted.";
+                            statusText.style.color = "#00e676";
+                        }
+                    }
+
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        startAmbientMusic();
+                        playSound('correct'); 
+
+                        setTimeout(() => {
+                            overlay.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
+                            overlay.style.opacity = '0';
+                            overlay.style.transform = 'scale(1.1)';
+                            
+                            setTimeout(() => {
+                                overlay.remove();
+                                initGlobe();
+                            }, 1000);
+                        }, 500);
+                    }
+                }, 100);
             }
         });
     }
@@ -558,26 +665,24 @@ async function initApp() {
     const langToggle = document.getElementById('lang-toggle');
     const langFlag = document.getElementById('current-lang-flag');
     if (langToggle && langFlag) {
+        // Set initial flag based on saved/default language
         langFlag.innerText = currentLang === 'ro' ? '🇷🇴' : '🇬🇧';
         langToggle.addEventListener('click', () => {
+            // currentLang is a live ES module binding — always reads the latest value
             const newLang = currentLang === 'ro' ? 'en' : 'ro';
             setLanguage(newLang);
             langFlag.innerText = newLang === 'ro' ? '🇷🇴' : '🇬🇧';
         });
     }
 
-    // Listen for language changes to re-render dynamic content
+    // Listen for language changes to re-render ALL dynamic content
     document.addEventListener('languageChanged', () => {
-        // Re-render lessons and quizzes which use currentLang internally
-        initLessons(); 
+        // 1. Update every element that has a data-i18n attribute
+        updateDOMTranslations();
+        // 2. Re-render dynamically-built lesson module cards and lesson lists
+        initLessons();
+        // 3. Re-render quiz content
         initQuizzes();
-        
-        // Re-render games selection if on games page
-        const gamesSelection = document.getElementById('games-selection');
-        if (gamesSelection && !gamesSelection.classList.contains('hidden')) {
-            // Need a way to re-show selection. For now, just re-init games logic if needed
-            // Actually startGame handle views, so we just need to ensure the selection screen is refreshed
-        }
     });
 
     // Game Launch Event Listener (from lessons or elsewhere)
@@ -602,8 +707,45 @@ async function initApp() {
         const amount = e.detail.amount;
         userXP += amount;
         localStorage.setItem('userXP', userXP);
-        showToast(`Lesson Completed! +${amount} XP`, "success");
+        showToast(currentLang === 'ro' ? `Ai primit +${amount} XP` : `Received +${amount} XP`, "success");
         updateStats();
+
+        // Animated XP Arrow
+        const xpNavEl = document.querySelector('.nav-xp');
+        if (xpNavEl) {
+            const arrow = document.createElement('div');
+            arrow.innerText = `⬆ +${amount} XP`;
+            arrow.style.position = 'absolute';
+            arrow.style.left = '50%';
+            arrow.style.bottom = '-10px';
+            arrow.style.transform = 'translateX(-50%)';
+            arrow.style.color = '#00e676';
+            arrow.style.fontWeight = 'bold';
+            arrow.style.fontSize = '1.2rem';
+            arrow.style.textShadow = '0 0 10px #00e676';
+            arrow.style.zIndex = '9999';
+            arrow.style.animation = 'floatUpXP 1.5s ease-out forwards';
+            arrow.style.pointerEvents = 'none';
+            
+            // Inject keyframes if not exists
+            if (!document.getElementById('xp-arrow-keyframe')) {
+                const style = document.createElement('style');
+                style.id = 'xp-arrow-keyframe';
+                style.innerHTML = `
+                    @keyframes floatUpXP {
+                        0% { opacity: 0; transform: translate(-50%, 10px) scale(0.5); }
+                        20% { opacity: 1; transform: translate(-50%, 0px) scale(1.2); }
+                        80% { opacity: 1; transform: translate(-50%, -30px) scale(1); }
+                        100% { opacity: 0; transform: translate(-50%, -50px) scale(0.8); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            xpNavEl.style.position = 'relative';
+            xpNavEl.appendChild(arrow);
+            setTimeout(() => arrow.remove(), 1500);
+        }
     });
 
     // Market Logic
@@ -682,19 +824,56 @@ async function initApp() {
         });
     }
 
+    // Banner Upload logic
+    const bannerUpload = document.getElementById('banner-upload');
+    const dossierBanner = document.getElementById('dossier-banner');
+    if (bannerUpload && dossierBanner) {
+        bannerUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    dossierBanner.style.backgroundImage = `url('${event.target.result}')`;
+                    playSound('click');
+                    showToast("Banner updated!", "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     // Dossier UI Elements
     const saveDossierBtn = document.getElementById('save-dossier-btn');
     if (saveDossierBtn) {
-        saveDossierBtn.addEventListener('click', () => {
+        saveDossierBtn.addEventListener('click', async () => {
             playSound('click');
-            saveDossierBtn.innerHTML = "✅ Saved";
-            showToast(t('profile.saved'), "success");
-            setTimeout(() => {
-                saveDossierBtn.innerHTML = `
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                    Save Dossier
-                `;
-            }, 2000);
+            saveDossierBtn.disabled = true;
+            const originalText = saveDossierBtn.innerHTML;
+            saveDossierBtn.innerHTML = "📸 Generare...";
+            
+            try {
+                const card = document.querySelector('#page-profile .relative.rounded-2xl.overflow-hidden');
+                if (card) {
+                    const canvas = await html2canvas(card, {
+                        useCORS: true,
+                        backgroundColor: '#0a0e17',
+                        scale: 2 // Higher quality
+                    });
+                    
+                    const link = document.createElement('a');
+                    link.download = `Agent_Dossier_${document.getElementById('profile-name').innerText}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    showToast("Dosarul a fost salvat ca imagine!", "success");
+                }
+            } catch (err) {
+                console.error("Screenshot error:", err);
+                showToast("Eroare la generarea imaginii.", "error");
+            } finally {
+                saveDossierBtn.disabled = false;
+                saveDossierBtn.innerHTML = originalText;
+            }
         });
     }
 
@@ -950,6 +1129,208 @@ async function initApp() {
         });
     }
 
+    // ── COACHING LOGIC ──────────────────────────────────────────
+    const coachingSubmitBtn = document.getElementById('coaching-submit-btn');
+    const coachingQuestionnaire = document.getElementById('coaching-questionnaire');
+    const coachingDashboard = document.getElementById('coaching-dashboard');
+    const coachingResetBtn = document.getElementById('coaching-reset-btn');
+    const mentorGrid = document.getElementById('mentor-grid');
+
+    // If coaching was already done, show dashboard
+    if (localStorage.getItem('coachingInterests') && coachingQuestionnaire && coachingDashboard) {
+        coachingQuestionnaire.style.display = 'none';
+        coachingDashboard.classList.remove('hidden');
+        filterMentors(JSON.parse(localStorage.getItem('coachingInterests')));
+    }
+
+    if (coachingSubmitBtn) {
+        coachingSubmitBtn.addEventListener('click', () => {
+            const selected = Array.from(document.querySelectorAll('input[name="interest"]:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                showToast('Selectează cel puțin un interes!', 'error');
+                return;
+            }
+            localStorage.setItem('coachingInterests', JSON.stringify(selected));
+            // Animate out questionnaire
+            coachingQuestionnaire.style.transition = 'opacity 0.5s, transform 0.5s';
+            coachingQuestionnaire.style.opacity = '0';
+            coachingQuestionnaire.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                coachingQuestionnaire.style.display = 'none';
+                coachingDashboard.classList.remove('hidden');
+                coachingDashboard.style.opacity = '0';
+                coachingDashboard.style.transform = 'translateY(20px)';
+                coachingDashboard.style.transition = 'opacity 0.5s, transform 0.5s';
+                filterMentors(selected);
+                requestAnimationFrame(() => {
+                    coachingDashboard.style.opacity = '1';
+                    coachingDashboard.style.transform = 'translateY(0)';
+                });
+            }, 500);
+            playSound('correct');
+        });
+    }
+
+    if (coachingResetBtn) {
+        coachingResetBtn.addEventListener('click', () => {
+            localStorage.removeItem('coachingInterests');
+            coachingDashboard.classList.add('hidden');
+            coachingQuestionnaire.style.display = '';
+            coachingQuestionnaire.style.opacity = '1';
+            coachingQuestionnaire.style.transform = '';
+            // Uncheck all
+            document.querySelectorAll('input[name="interest"]').forEach(cb => {
+                cb.checked = false;
+                const span = cb.nextElementSibling;
+                if (span) { span.style.background = 'transparent'; span.style.borderColor = 'rgba(0,212,255,0.25)'; span.style.color = 'rgba(255,255,255,0.55)'; }
+            });
+        });
+    }
+
+    function filterMentors(selected) {
+        if (!mentorGrid) return;
+        const allCards = mentorGrid.querySelectorAll('.mentor-card');
+        let shown = 0;
+        allCards.forEach(card => {
+            const cardInterests = card.getAttribute('data-interests')?.split(',') || [];
+            const matches = selected.length === 0 || selected.some(s => cardInterests.includes(s));
+            card.style.display = matches ? '' : 'none';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(15px)';
+            card.style.transition = 'opacity 0.4s, transform 0.4s';
+            if (matches) {
+                shown++;
+                const delay = shown * 80;
+                setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, delay);
+            }
+        });
+        const titleEl = document.getElementById('coaching-result-title');
+        if (titleEl) titleEl.textContent = `${shown} Mentor${shown !== 1 ? 'i' : ''} Recomandat${shown !== 1 ? 'i' : ''}`;
+    }
+
+    // ── UNIVERSAL CHAT LOGIC ───────────────────────────────────────
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatMessages = document.getElementById('community-chat-messages');
+    const chatAttachBtn = document.getElementById('chat-attach-btn');
+    const chatFileInput = document.getElementById('chat-file-input');
+    const chatAttachPreview = document.getElementById('chat-attachment-preview');
+    const chatRemoveAttach = document.getElementById('chat-remove-attachment');
+    let currentAttachment = null;
+
+    if (chatInput && chatSendBtn && chatMessages) {
+        const sendMessage = () => {
+            const text = chatInput.value.trim();
+            if (!text && !currentAttachment) return;
+            
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            let attachHtml = '';
+            
+            if (currentAttachment) {
+                attachHtml = `<div style="margin-top:8px; border-radius:8px; overflow:hidden; border:1px solid rgba(0,212,255,0.3); max-width:200px;"><img src="${currentAttachment}" style="width:100%; display:block;"></div>`;
+            }
+
+            const msgHtml = `
+                <div style="display:flex; gap:10px; animation: fadeIn 0.3s ease;">
+                    <div style="width:30px; height:30px; background:#00d4ff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">👤</div>
+                    <div style="background:rgba(0,212,255,0.1); padding:10px 14px; border-radius:0 12px 12px 12px; border:1px solid rgba(0,212,255,0.2);">
+                        <div style="font-size:0.75rem; color:#00d4ff; font-weight:bold; margin-bottom:4px;">Tu <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la ${time}</span></div>
+                        <div style="font-size:0.85rem; color:white; line-height:1.4;">${text}</div>
+                        ${attachHtml}
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.insertAdjacentHTML('beforeend', msgHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            chatInput.value = '';
+            currentAttachment = null;
+            chatAttachPreview.classList.add('hidden');
+            playSound('click');
+
+            // Simulate reply
+            setTimeout(() => {
+                const replyHtml = `
+                    <div style="display:flex; gap:10px; animation: fadeIn 0.3s ease;">
+                        <div style="width:30px; height:30px; background:#d4a843; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">🕵️‍♂️</div>
+                        <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:0 12px 12px 12px;">
+                            <div style="font-size:0.75rem; color:#d4a843; font-weight:bold; margin-bottom:4px;">Elena V. <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
+                            <div style="font-size:0.85rem; color:white; line-height:1.4;">Interesant punct de vedere! Hai să detaliem asta pe chat privat sau într-o sesiune scurtă dacă vrei.</div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.insertAdjacentHTML('beforeend', replyHtml);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                playSound('correct'); // subtle notification sound
+            }, 3000);
+        };
+
+        chatSendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Attachment Logic
+        if (chatAttachBtn && chatFileInput) {
+            chatAttachBtn.addEventListener('click', () => chatFileInput.click());
+            
+            chatFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        currentAttachment = ev.target.result;
+                        chatAttachPreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (chatRemoveAttach) {
+            chatRemoveAttach.addEventListener('click', () => {
+                currentAttachment = null;
+                chatFileInput.value = '';
+                chatAttachPreview.classList.add('hidden');
+            });
+        }
+    }
+
+    // ── SHOP DOTS ────────────────────────────────────────────────
+    const shopDotsEl = document.getElementById('shop-dots');
+    if (shopDotsEl && shopContainer) {
+        const cats = shopContainer.querySelectorAll('.shop-category-view');
+        cats.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${i===0?'#00d4ff':'rgba(255,255,255,0.2)'};transition:all 0.3s;cursor:pointer;`;
+            dot.addEventListener('click', () => { currentShopShelfIndex = i; updateShopViewGlobal(); });
+            shopDotsEl.appendChild(dot);
+        });
+    }
+
+    function updateShopViewGlobal() {
+        if (!shopContainer) return;
+        const cats = shopContainer.querySelectorAll('.shop-category-view');
+        shopContainer.style.transform = `translateX(-${currentShopShelfIndex * 100}%)`;
+        if (shopCategoryTitle) shopCategoryTitle.textContent = cats[currentShopShelfIndex]?.getAttribute('data-title') || '';
+        if (shopPrevBtn) shopPrevBtn.style.display = currentShopShelfIndex > 0 ? 'block' : 'none';
+        if (shopNextBtn) shopNextBtn.style.display = currentShopShelfIndex < cats.length - 1 ? 'block' : 'none';
+        // Update dots
+        if (shopDotsEl) {
+            shopDotsEl.querySelectorAll('div').forEach((d, i) => {
+                d.style.background = i === currentShopShelfIndex ? '#00d4ff' : 'rgba(255,255,255,0.2)';
+                d.style.width = i === currentShopShelfIndex ? '22px' : '8px';
+                d.style.borderRadius = '4px';
+            });
+        }
+    }
+
+    // Override the previous shopPrevBtn/shopNextBtn listeners with the new dot-aware version
+    if (shopPrevBtn) { shopPrevBtn.onclick = () => { if(currentShopShelfIndex>0){currentShopShelfIndex--;updateShopViewGlobal();playSound('click');} }; }
+    if (shopNextBtn) { shopNextBtn.onclick = () => { const cats=shopContainer?.querySelectorAll('.shop-category-view'); if(cats&&currentShopShelfIndex<cats.length-1){currentShopShelfIndex++;updateShopViewGlobal();playSound('click');} }; }
+    updateShopViewGlobal();
+
     // 3D Globe
     function initGlobe() {
         const globeContainer = document.getElementById('globe-container');
@@ -975,6 +1356,114 @@ async function initApp() {
     }
 }
 
+// ── GLOBAL handleBuy (called from inline onclick in shop items) ──
+window.handleBuy = function(btn) {
+    const item = btn.closest('.shop-item');
+    if (!item) return;
+    const price = parseInt(btn.getAttribute('data-price') || item.getAttribute('data-price') || 0);
+    const itemId = btn.getAttribute('data-id') || item.getAttribute('data-id') || '';
+    const nameEl = item.querySelector('h4');
+    const itemName = nameEl ? nameEl.innerText : itemId;
+
+    let compassCoins = parseInt(localStorage.getItem('compassCoins')) || 0;
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+    if (inventory.includes(itemId)) {
+        btn.textContent = '✓ Deja deții';
+        btn.style.background = 'rgba(0,230,118,0.2)';
+        btn.style.color = '#00e676';
+        btn.style.borderColor = '#00e676';
+        return;
+    }
+    if (compassCoins >= price) {
+        compassCoins -= price;
+        inventory.push(itemId);
+        localStorage.setItem('compassCoins', compassCoins);
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+        // Update all coin displays
+        document.querySelectorAll('#shop-balance, .coin-count').forEach(el => el.textContent = compassCoins);
+        btn.textContent = '✓ Cumpărat!';
+        btn.style.background = 'rgba(0,230,118,0.2)';
+        btn.style.color = '#00e676';
+        btn.style.borderColor = '#00e676';
+        btn.disabled = true;
+        // Particle burst effect
+        item.style.transition = 'box-shadow 0.3s';
+        item.style.boxShadow = '0 0 40px rgba(0,230,118,0.6)';
+        setTimeout(() => { item.style.boxShadow = ''; }, 800);
+        // Show toast
+        const toast = document.createElement('div');
+        toast.textContent = `✅ Ai cumpărat: ${itemName}`;
+        toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#00e676;color:#07101d;padding:12px 24px;border-radius:12px;font-family:Orbitron,sans-serif;font-weight:bold;font-size:0.85rem;z-index:9999;box-shadow:0 0 25px rgba(0,230,118,0.5);animation:fadeIn 0.3s ease;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    } else {
+        item.style.animation = 'shake 0.4s ease';
+        setTimeout(() => item.style.animation = '', 500);
+        const toast = document.createElement('div');
+        toast.textContent = '❌ Coins insuficienți!';
+        toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#ff4466;color:white;padding:12px 24px;border-radius:12px;font-family:Orbitron,sans-serif;font-weight:bold;font-size:0.85rem;z-index:9999;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+};
+
+// ── GLOBAL SHOP NAV (used by inline onclick in shop HTML) ───────────────
+let _shopCatIndex = 0;
+const _shopCatLabels = ['BANNERE', 'AVATARE', 'UPGRADES'];
+
+window.switchShopCat = function(idx, btn) {
+    _shopCatIndex = idx;
+    _updateShopTrack();
+    // Update tab buttons
+    document.querySelectorAll('.shop-tab-btn').forEach((b, i) => {
+        if (i === idx) {
+            b.style.background = 'rgba(0,212,255,0.15)';
+            b.style.borderColor = 'rgba(0,212,255,0.5)';
+            b.style.color = '#00d4ff';
+        } else {
+            b.style.background = 'transparent';
+            b.style.borderColor = 'rgba(255,255,255,0.1)';
+            b.style.color = 'rgba(255,255,255,0.4)';
+        }
+    });
+};
+
+window.shopNav = function(dir) {
+    const panels = document.querySelectorAll('.shop-cat-panel');
+    _shopCatIndex = Math.max(0, Math.min(panels.length - 1, _shopCatIndex + dir));
+    _updateShopTrack();
+    // Sync tab buttons
+    document.querySelectorAll('.shop-tab-btn').forEach((b, i) => {
+        if (i === _shopCatIndex) {
+            b.style.background = 'rgba(0,212,255,0.15)';
+            b.style.borderColor = 'rgba(0,212,255,0.5)';
+            b.style.color = '#00d4ff';
+        } else {
+            b.style.background = 'transparent';
+            b.style.borderColor = 'rgba(255,255,255,0.1)';
+            b.style.color = 'rgba(255,255,255,0.4)';
+        }
+    });
+};
+
+function _updateShopTrack() {
+    const track = document.getElementById('shop-shelf-track');
+    const prevBtn = document.getElementById('shop-prev-btn');
+    const nextBtn = document.getElementById('shop-next-btn');
+    const label   = document.getElementById('shop-cat-label');
+    const panels  = document.querySelectorAll('.shop-cat-panel');
+
+    if (!track) return;
+    track.style.transform = `translateX(-${_shopCatIndex * 100}%)`;
+    if (prevBtn) prevBtn.style.display = _shopCatIndex > 0 ? 'block' : 'none';
+    if (nextBtn) nextBtn.style.display = _shopCatIndex < panels.length - 1 ? 'block' : 'none';
+    if (label)   label.textContent = _shopCatLabels[_shopCatIndex] || '';
+}
+
+// Initialise on page load
+document.addEventListener('DOMContentLoaded', () => { _updateShopTrack(); });
+
 // Entry Point
 console.log("APP.JS MODULE EXECUTING...");
 
@@ -984,8 +1473,48 @@ if (document.readyState === 'loading') {
     initApp();
 }
 
-// Global error handler for module loading
-window.addEventListener('unhandledrejection', event => {
-    console.error('Unhandled rejection in app.js:', event.reason);
+// Friend Link Sharing Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const shareBtn = document.getElementById('share-friend-link-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            const qrCode = document.getElementById('my-qr-text').innerText;
+            if (!qrCode || qrCode === '—' || qrCode.length < 5) {
+                showToast("Autentifică-te pentru a genera link-ul!", "error");
+                return;
+            }
+            const link = window.location.origin + window.location.pathname + "?addFriend=" + qrCode;
+            navigator.clipboard.writeText(link).then(() => {
+                showToast("Link-ul de prietenie a fost copiat!", "success");
+            }).catch(() => {
+                // Fallback if clipboard API fails
+                alert("Link: " + link);
+            });
+        });
+    }
+
+    // Handle Friend Add from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const friendToAdd = urlParams.get('addFriend');
+    if (friendToAdd) {
+        onAuthReady(async (user) => {
+            if (user) {
+                showToast("Procesare cerere de prietenie...", "info");
+                try {
+                    const result = await addFriend(friendToAdd);
+                    if (result) {
+                        showToast("Prieten adăugat cu succes!", "success");
+                    }
+                } catch (e) {
+                    console.error("Friend link error:", e);
+                }
+                // Clean URL
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            } else {
+                showToast("Conectează-te pentru a adăuga acest prieten!", "warning");
+            }
+        });
+    }
 });
 

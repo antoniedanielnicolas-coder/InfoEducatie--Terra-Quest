@@ -58,6 +58,10 @@ export function onAuthReady(callback) {
     if (!auth) return;
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
+        
+        // Attempt to seed news (might fail if guest, but helpful for logged-in admins)
+        seedInitialNews().catch(() => {});
+
         if (user) {
             await ensureUserProfile(user);
             updateAuthUI(user);
@@ -79,7 +83,7 @@ async function ensureUserProfile(user) {
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
             photoURL: user.photoURL || '',
-            qrCode: `GEO_${user.uid.slice(0, 8).toUpperCase()}`,
+            qrCode: `TERRA_${user.uid.slice(0, 8).toUpperCase()}`,
             friends: [],
             friendRequests: [],
             xp: 0,
@@ -316,11 +320,27 @@ function showAuthSuccess(msg) {
 // ─── Real-time News Feed ─────────────────────────────────────────────────────
 const INITIAL_NEWS = [
     {
+        title: '🛡️ Actualizare Securitate - Protocol V2',
+        description: 'Sistemele de criptare a datelor au fost îmbunătățite. Toate comunicațiile dintre agent și satelit sunt acum protejate prin protocolul Quantum-Safe.',
+        tag: 'Securitate',
+        tagColor: '#ff4466',
+        pinned: true,
+        createdAt: new Date('2026-05-12T14:30:00Z')
+    },
+    {
+        title: '🤝 Hub Social Activat',
+        description: 'Funcția de adăugare prieteni prin cod QR a fost optimizată. Acum poți vedea rangul și progresul colegilor tăi în timp real.',
+        tag: 'Social',
+        tagColor: '#00e676',
+        pinned: false,
+        createdAt: new Date('2026-05-12T10:00:00Z')
+    },
+    {
         title: '🎉 TerraQuest a fost lansat!',
         description: 'Platforma a fost redenumită din GeoQuest în TerraQuest. Design nou, experiență îmbunătățită.',
         tag: 'Rebrand',
         tagColor: '#00d4ff',
-        pinned: true,
+        pinned: false,
         createdAt: new Date('2026-05-08T08:00:00Z')
     },
     {
@@ -361,27 +381,29 @@ async function seedInitialNews() {
     if (!db) return;
     try {
         const newsCol = collection(db, 'app_news');
-        const snap = await getDocs(query(newsCol, limit(20)));
-        if (snap.empty) {
-            // No data yet — seed all items
-            for (const item of INITIAL_NEWS) {
+        const snap = await getDocs(query(newsCol, limit(100)));
+        const existingTitles = snap.docs.map(d => d.data().title);
+
+        // Check each item in INITIAL_NEWS and add if missing
+        for (const item of INITIAL_NEWS) {
+            if (!existingTitles.includes(item.title)) {
                 await setDoc(doc(newsCol), {
                     ...item,
                     createdAt: serverTimestamp()
                 });
-            }
-        } else {
-            // Data exists — find and fix the rebrand item if it has old text
-            for (const docSnap of snap.docs) {
-                const data = docSnap.data();
-                if (data.description && data.description.includes('GeoInformatica')) {
-                    await setDoc(docSnap.ref, {
-                        ...data,
-                        description: data.description.replace(/GeoInformatica/g, 'GeoQuest')
-                    }, { merge: true });
-                }
+                console.log(`Seeding news: ${item.title}`);
             }
         }
+        
+        // Clean up old branding in existing docs
+        snap.docs.forEach(async (docSnap) => {
+            const data = docSnap.data();
+            if (data.description && (data.description.includes('GeoQuest') || data.description.includes('GeoInformatica'))) {
+                await updateDoc(docSnap.ref, {
+                    description: data.description.replace(/GeoQuest/g, 'TerraQuest').replace(/GeoInformatica/g, 'TerraQuest')
+                });
+            }
+        });
     } catch (e) {
         console.warn('News seed skipped (Firestore rules?):', e.code);
     }

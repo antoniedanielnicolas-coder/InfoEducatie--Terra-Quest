@@ -68,7 +68,7 @@ export function initAI() {
             } else if (lowerMsg.includes('ocean') || lowerMsg.includes('sea') || lowerMsg.includes('mare')) {
                 offlineReply = "The UN Convention on the Law of the Sea (UNCLOS) establishes a 12 nautical mile territorial sea and a 200 nautical mile Exclusive Economic Zone (EEZ) for coastal states.";
             } else if (lowerMsg.includes('hello') || lowerMsg.includes('salut') || lowerMsg.includes('buna')) {
-                offlineReply = "Greetings, Agent. I am the GeoInformatica AI system. I'm ready to brief you on any geopolitical situation.";
+                offlineReply = "Greetings, Agent. I am the TerraQuest AI system. I'm ready to brief you on any geopolitical situation.";
             }
             
             addMessage(offlineReply, 'bot');
@@ -82,23 +82,36 @@ export function initAI() {
         }
     });
 
+    // Handle Mic Button
+    initSpeechRecognition();
+
     // Handle language change
     document.addEventListener('languageChanged', () => {
-        // We could re-render system messages here if needed
         aiInput.placeholder = t('ai.placeholder');
         aiSendBtn.innerText = t('ai.btn_send');
     });
 }
 
 function addMessage(text, sender) {
-    chatHistory.push({ text, sender });
-    // Keep only last 50
+    const model = document.getElementById('ai-model-select')?.value || 'classic';
+    let processedText = text;
+    
+    if (sender === 'bot') {
+        const prefixes = {
+            'gemini-1.5': '♊ Gemini:',
+            'claude-3.5': '🎭 Claude:',
+            'gpt-4o': '🧠 GPT-4o:',
+            'classic': '📜 Geo-Logic:'
+        };
+        processedText = `${prefixes[model]} ${text}`;
+    }
+
+    chatHistory.push({ text: processedText, sender });
     if(chatHistory.length > 50) chatHistory.shift();
     localStorage.setItem('ai_chat_history', JSON.stringify(chatHistory));
     
-    appendMessageElement(text, sender);
+    appendMessageElement(processedText, sender);
 
-    // Speak the response if it's the bot
     if (sender === 'bot') {
         speakText(text, currentLang);
     }
@@ -123,7 +136,7 @@ function appendMessageElement(text, sender) {
     
     const div = document.createElement('div');
     div.className = `ai-msg ${sender}-msg`;
-    div.innerText = text; // In a real app, use a markdown parser like marked.js
+    div.innerText = text;
     aiChatHistory.appendChild(div);
     aiChatHistory.scrollTop = aiChatHistory.scrollHeight;
 }
@@ -145,53 +158,86 @@ function removeTypingIndicator(id) {
     if(el) el.remove();
 }
 
+// ============ SPEECH TO TEXT ============
+function initSpeechRecognition() {
+    const micBtn = document.getElementById('ai-mic-btn');
+    const micStatus = document.getElementById('mic-status');
+    const aiInput = document.getElementById('ai-input');
+    
+    if (!micBtn || !('webkitSpeechRecognition' in window)) {
+        if (micBtn) micBtn.style.display = 'none';
+        return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    micBtn.addEventListener('click', () => {
+        recognition.lang = currentLang === 'ro' ? 'ro-RO' : 'en-US';
+        recognition.start();
+        micBtn.style.background = 'rgba(255, 68, 102, 0.2)';
+        micBtn.style.borderColor = '#ff4466';
+        if (micStatus) micStatus.style.display = 'block';
+    });
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (aiInput) aiInput.value = transcript;
+    };
+
+    recognition.onend = () => {
+        micBtn.style.background = 'rgba(255, 255, 255, 0.05)';
+        micBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        if (micStatus) micStatus.style.display = 'none';
+    };
+
+    recognition.onerror = () => {
+        micBtn.style.background = 'rgba(255, 255, 255, 0.05)';
+        if (micStatus) micStatus.style.display = 'none';
+    };
+}
+
 // ============ VOICE SYNTHESIS ============
 let currentUtterance = null;
 
 function speakText(text, lang) {
     if (!('speechSynthesis' in window)) return;
-    
-    // Stop any ongoing speech
     window.speechSynthesis.cancel();
     
-    // Remove emojis or special characters that sound weird
     const cleanText = text.replace(/[\u{1F600}-\u{1F6FF}\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}]/gu, '')
-                          .replace(/\[.*?\]/g, ''); // Remove [Offline Mode] tags etc
+                          .replace(/\[.*?\]/g, '');
     
     currentUtterance = new SpeechSynthesisUtterance(cleanText);
     
-    // Try to find a good robotic/system voice
     const voices = window.speechSynthesis.getVoices();
-    let voice = voices.find(v => v.lang.startsWith(lang === 'ro' ? 'ro' : 'en') && (v.name.includes('Google') || v.name.includes('Microsoft')));
+    const voicePref = document.getElementById('ai-voice-select')?.value || 'default';
     
-    // Fallback to any english voice if romanian is not found
-    if (!voice) voice = voices.find(v => v.lang.startsWith('en'));
+    let voice = null;
+    if (voicePref === 'female-ro') voice = voices.find(v => v.lang.startsWith('ro') && (v.name.includes('Female') || v.name.includes('Ioana') || v.name.includes('Google')));
+    if (voicePref === 'male-ro') voice = voices.find(v => v.lang.startsWith('ro') && (v.name.includes('Male') || v.name.includes('Andrei') || v.name.includes('Microsoft')));
+    if (voicePref === 'female-en') voice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Google')));
+    if (voicePref === 'male-en') voice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google')));
+    
+    // Fallback logic
+    if (!voice) {
+        voice = voices.find(v => v.lang.startsWith(lang === 'ro' ? 'ro' : 'en'));
+    }
     
     if (voice) currentUtterance.voice = voice;
-    currentUtterance.pitch = 0.9; // Slightly lower pitch for authority
-    currentUtterance.rate = 1.05; // Slightly faster for efficiency
+    currentUtterance.pitch = 1.0;
+    currentUtterance.rate = 1.0;
     
     const wave = document.getElementById('ai-voice-wave');
-    
-    currentUtterance.onstart = () => {
-        if (wave) wave.classList.remove('hidden');
-    };
-    
-    currentUtterance.onend = () => {
-        if (wave) wave.classList.add('hidden');
-    };
-    
-    currentUtterance.onerror = () => {
-        if (wave) wave.classList.add('hidden');
-    };
+    currentUtterance.onstart = () => { if (wave) wave.classList.remove('hidden'); };
+    currentUtterance.onend = () => { if (wave) wave.classList.add('hidden'); };
+    currentUtterance.onerror = () => { if (wave) wave.classList.add('hidden'); };
     
     window.speechSynthesis.speak(currentUtterance);
 }
 
-// Make sure voices are loaded
 if ('speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = () => {
-        // Just trigger load
         window.speechSynthesis.getVoices();
     };
 }

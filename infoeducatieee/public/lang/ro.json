@@ -8,7 +8,8 @@
     "profile": "Profil",
     "ai": "Agent AI",
     "worldmap": "Harta Mondială",
-    "settings": "Setări"
+    "settings": "Setări",
+    "coaching": "Coaching"
   },
   "home": {
     "title_line1": "Stăpânește",
@@ -17,6 +18,10 @@
     "desc": "Descoperă o călătorie imersivă prin sisteme statale, dispute teritoriale, blocuri geopolitice și forțele care ne modelează lumea. Pregătește-te pentru a învăța geografie cu instrumente interactive de ultimă oră.",
     "btn_learn": "Începe Învățarea",
     "btn_play": "Joacă-te",
+    "correct_toast": "✅ Corect! +5 Monede",
+    "timeline_chal_desc": "Trage evenimentele în ordinea cronologică corectă.",
+    "check_order": "Verifică Ordinea",
+    "time_up": "Timpul a expirat!",
     "stat_lessons": "Lecții",
     "stat_countries": "Țări",
     "stat_questions": "Întrebări",
@@ -192,7 +197,13 @@
     "subtitle": "Asistentul tău personal de geografie politică",
     "greeting": "Salut! Sunt asistentul tău GeoAI. Întreabă-mă orice despre geografie politică!",
     "placeholder": "Scrie întrebarea ta de geografie aici...",
-    "btn_send": "Trimite"
+    "btn_send": "Trimite",
+    "mode_label": "Mod",
+    "voice_label": "Voce",
+    "mode_normal": "Normal",
+    "mode_learning": "Învățare",
+    "mode_assistant": "Asistent",
+    "mode_test": "Test"
   },
   "common": {
     "level": "Nivel",
@@ -247,5 +258,46 @@
     "placeholder_name": "👤 Nume Agent",
     "reset_desc": "Introdu adresa de email și îți vom trimite un link de resetare a parolei.",
     "music_selection": "Muzică de fundal"
+  },
+  "geo_sim": {
+    "sidebar_title": "Blocuri Geopolitice",
+    "sidebar_desc": "Trage fiecare bloc pe zona corectă de pe hartă.",
+    "progress": "Progres:",
+    "drag_bottom_hint": "↕ Trage blocurile din stânga pe zonele marcate",
+    "placed": "plasat!",
+    "success_placed": "plasat corect!",
+    "success_perfect": "🏆 Perfect! Ai plasat toate blocurile corect! +25 Monede bonus!",
+    "error_wrong": "❌ Bloc greșit! Încearcă din nou.",
+    "items": {
+      "eu_label": "Uniunea Europeană",
+      "eu_desc": "Bloc economic și politic european",
+      "eu_zone": "Europa de Vest",
+      "eu_hint": "Centrul puterii UE",
+      "nato_label": "NATO",
+      "nato_desc": "Alianța militară nord-atlantică",
+      "nato_zone": "Flancul Estic NATO",
+      "nato_hint": "Apărare colectivă",
+      "dmz_label": "Zona Demilitarizată",
+      "dmz_desc": "Granița dintre Coreea de Nord și Sud",
+      "dmz_zone": "Peninsula Coreeană",
+      "dmz_hint": "38° paralelă",
+      "49th_label": "Al 49-lea Paralel",
+      "49th_desc": "Granița SUA-Canada",
+      "49th_zone": "America de Nord",
+      "49th_hint": "Cea mai lungă graniță pașnică",
+      "bri_label": "Drumul Mătăsii",
+      "bri_desc": "Inițiativa Belt & Road a Chinei",
+      "bri_zone": "Asia Centrală",
+      "bri_hint": "Infrastructură și influență"
+    }
+  },
+  "games_content": {
+    "timeline": {
+      "westphalia": "Pacea de la Westfalia",
+      "berlin": "Conferința de la Berlin",
+      "un": "Fondarea ONU",
+      "ussr": "Căderea URSS",
+      "brexit": "Brexit"
+    }
   }
 }

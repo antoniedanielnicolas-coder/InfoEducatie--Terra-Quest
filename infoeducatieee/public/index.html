@@ -8,10 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="components.css">
-    <link rel="stylesheet" href="animations.css">
-    <link rel="stylesheet" href="pages.css">
+    <link rel="stylesheet" href="styles.css?v=20">
+    <link rel="stylesheet" href="components.css?v=20">
+    <link rel="stylesheet" href="animations.css?v=20">
+    <link rel="stylesheet" href="pages.css?v=20">
     <!-- Inline Preloader Hide (Failsafe) -->
     <script>
         setTimeout(function() {
@@ -101,20 +101,40 @@
 
     <!-- Biometric Welcome Overlay -->
     <div id="welcome-overlay" class="fixed inset-0 z-[9999] bg-[#0a0e17] flex flex-col items-center justify-center">
-        <div class="relative w-64 h-64 border-2 border-[#00d4ff]/30 rounded-3xl flex items-center justify-center mb-8 overflow-hidden group">
-            <div class="absolute inset-0 bg-[#00d4ff]/5 animate-pulse"></div>
-            <!-- Fingerprint SVG -->
-            <svg class="w-32 h-32 text-[#00d4ff] opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-            </svg>
-            <!-- Scanner Line -->
-            <div class="absolute top-0 left-0 w-full h-1 bg-[#00d4ff] shadow-[0_0_15px_#00d4ff] animate-[scan_2s_ease-in-out_infinite_alternate]"></div>
+        <!-- Biometric Scan Area -->
+        <div id="welcome-biometric" class="flex flex-col items-center">
+            <div class="relative w-64 h-64 border-2 border-[#00d4ff]/30 rounded-3xl flex items-center justify-center mb-8 overflow-hidden group cursor-pointer hover:border-[#00d4ff]/80 transition-colors">
+                <div class="absolute inset-0 bg-[#00d4ff]/5 animate-pulse"></div>
+                <!-- Fingerprint SVG -->
+                <svg class="w-32 h-32 text-[#00d4ff] opacity-80 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                </svg>
+                <!-- Scanner Line -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-[#00d4ff] shadow-[0_0_15px_#00d4ff] animate-[scan_2s_ease-in-out_infinite_alternate]"></div>
+            </div>
+            <h2 class="text-3xl font-orbitron font-bold text-white tracking-widest uppercase mb-2" data-i18n="welcome.identify">Identify Agent</h2>
+            <p class="text-[#00d4ff] font-jetbrains text-sm mb-8 animate-pulse" data-i18n="welcome.awaiting">Awaiting Biometric Authentication...</p>
+            <button class="btn border border-[#00d4ff] text-[#00d4ff] hover:bg-[#00d4ff] hover:text-[#0a0e17] font-bold py-3 px-8 rounded-lg uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)]" id="start-experience-btn" data-i18n="welcome.initiate">
+                Initiate Access
+            </button>
         </div>
-        <h2 class="text-3xl font-orbitron font-bold text-white tracking-widest uppercase mb-2" data-i18n="welcome.identify">Identify Agent</h2>
-        <p class="text-[#00d4ff] font-jetbrains text-sm mb-8 animate-pulse" data-i18n="welcome.awaiting">Awaiting Biometric Authentication...</p>
-        <button class="btn border border-[#00d4ff] text-[#00d4ff] hover:bg-[#00d4ff] hover:text-[#0a0e17] font-bold py-3 px-8 rounded-lg uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)]" id="start-experience-btn" data-i18n="welcome.initiate">
-            Initiate Access
-        </button>
+
+        <!-- Progress Loading Area -->
+        <div id="welcome-loading" class="hidden flex-col items-center w-full max-w-md px-6">
+            <h2 class="text-4xl font-orbitron font-bold text-white tracking-widest uppercase mb-2" style="text-shadow:0 0 20px rgba(0,212,255,0.5);">TerraQuest</h2>
+            <p class="text-[#00d4ff] font-jetbrains text-sm mb-6 animate-pulse" id="welcome-loading-text">Authenticating...</p>
+            
+            <div class="w-full bg-[#1a2235] h-3 rounded-full overflow-hidden border border-[#00d4ff]/30 relative">
+                <div id="welcome-progress-fill" class="h-full bg-gradient-to-r from-[#00d4ff] to-[#0077ff] w-0 transition-all duration-[50ms] ease-out relative">
+                    <div class="absolute top-0 bottom-0 right-0 w-10 bg-white/50 blur-[5px] animate-pulse"></div>
+                </div>
+            </div>
+            <div class="w-full flex justify-between mt-2 text-xs font-jetbrains text-white/50">
+                <span>0%</span>
+                <span id="welcome-progress-pct" class="text-[#00d4ff] font-bold">0%</span>
+                <span>100%</span>
+            </div>
+        </div>
     </div>
     <!-- Preloader -->
     <div id="preloader">
@@ -159,6 +179,9 @@
                 </a>
                 <a href="#" class="nav-link" data-page="tests" data-i18n="nav.tests">
                     <span class="nav-icon">📝</span>Tests
+                </a>
+                <a href="#" class="nav-link" data-page="coaching" data-i18n="nav.coaching">
+                    <span class="nav-icon">🎓</span>Coaching
                 </a>
                 <a href="#" class="nav-link" data-page="shop" data-i18n="nav.shop">
                     <span class="nav-icon">🛒</span>Geo-Market
@@ -214,7 +237,7 @@
                         <span style="color:#2eaa6e">⬤</span>
                         <span style="color:#d4a843">⬤</span>
                     </div>
-                    <div class="ob3d-text">OLIMPIADA <span class="ob3d-geo">Info</span><span class="ob3d-info">Educa?ie</span></div>
+                    <div class="ob3d-text">OLIMPIADA <span class="ob3d-geo">Info</span><span class="ob3d-info">Educație</span></div>
                     <div class="ob3d-sub">EDIȚIA 2026 · GEOGRAFIE POLITICĂ</div>
                     <div class="ob3d-glow"></div>
                     <div class="mt-4 flex justify-center items-center gap-3 animate-pulse">
@@ -237,7 +260,6 @@
                 </div>
 
                 <div class="hero-content" style="position:relative;z-index:2;">
-                    <div class="hero-badge" data-i18n="home.badge" style="animation:slideInDown 0.8s ease;">🌍 Political Geography Olympiad</div>
                     <h1 class="hero-title">
                         <span class="title-line" data-i18n="home.title_line1" style="animation:slideInLeft 0.8s ease 0.1s both;">Master the</span>
                         <span class="title-line gradient-text" data-i18n="home.title_line2" style="animation:slideInLeft 0.8s ease 0.2s both;font-size:clamp(2.5rem,6vw,4.5rem);">Geopolitical</span>
@@ -279,9 +301,8 @@
                 </div>
 
                 <div class="hero-visual" style="border-radius:20px;overflow:hidden;box-shadow:0 0 60px rgba(0,212,255,0.3);border:1px solid rgba(0,212,255,0.4);animation:fadeInRight 1s ease 0.3s both;transform-style:preserve-3d;" id="hero-visual-card">
-                    <img src="assets/hero-image-new.png" alt="TerraQuest" style="width:100%;height:100%;object-fit:cover;filter:contrast(1.1) saturate(1.2);" />
+                    <img src="assets/hero-infoeducatie-2026.png" alt="Olimpiada InfoEducatie 2026" style="width:100%;height:100%;object-fit:cover;" />
                 </div>
-                <div class="orbit-badge ob-2">⚔️ 47 Active Conflicts</div>
             </div>
 
             <!-- QUICK ACCESS DASHBOARD — 3D Floating Cards -->
@@ -417,40 +438,17 @@
                 </div>
             </div>
 
-            <!-- Timeline Section -->
-            <div class="section timeline-section">
-                <h2 class="section-title"><span data-i18n="home.timeline_title">Political Geography</span> <span class="gradient-text" data-i18n="home.timeline_title_gradient">Through Time</span></h2>
-                <div class="timeline">
-                    <div class="timeline-item" data-year="1648">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl1_title">Treaty of Westphalia</h3>
-                            <p data-i18n="home.tl1_desc">Birth of the modern state system and concept of national sovereignty.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="1884">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl2_title">Berlin Conference</h3>
-                            <p data-i18n="home.tl2_desc">European powers partition Africa, reshaping the political map of an entire continent.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="1945">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl3_title">United Nations Founded</h3>
-                            <p data-i18n="home.tl3_desc">A new world order emerges from the ashes of WWII, establishing global governance.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="1991">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl4_title">Fall of the USSR</h3>
-                            <p data-i18n="home.tl4_desc">The collapse creates 15 new nations and ends the bipolar world order.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item" data-year="2024">
-                        <div class="timeline-content">
-                            <h3 data-i18n="home.tl5_title">Multipolar World</h3>
-                            <p data-i18n="home.tl5_desc">Rise of China, Ukraine war, BRICS expansion — a new geopolitical era emerges.</p>
-                        </div>
-                    </div>
+            <!-- App Updates / News Section -->
+            <div class="section" id="home-news-section" style="padding:40px 0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h2 class="section-title" style="margin:0;"><span data-i18n="home.news_title">App</span> <span class="gradient-text" data-i18n="home.news_title_gradient">Updates</span></h2>
+                    <span style="background:rgba(0,230,118,0.15);border:1px solid rgba(0,230,118,0.4);color:#00e676;padding:5px 14px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:0.72rem;letter-spacing:1px;display:flex;align-items:center;gap:6px;">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#00e676;display:inline-block;animation:pulse 2s infinite;"></span> LIVE
+                    </span>
+                </div>
+                <p style="color:var(--text-secondary);margin:0 0 20px;font-size:0.85rem;" data-i18n="home.news_subtitle">Track the latest improvements made to the platform.</p>
+                <div id="news-feed-container" style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="text-align:center;color:#555;font-size:0.8rem;font-family:'JetBrains Mono',monospace;padding:20px;">Se încarcă noutățile...</div>
                 </div>
             </div>
         </section>
@@ -459,8 +457,8 @@
 
         <section id="page-lessons" class="page">
             <div class="page-header">
-                <h1 class="page-title">Lesson <span class="gradient-text">Modules</span></h1>
-                <p class="page-subtitle">Deep-dive into the core pillars of Political Geography</p>
+                <h1 class="page-title"><span data-i18n="lessons.title">Lesson</span> <span class="gradient-text" data-i18n="lessons.title_gradient">Modules</span></h1>
+                <p class="page-subtitle" data-i18n="lessons.subtitle">Deep-dive into the core pillars of Political Geography</p>
             </div>
 
             <!-- 🔴 LIVE GEO FEED TICKER -->
@@ -480,8 +478,8 @@
             </div>
 
             <div class="year-selector" id="year-selector">
-                <button class="year-tab active" data-year="10" data-i18n="lessons.grade10">Clasa a 10-a</button>
                 <button class="year-tab" data-year="9" data-i18n="lessons.grade9">Clasa a 9-a</button>
+                <button class="year-tab active" data-year="10" data-i18n="lessons.grade10">Clasa a 10-a</button>
                 <button class="year-tab" data-year="11" data-i18n="lessons.grade11">Clasa a 11-a</button>
                 <button class="year-tab" data-year="12" data-i18n="lessons.grade12">Clasa a 12-a</button>
             </div>
@@ -767,7 +765,12 @@
             <div id="test-container" class="test-container hidden">
                 <div class="test-header">
                     <div class="test-info">
-                        <h2 id="test-title"></h2>
+                        <div style="display:flex; align-items:center; gap:15px; margin-bottom:10px;">
+                            <button id="test-exit-btn" class="btn btn-outline btn-sm" style="border-color:var(--error); color:var(--error); padding:4px 8px; font-size:0.8rem;">
+                                ✖ Ieșire
+                            </button>
+                            <h2 id="test-title" style="margin:0;"></h2>
+                        </div>
                         <div class="test-progress">
                             <span id="test-question-num">1/10</span>
                             <div class="test-progress-bar">
@@ -786,7 +789,7 @@
                 </div>
                 <div class="test-actions">
                     <button class="btn btn-outline" id="test-prev-btn" disabled>Previous</button>
-                    <button class="btn btn-primary" id="test-submit-btn" style="display:none;">Submit Test</button>
+                    
                     <button class="btn btn-primary" id="test-next-btn">Next</button>
                 </div>
             </div>
@@ -807,156 +810,753 @@
             </div>
         </section>
 
-        <!-- SHOP PAGE -->
-        <section id="page-shop" class="page">
-            <div class="max-w-6xl mx-auto p-6 mt-8">
-                <!-- Shop Header -->
-                <div class="bg-[#121a2e]/80 backdrop-blur-xl border border-[#00d4ff]/30 rounded-2xl p-8 mb-8 flex flex-col md:flex-row items-center justify-between shadow-[0_0_40px_rgba(0,212,255,0.15)] relative overflow-hidden">
-                    <div class="absolute -top-20 -right-20 w-64 h-64 bg-[#00d4ff]/10 rounded-full blur-3xl"></div>
-                    <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-[#d4a843]/10 rounded-full blur-3xl"></div>
+        <!-- COACHING PAGE -->
+        <section id="page-coaching" class="page">
+            <!-- Coaching Background Image -->
+            <div style="position:fixed;inset:0;z-index:0;pointer-events:none;">
+                <img src="assets/coaching_bg.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;opacity:0.45;filter:saturate(0.9) brightness(0.8);" />
+                <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,23,0.6) 0%,rgba(5,8,20,0.85) 100%);"></div>
+            </div>
+
+            <div style="position:relative;z-index:1;">
+                <div class="page-header">
+                    <h1 class="page-title">Geo <span class="gradient-text">Coaching & Comunitate</span></h1>
+                    <p class="page-subtitle">Sistemul educațional tradițional a făcut geografia plictisitoare. Noi schimbăm asta! Aici te conectezi cu profesori, experți și pasionați pentru a discuta probleme reale și a rezolva curiozități.</p>
+                </div>
+
+                <!-- Stats Bar -->
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:36px;">
+                    <div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:16px;padding:18px;text-align:center;backdrop-filter:blur(10px);">
+                        <div style="font-size:2rem;font-family:'Orbitron',sans-serif;font-weight:900;color:#00d4ff;">4</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:1px;text-transform:uppercase;">Mentori Activi</div>
+                    </div>
+                    <div style="background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:18px;text-align:center;backdrop-filter:blur(10px);">
+                        <div style="font-size:2rem;font-family:'Orbitron',sans-serif;font-weight:900;color:#d4a843;">12</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:1px;text-transform:uppercase;">Sesiuni Luna Aceasta</div>
+                    </div>
+                    <div style="background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.2);border-radius:16px;padding:18px;text-align:center;backdrop-filter:blur(10px);">
+                        <div style="font-size:2rem;font-family:'Orbitron',sans-serif;font-weight:900;color:#00e676;">98%</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:1px;text-transform:uppercase;">Satisfacție</div>
+                    </div>
+                    <div style="background:rgba(184,41,227,0.06);border:1px solid rgba(184,41,227,0.2);border-radius:16px;padding:18px;text-align:center;backdrop-filter:blur(10px);">
+                        <div style="font-size:2rem;font-family:'Orbitron',sans-serif;font-weight:900;color:#b829e3;">30min</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:1px;text-transform:uppercase;">Sesiune Standard</div>
+                    </div>
+                </div>
+
+                <!-- Manifesto & Community Intro -->
+                <div style="background:rgba(0,212,255,0.05);border-left:4px solid var(--neon-blue);border-radius:0 16px 16px 0;padding:25px;margin-bottom:30px;">
+                    <h3 style="margin:0 0 10px 0;color:var(--neon-blue);font-family:'Orbitron',sans-serif;">De ce Geo Coaching? 🌍</h3>
+                    <p style="margin:0;color:rgba(255,255,255,0.8);line-height:1.6;font-size:0.95rem;">
+                        Mulți elevi își pierd interesul pentru geografie din cauza metodelor învechite. <strong>TerraQuest</strong> readuce pasiunea! 
+                        Prin această secțiune, tinerii se conectează direct cu profesori dedicați, analiști și colegi olimpici. 
+                        Pune întrebări, trimite capturi de ecran cu erorile tale sau dezbate cele mai recente crize geopolitice pe chatul universal!
+                    </p>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 350px; gap:24px; align-items:start;">
                     
-                    <div class="z-10 text-center md:text-left mb-6 md:mb-0">
-                        <h1 class="text-4xl font-orbitron font-bold text-white mb-2 uppercase tracking-widest drop-shadow-lg" data-i18n="shop.title">Geo<span class="text-[#00d4ff]">-Market</span></h1>
-                        <p class="text-gray-400 font-jetbrains text-sm" data-i18n="shop.subtitle">Spend your Compass Coins on exclusive operational assets.</p>
+                    <!-- Left Column: Questionnaire OR Mentors -->
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                        <!-- Questionnaire Overlay (Shown if not completed) -->
+                        <div id="coaching-questionnaire" style="width:100%;background:linear-gradient(135deg,rgba(0,212,255,0.06),rgba(0,100,200,0.04));border:1px solid rgba(0,212,255,0.25);border-radius:24px;padding:36px;backdrop-filter:blur(20px);box-shadow:0 0 40px rgba(0,212,255,0.1);">
+                            <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+                                <div style="width:48px;height:48px;background:linear-gradient(135deg,#00d4ff,#0077ff);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🎯</div>
+                                <div>
+                                    <h2 style="font-family:'Orbitron',sans-serif;color:#00d4ff;margin:0;font-size:1.3rem;letter-spacing:1px;">Profilul Tău de Învățare</h2>
+                                    <p style="color:rgba(255,255,255,0.4);margin:3px 0 0;font-size:0.8rem;font-family:'JetBrains Mono',monospace;">Personalizăm recomandările pentru tine</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+                                <label style="display:flex;align-items:center;gap:12px;cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.08)';this.style.borderColor='rgba(0,212,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)'">
+                                    <input type="checkbox" name="interest" value="colegi" style="width:18px;height:18px;accent-color:#00d4ff;">
+                                    <span style="font-size:1.2rem;">👥</span>
+                                    <div><div style="color:white;font-size:0.9rem;font-weight:600;">Colegi</div><div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">Studiu în echipă și schimb de experiență</div></div>
+                                </label>
+                                <label style="display:flex;align-items:center;gap:12px;cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.08)';this.style.borderColor='rgba(0,212,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)'">
+                                    <input type="checkbox" name="interest" value="profesori" style="width:18px;height:18px;accent-color:#00d4ff;">
+                                    <span style="font-size:1.2rem;">👨‍🏫</span>
+                                    <div><div style="color:white;font-size:0.9rem;font-weight:600;">Profesori de Geografie</div><div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">Ghidare academică profesionistă</div></div>
+                                </label>
+                                <label style="display:flex;align-items:center;gap:12px;cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.08)';this.style.borderColor='rgba(0,212,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)'">
+                                    <input type="checkbox" name="interest" value="experti" style="width:18px;height:18px;accent-color:#00d4ff;">
+                                    <span style="font-size:1.2rem;">🕵️‍♂️</span>
+                                    <div><div style="color:white;font-size:0.9rem;font-weight:600;">Experți în Geopolitică</div><div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">Analiză avansată a relațiilor internaționale</div></div>
+                                </label>
+                                <label style="display:flex;align-items:center;gap:12px;cursor:pointer;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,212,255,0.08)';this.style.borderColor='rgba(0,212,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)'">
+                                    <input type="checkbox" name="interest" value="geologi" style="width:18px;height:18px;accent-color:#00d4ff;">
+                                    <span style="font-size:1.2rem;">🧗</span>
+                                    <div><div style="color:white;font-size:0.9rem;font-weight:600;">Geologi</div><div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">Resurse naturale și perspectivă practică</div></div>
+                                </label>
+                            </div>
+                            <button id="coaching-submit-btn" style="width:100%;background:linear-gradient(90deg,#00d4ff,#0077ff);color:#0a0e17;border:none;border-radius:12px;padding:16px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;letter-spacing:1px;transition:all 0.3s;box-shadow:0 0 25px rgba(0,212,255,0.3);" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 0 40px rgba(0,212,255,0.5)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 0 25px rgba(0,212,255,0.3)'">🚀 Descoperă Mentorii Tăi</button>
+                        </div>
+
+                        <!-- Coaching Dashboard (Mentors Grid, Hidden initially) -->
+                        <div id="coaching-dashboard" class="hidden">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                                <h3 id="coaching-result-title" style="margin:0; font-family:'Orbitron',sans-serif; color:var(--neon-blue);">Mentorii Tăi Recomandați</h3>
+                                <button id="coaching-reset-btn" class="btn btn-outline" style="padding:5px 10px; font-size:0.7rem;">Modifică Preferințe</button>
+                            </div>
+                            <div id="mentor-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+                    <!-- Mentor 1 -->
+                    <div class="glass-card mentor-card mentor-profesori" style="padding:20px; border-left:4px solid var(--neon-blue); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#00d4ff,#0077ff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">👨‍🏫</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Prof. Alexandru M.</h3>
+                                <div style="color:var(--neon-blue); font-size:0.8rem;">Profesor de Geografie</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Specializat în geografia Europei și schimbări climatice. Disponibil pentru sesiuni de 30 min.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
                     </div>
 
-                    <div class="z-10 bg-[#0a0e17] border border-[#d4a843]/30 px-6 py-4 rounded-xl flex items-center gap-4 shadow-xl">
-                        <div class="text-4xl animate-[spin_4s_linear_infinite] filter drop-shadow-[0_0_10px_rgba(212,168,67,0.5)]">🧭</div>
+                    <!-- Mentor 2 -->
+                    <div class="glass-card mentor-card mentor-experti" style="padding:20px; border-left:4px solid var(--gold-bright); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#d4a843,#a17e2e); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🕵️‍♂️</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Elena V.</h3>
+                                <div style="color:var(--gold-bright); font-size:0.8rem;">Expert Geopolitică</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Analist relații internaționale. Te poate ajuta să înțelegi conflictele moderne.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    <!-- Mentor 3 -->
+                    <div class="glass-card mentor-card mentor-colegi" style="padding:20px; border-left:4px solid var(--success); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#00e676,#00a352); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">👨‍🎓</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Andrei G.</h3>
+                                <div style="color:var(--success); font-size:0.8rem;">Olimpic (Coleg)</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Medaliat cu aur la OIG. Disponibil pentru schimb de experiență și rezolvare teste.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    <!-- Mentor 4 -->
+                    <div class="glass-card mentor-card mentor-geologi" style="padding:20px; border-left:4px solid var(--danger); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#ff4466,#cc0033); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🧗</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Dr. Mihai T.</h3>
+                                <div style="color:var(--danger); font-size:0.8rem;">Geolog</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Expert în resurse naturale și topografie. Îți poate oferi o perspectivă practică.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+                </div>
+                </div> <!-- End Left Column -->
+
+                <!-- Universal Chat (Right Side) -->
+                <div class="glass-card" style="display:flex; flex-direction:column; height:600px; border:1px solid rgba(0,212,255,0.3); border-radius:16px; overflow:hidden;">
+                    <div style="background:rgba(0,0,0,0.4); padding:15px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:1.4rem;">💬</span>
                         <div>
-                            <p class="text-xs text-gray-500 font-orbitron uppercase tracking-widest mb-1" data-i18n="shop.funds">Available Funds</p>
-                            <p class="text-3xl font-jetbrains font-bold text-[#d4a843]" id="shop-balance">0</p>
+                            <h3 style="margin:0; font-family:'Orbitron',sans-serif; color:white; font-size:1rem;">Chat Universal</h3>
+                            <div style="color:#00e676; font-size:0.7rem; font-family:'JetBrains Mono',monospace;">● 42 ONLINE</div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Shop Tabs -->
-                <div class="flex gap-4 mb-8 overflow-x-auto pb-2 shop-tabs-container">
-                    <button class="shop-tab-tw active flex-1 py-3 px-6 rounded-lg bg-gradient-to-r from-[#00d4ff]/20 to-[#0077ff]/20 border border-[#00d4ff]/50 text-white font-bold transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] min-w-[150px]" data-tab="banners" data-i18n="shop.tab_banners">
-                        🖼️ Profile Banners
-                    </button>
-                    <button class="shop-tab-tw flex-1 py-3 px-6 rounded-lg bg-[#121a2e] border border-white/10 text-gray-400 font-bold hover:bg-white/5 transition-all min-w-[150px]" data-tab="avatars" data-i18n="shop.tab_avatars">
-                        👤 Agent Avatars
-                    </button>
-                    <button class="shop-tab-tw flex-1 py-3 px-6 rounded-lg bg-[#121a2e] border border-white/10 text-gray-400 font-bold hover:bg-white/5 transition-all min-w-[150px]" data-tab="themes" data-i18n="shop.tab_themes">
-                        🎨 UI Themes
-                    </button>
-                </div>
-
-                <!-- Shop Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-grid">
                     
-                    <!-- Item 1 -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#00d4ff]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(0,212,255,0.2)] shop-item" data-type="banner" data-price="100" data-id="banner-world">
-                        <div class="h-40 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121a2e] to-transparent"></div>
-                            <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs font-jetbrains text-[#d4a843] border border-[#d4a843]/30">RARE</div>
+                    <div id="community-chat-messages" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:15px;">
+                        <!-- Example Messages -->
+                        <div style="display:flex; gap:10px;">
+                            <div style="width:30px; height:30px; background:#d4a843; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">🕵️‍♂️</div>
+                            <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:0 12px 12px 12px;">
+                                <div style="font-size:0.75rem; color:#d4a843; font-weight:bold; margin-bottom:4px;">Elena V. <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la 14:22</span></div>
+                                <div style="font-size:0.85rem; color:white; line-height:1.4;">Azi dezbatem conflictul din Marea Chinei de Sud! Cine are nelămuriri despre rutele comerciale de acolo?</div>
+                            </div>
                         </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_banner_world_name">World Map Banner</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_banner_world_desc">A classic cartographic representation for true geographers.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 100
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00d4ff] text-white hover:text-[#0a0e17] border border-white/20 hover:border-[#00d4ff] px-4 py-2 rounded font-bold transition-all" data-i18n="shop.btn_purchase">Purchase</button>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <div style="width:30px; height:30px; background:#00e676; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">👨‍🎓</div>
+                            <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:0 12px 12px 12px;">
+                                <div style="font-size:0.75rem; color:#00e676; font-weight:bold; margin-bottom:4px;">Andrei G. <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la 14:25</span></div>
+                                <div style="font-size:0.85rem; color:white; line-height:1.4;">Eu am o problemă la testul despre resursele petroliere. Nu înțeleg de ce OPEC influențează prețul așa tare. O să las un screenshot imediat.</div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Item 2 -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#00d4ff]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(0,212,255,0.2)] shop-item" data-type="banner" data-price="150" data-id="banner-cyberpunk">
-                        <div class="h-40 bg-[url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121a2e] to-transparent"></div>
-                            <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs font-jetbrains text-[#b829e3] border border-[#b829e3]/30">EPIC</div>
+                    
+                    <div style="background:rgba(0,0,0,0.4); padding:10px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <div style="display:flex; gap:8px;">
+                            <button id="chat-attach-btn" title="Atașează Screenshot" style="background:transparent; border:none; color:var(--neon-blue); font-size:1.2rem; cursor:pointer; padding:5px; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">📎</button>
+                            <input type="file" id="chat-file-input" accept="image/*" style="display:none;">
+                            <input type="text" id="chat-input" placeholder="Scrie un mesaj sau trimite un screenshot..." style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:0 15px; color:white; font-size:0.85rem; outline:none;">
+                            <button id="chat-send-btn" class="btn btn-primary" style="padding:8px 15px; font-size:0.85rem; border-radius:20px;">Trimite</button>
                         </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_banner_cyber_name">Cyberpunk City</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_banner_cyber_desc">Neon lights and futuristic metropolis aesthetics.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 150
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00d4ff] text-white hover:text-[#0a0e17] border border-white/20 hover:border-[#00d4ff] px-4 py-2 rounded font-bold transition-all" data-i18n="shop.btn_purchase">Purchase</button>
-                            </div>
+                        <!-- Preview attach -->
+                        <div id="chat-attachment-preview" class="hidden" style="margin-top:10px; padding-left:40px; display:flex; align-items:center; gap:10px;">
+                            <div style="font-size:0.7rem; color:var(--success);">✅ Imagine atașată</div>
+                            <button id="chat-remove-attachment" style="background:none; border:none; color:var(--error); font-size:0.7rem; cursor:pointer;">[Șterge]</button>
                         </div>
                     </div>
+                </div>
+            </div> <!-- End Grid for Mentors + Chat -->
+            </div>
+        </section>
 
-                    <!-- Item 3 -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-[#d4a843]/30 hover:border-[#d4a843] transition-all duration-300 group hover:-translate-y-2 shadow-[0_0_15px_rgba(212,168,67,0.1)] hover:shadow-[0_10px_30px_rgba(212,168,67,0.3)] shop-item relative" data-type="banner" data-price="300" data-id="banner-topographic">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#d4a843] to-transparent opacity-50"></div>
-                        <div class="h-40 bg-[url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center relative">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121a2e] to-transparent"></div>
-                            <div class="absolute top-3 right-3 bg-[#d4a843]/20 backdrop-blur-sm px-2 py-1 rounded text-xs font-jetbrains text-[#f0c94d] border border-[#d4a843]">LEGENDARY</div>
-                        </div>
-                        <div class="p-5 relative z-10">
-                            <h4 class="text-xl font-orbitron font-bold text-[#f0c94d] mb-2" data-i18n="shop.item_banner_topo_name">Topographic Master</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_banner_topo_desc">The ultimate agent dossier background. Exudes authority.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 300
-                                </div>
-                                <button class="buy-btn bg-gradient-to-r from-[#d4a843] to-[#a17e2e] text-[#0a0e17] hover:scale-105 px-4 py-2 rounded font-bold transition-transform shadow-[0_0_15px_rgba(212,168,67,0.4)]" data-i18n="shop.btn_purchase">Purchase</button>
-                            </div>
-                        </div>
+        <!-- SHOP PAGE -->
+                <!-- SHOP PAGE -->
+        <section id="page-shop" class="page" style="padding:0;overflow:hidden;background:linear-gradient(160deg,#0a1628 0%,#0d1f3c 50%,#0a1628 100%);position:relative;height:calc(100vh - 70px);">
+
+            <div style="position:absolute;inset:0;z-index:0;pointer-events:none;">
+                <img src="assets/shop_bg.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;opacity:0.45;filter:saturate(0.9) brightness(0.9) blur(1px);" />
+                <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(10,22,40,0.8) 0%,rgba(13,31,60,0.65) 50%,rgba(10,22,40,0.8) 100%);"></div>
+            </div>
+
+            <!-- Ambient radial glow -->
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(0,150,255,0.06) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+
+            <!-- ═══ TOP HEADER BAR ═══ -->
+            <div style="position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 50px 0;">
+                <div>
+                    <h1 style="font-family:'Orbitron',sans-serif;color:white;margin:0;font-size:1.7rem;letter-spacing:6px;text-shadow:0 0 25px rgba(0,180,255,0.5);">GEO<span style="color:#d4a843;">-MARKET</span></h1>
+                    <p style="color:rgba(255,255,255,0.3);font-size:0.7rem;margin:2px 0 0;font-family:'JetBrains Mono',monospace;letter-spacing:3px;">BROWSE · BUY · UPGRADE</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:20px;">
+                    <div style="background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.35);padding:8px 20px;border-radius:40px;display:flex;align-items:center;gap:8px;box-shadow:0 0 18px rgba(212,168,67,0.1);">
+                        <span style="font-size:1.2rem;">🧭</span>
+                        <span id="shop-balance" style="color:#d4a843;font-family:'JetBrains Mono',monospace;font-weight:bold;font-size:1.4rem;">0</span>
+                        <span style="color:rgba(255,255,255,0.2);font-size:0.65rem;font-family:'Orbitron',monospace;">CP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ CATEGORY TABS ═══ -->
+            <div style="position:relative;z-index:10;display:flex;justify-content:center;gap:6px;margin:12px 0 8px;">
+                <button class="shop-tab-btn active" data-cat="0" onclick="switchShopCat(0,this)" style="padding:7px 22px;border-radius:25px;border:1px solid rgba(0,212,255,0.5);background:rgba(0,212,255,0.15);color:#00d4ff;font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;cursor:pointer;transition:all 0.3s;">🖼️ BANNERE</button>
+                <button class="shop-tab-btn" data-cat="1" onclick="switchShopCat(1,this)" style="padding:7px 22px;border-radius:25px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;cursor:pointer;transition:all 0.3s;">🧗 AVATARE</button>
+                <button class="shop-tab-btn" data-cat="2" onclick="switchShopCat(2,this)" style="padding:7px 22px;border-radius:25px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;cursor:pointer;transition:all 0.3s;">⚡ UPGRADE</button>
+            </div>
+
+            <!-- ═══ CATEGORY TITLE ═══ -->
+            <div style="text-align:center;position:relative;z-index:10;margin-bottom:6px;">
+                <span id="shop-cat-label" style="font-family:'Orbitron',sans-serif;color:rgba(255,255,255,0.07);font-size:2.4rem;letter-spacing:18px;font-weight:900;text-transform:uppercase;pointer-events:none;">BANNERE</span>
+            </div>
+
+            <!-- ═══ SHELF VIEWPORT ═══ -->
+            <div style="position:relative;z-index:5;overflow:hidden;height:calc(100% - 160px);">
+                <div id="shop-shelf-track" style="display:flex;height:100%;transition:transform 0.75s cubic-bezier(0.4,0,0.2,1);will-change:transform;">
+
+                    <!-- ██ CATEGORY 0 : BANNERE (9 items, 3 shelves) ██ -->
+                    <div class="shop-cat-panel" style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0 60px;">
+
+                        
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="ban-world" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#d4a843;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #d4a843;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">RARE</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">World Map</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 100</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="100" data-id="ban-world" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-cyber" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Cyberpunk</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 150</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="150" data-id="ban-cyber" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-topo" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#f0c94d;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #f0c94d;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">LEGEND</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Topographic</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 300</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="300" data-id="ban-topo" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="ban-space" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Deep Space</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 200</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="200" data-id="ban-space" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-ocean" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#d4a843;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #d4a843;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">RARE</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Ocean View</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 120</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="120" data-id="ban-ocean" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-mnt" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Mountain</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 180</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="180" data-id="ban-mnt" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="ban-desert" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff6b35;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff6b3566'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#d4a843;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #d4a843;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">RARE</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1542401886-65d6c61db217?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff6b3544;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Desert</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 160</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="160" data-id="ban-desert" style="padding:3px 9px;background:#ff6b3522;border:1px solid #ff6b35;color:#ff6b35;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff6b35';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff6b3522';this.style.color='#ff6b35'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-arctic" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#b829e3;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #b829e3;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">EPIC</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Arctic</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 220</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="220" data-id="ban-arctic" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="ban-gold" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.75);color:#f0c94d;font-size:0.52rem;padding:2px 5px;border-radius:4px;border:1px solid #f0c94d;font-family:'JetBrains Mono';font-weight:bold;z-index:2;">LEGEND</div>
+    <div style="flex:1;background:url('https://images.unsplash.com/photo-1503756234508-e32369269dde?q=80&w=300') center/cover;"></div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Golden Age</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 500</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="500" data-id="ban-gold" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+
                     </div>
 
-                    <!-- Item 4: Avatar -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#00e676]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(0,230,118,0.2)] shop-item" data-type="avatar" data-price="250" data-id="avatar-explorer">
-                        <div class="h-40 bg-[#0a0e17] flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-50"></div>
-                            <div class="text-6xl group-hover:scale-125 transition-transform duration-500 filter drop-shadow-[0_0_15px_rgba(0,230,118,0.5)]">🧗</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_avatar_explorer_name">Field Explorer</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_avatar_explorer_desc">An avatar for those who prefer boots on the ground.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 250
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00e676] text-white hover:text-[#0a0e17] border border-white/20 hover:border-[#00e676] px-4 py-2 rounded font-bold transition-all">Purchase</button>
-                            </div>
-                        </div>
+                    <!-- ██ CATEGORY 1 : AVATARE (9 items, 3 shelves) ██ -->
+                    <div class="shop-cat-panel" style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0 60px;">
+
+                        
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="av-explorer" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">🧗</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Explorer</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 250</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="250" data-id="av-explorer" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-globe" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff6b35;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff6b3566'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff6b35);">🌍</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff6b3544;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Globetrotter</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 180</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="180" data-id="av-globe" style="padding:3px 9px;background:#ff6b3522;border:1px solid #ff6b35;color:#ff6b35;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff6b35';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff6b3522';this.style.color='#ff6b35'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-agent" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #b829e3);">🕵️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Secret Agent</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 350</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="350" data-id="av-agent" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="av-scientist" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00d4ff);">🧑‍🔬</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Scientist</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 200</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="200" data-id="av-scientist" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-ninja" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff4466;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff446666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff4466);">🥷</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff446644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Geo Ninja</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 300</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="300" data-id="av-ninja" style="padding:3px 9px;background:#ff446622;border:1px solid #ff4466;color:#ff4466;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff4466';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff446622';this.style.color='#ff4466'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-astronaut" style="width:140px;height:155px;background:#0b1420;border:2px solid #d4a843;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #d4a84366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #d4a843);">👩‍🚀</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #d4a84344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Astronaut</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 400</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="400" data-id="av-astronaut" style="padding:3px 9px;background:#d4a84322;border:1px solid #d4a843;color:#d4a843;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#d4a843';this.style.color='#07101d'"
+          onmouseout="this.style.background='#d4a84322';this.style.color='#d4a843'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="av-wizard" style="width:140px;height:155px;background:#0b1420;border:2px solid #b829e3;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #b829e366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #b829e322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #b829e3);">🧙‍♂️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #b829e344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Geo Wizard</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 280</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="280" data-id="av-wizard" style="padding:3px 9px;background:#b829e322;border:1px solid #b829e3;color:#b829e3;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#b829e3';this.style.color='#07101d'"
+          onmouseout="this.style.background='#b829e322';this.style.color='#b829e3'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-knight" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">💂</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Knight</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 320</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="320" data-id="av-knight" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="av-champion" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #f0c94d);">👑</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Champion</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 600</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="600" data-id="av-champion" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+
                     </div>
 
-                    <!-- Item 5: Theme -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover:border-[#ff4466]/50 transition-all duration-300 group hover:-translate-y-2 shadow-lg hover:shadow-[0_10px_30px_rgba(255,68,102,0.2)] shop-item" data-type="theme" data-price="400" data-id="theme-volcanic">
-                        <div class="h-40 bg-gradient-to-br from-[#121a2e] to-[#4a0011] flex items-center justify-center relative">
-                            <div class="w-16 h-16 rounded-full bg-[#ff4466] blur-xl absolute"></div>
-                            <div class="text-5xl relative z-10">🌋</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-white mb-2" data-i18n="shop.item_theme_volcanic_name">Volcanic Red UI</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_theme_volcanic_desc">Unlock the aggressive Volcanic Red theme for your dossier.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 400
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#ff4466] text-white hover:text-white border border-white/20 hover:border-[#ff4466] px-4 py-2 rounded font-bold transition-all">Purchase</button>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- ██ CATEGORY 2 : UPGRADES (9 items, 3 shelves) ██ -->
+                    <div class="shop-cat-panel" style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0 60px;">
 
-                    <!-- Item 6: Power-Up -->
-                    <div class="bg-[#121a2e]/80 backdrop-blur-md rounded-xl overflow-hidden border border-[#00d4ff]/30 hover:border-[#00d4ff] transition-all duration-300 group hover:-translate-y-2 shadow-[0_0_15px_rgba(0,212,255,0.1)] hover:shadow-[0_10px_30px_rgba(0,212,255,0.3)] shop-item relative" data-type="powerup" data-price="50" data-id="powerup-chronos">
-                        <div class="h-40 bg-[#0a0e17] flex items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#00d4ff]/20 to-transparent opacity-50"></div>
-                            <div class="text-6xl group-hover:rotate-12 transition-transform duration-500 filter drop-shadow-[0_0_15px_rgba(0,212,255,0.8)]">⏳</div>
-                            <div class="absolute top-3 right-3 bg-[#00d4ff]/20 px-2 py-1 rounded text-xs font-jetbrains text-[#00d4ff] border border-[#00d4ff]">PASSIVE</div>
-                        </div>
-                        <div class="p-5">
-                            <h4 class="text-xl font-orbitron font-bold text-[#00d4ff] mb-2" data-i18n="shop.item_powerup_chronos_name">Chronos Protocol</h4>
-                            <p class="text-sm text-gray-400 mb-6 line-clamp-2" data-i18n="shop.item_powerup_chronos_desc">Grants a permanent +10 seconds time extension in the Timeline Challenge.</p>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 text-xl font-jetbrains font-bold text-[#d4a843]">
-                                    🧭 50
-                                </div>
-                                <button class="buy-btn bg-white/5 hover:bg-[#00d4ff] text-white hover:text-[#0a0e17] border border-[#00d4ff]/50 hover:border-[#00d4ff] px-4 py-2 rounded font-bold transition-all" data-i18n="shop.btn_purchase">Purchase</button>
-                            </div>
-                        </div>
+                        
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="up-volcanic" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff4466;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff446666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff446622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff4466);">🌋</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff446644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Volcanic UI</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 400</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="400" data-id="up-volcanic" style="padding:3px 9px;background:#ff446622;border:1px solid #ff4466;color:#ff4466;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff4466';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff446622';this.style.color='#ff4466'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-chronos" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00d4ff);">⏳</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Chronos +10s</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 50</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="50" data-id="up-chronos" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-boost" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #f0c94d);">⚡</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">XP Boost x2</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 75</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="75" data-id="up-boost" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="up-compass" style="width:140px;height:155px;background:#0b1420;border:2px solid #d4a843;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #d4a84366'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #d4a84322'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #d4a843);">🧭</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #d4a84344;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Compass Pro</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 120</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="120" data-id="up-compass" style="padding:3px 9px;background:#d4a84322;border:1px solid #d4a843;color:#d4a843;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#d4a843';this.style.color='#07101d'"
+          onmouseout="this.style.background='#d4a84322';this.style.color='#d4a843'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-shield" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">🛡️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Shield</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 90</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="90" data-id="up-shield" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-emerald" style="width:140px;height:155px;background:#0b1420;border:2px solid #00e676;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00e67666'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00e67622'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00e676);">💎</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00e67644;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Emerald UI</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 350</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="350" data-id="up-emerald" style="padding:3px 9px;background:#00e67622;border:1px solid #00e676;color:#00e676;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00e676';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00e67622';this.style.color='#00e676'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+        <div style="position:relative;margin-bottom:0;">
+          <!-- Items sitting on the shelf -->
+          <div style="display:flex;justify-content:center;gap:32px;padding:0 0 12px;">
+            <div class="shop-item" data-id="up-streak" style="width:140px;height:155px;background:#0b1420;border:2px solid #ff6b35;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #ff6b3566'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #ff6b3522'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #ff6b35);">🔥</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #ff6b3544;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Streak Saver</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 60</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="60" data-id="up-streak" style="padding:3px 9px;background:#ff6b3522;border:1px solid #ff6b35;color:#ff6b35;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#ff6b35';this.style.color='#07101d'"
+          onmouseout="this.style.background='#ff6b3522';this.style.color='#ff6b35'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-hint" style="width:140px;height:155px;background:#0b1420;border:2px solid #f0c94d;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #f0c94d66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #f0c94d22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #f0c94d);">💡</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #f0c94d44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Hint Pack x5</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 40</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="40" data-id="up-hint" style="padding:3px 9px;background:#f0c94d22;border:1px solid #f0c94d;color:#f0c94d;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#f0c94d';this.style.color='#07101d'"
+          onmouseout="this.style.background='#f0c94d22';this.style.color='#f0c94d'">BUY</button>
+      </div>
+    </div>
+  </div><div class="shop-item" data-id="up-arctic" style="width:140px;height:155px;background:#0b1420;border:2px solid #00d4ff;border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22;transition:transform 0.28s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.28s;position:relative;"
+    onmouseover="this.style.transform='translateY(-12px) scale(1.07)';this.style.boxShadow='0 20px 40px rgba(0,0,0,0.8),0 0 35px #00d4ff66'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 10px 25px rgba(0,0,0,0.65),0 0 15px #00d4ff22'">
+    
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 10px #00d4ff);">❄️</div>
+    <div style="padding:7px 8px 8px;background:rgba(5,10,20,0.95);border-top:1px solid #00d4ff44;flex-shrink:0;">
+      <div style="color:white;font-family:'Orbitron',sans-serif;font-size:0.62rem;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Arctic UI</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+        <span style="color:#d4a843;font-family:'JetBrains Mono';font-size:0.72rem;font-weight:bold;">🧭 380</span>
+        <button onclick="event.stopPropagation();handleBuy(this)" data-price="380" data-id="up-arctic" style="padding:3px 9px;background:#00d4ff22;border:1px solid #00d4ff;color:#00d4ff;border-radius:6px;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:0.55rem;letter-spacing:1px;transition:all 0.2s;white-space:nowrap;"
+          onmouseover="this.style.background='#00d4ff';this.style.color='#07101d'"
+          onmouseout="this.style.background='#00d4ff22';this.style.color='#00d4ff'">BUY</button>
+      </div>
+    </div>
+  </div>
+          </div>
+          <!-- Wooden shelf board -->
+          <div style="height:14px;background:linear-gradient(to bottom,#b87333 0%,#8b5a2b 35%,#6b3f15 100%);border-radius:4px;box-shadow:0 6px 20px rgba(0,0,0,0.7),inset 0 2px 3px rgba(255,220,140,0.25),0 2px 0 #3d2008;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(0,0,0,0.08) 80px,rgba(0,0,0,0.08) 82px);border-radius:4px;"></div>
+          </div>
+          <!-- shelf shadow -->
+          <div style="height:8px;background:linear-gradient(to bottom,rgba(0,0,0,0.45),transparent);"></div>
+        </div>
+
                     </div>
 
                 </div>
             </div>
+
+            <!-- ═══ NAV ARROWS ═══ -->
+            <button id="shop-prev-btn" onclick="shopNav(-1)" style="display:none;position:absolute;left:14px;top:55%;transform:translateY(-50%);z-index:30;width:46px;height:46px;border-radius:50%;background:rgba(0,180,255,0.1);border:2px solid rgba(0,212,255,0.45);color:#00d4ff;font-size:1.2rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(0,212,255,0.25)'" onmouseout="this.style.background='rgba(0,180,255,0.1)'">❮</button>
+            <button id="shop-next-btn" onclick="shopNav(1)"  style="position:absolute;right:14px;top:55%;transform:translateY(-50%);z-index:30;width:46px;height:46px;border-radius:50%;background:rgba(0,180,255,0.1);border:2px solid rgba(0,212,255,0.45);color:#00d4ff;font-size:1.2rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(0,212,255,0.25)'" onmouseout="this.style.background='rgba(0,180,255,0.1)'">❯</button>
+
         </section>
 
         <!-- PROFILE PAGE -->
@@ -965,8 +1565,14 @@
                 <!-- Agent Dossier Header -->
                 <div class="relative rounded-2xl overflow-hidden mb-8 shadow-[0_0_40px_rgba(0,212,255,0.2)] border border-[#00d4ff]/30 bg-[#0a0e17]/80 backdrop-blur-xl">
                     <!-- Banner -->
-                    <div id="dossier-banner" class="h-48 w-full bg-cover bg-center transition-all duration-500" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');">
+                    <div id="dossier-banner" class="h-48 w-full bg-cover bg-center transition-all duration-500 relative group" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0a0e17] to-transparent"></div>
+                        <!-- Banner Edit Overlay -->
+                        <label for="banner-upload" class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 cursor-pointer">
+                            <svg class="w-10 h-10 text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span class="text-sm text-white font-bold tracking-widest uppercase">Schimbă Bannerul</span>
+                            <input type="file" id="banner-upload" class="hidden" accept="image/*">
+                        </label>
                     </div>
                     
                     <!-- Profile Info Area -->
@@ -1195,8 +1801,9 @@
                                 <div class="flex flex-col justify-center gap-2 flex-1">
                                     <p class="text-xs text-gray-300 font-jetbrains">Codul tău QR personal:</p>
                                     <div id="my-qr-text" class="text-[#00d4ff] font-jetbrains font-bold text-sm tracking-widest">—</div>
-                                    <button id="copy-qr-btn" class="bg-[#00d4ff]/20 text-[#00d4ff] border border-[#00d4ff]/50 px-3 py-1.5 rounded font-bold text-xs hover:bg-[#00d4ff] hover:text-[#0a0e17] transition-all self-start">
-                                        📋 Copiază Codul
+                                    </button>
+                                    <button id="share-friend-link-btn" class="bg-[#d4a843]/20 text-[#d4a843] border border-[#d4a843]/50 px-3 py-1.5 rounded font-bold text-xs hover:bg-[#d4a843] hover:text-[#0a0e17] transition-all self-start flex items-center gap-2">
+                                        🔗 Partajează Link Prietenie
                                     </button>
                                 </div>
                             </div>
@@ -1363,6 +1970,30 @@
                             <button id="btn-reset" style="background:linear-gradient(90deg,#d4a843,#a17e2e); color:#0a0e17; border:none; border-radius:8px; padding:14px; font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; letter-spacing:1px;" data-i18n="settings.btn_reset">🔑 Trimite Email de Resetare</button>
                         </div>
                     </div>
+
+                    <!-- Support Us Section -->
+                    <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;">
+                        <h3 style="color:white; font-family:'Orbitron',sans-serif; margin: 0 0 15px; font-size:1.1rem; display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.3rem;">❤️</span> Susține Platforma
+                        </h3>
+                        <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom: 15px;">Dacă îți place platforma TerraQuest, ne poți susține urmărindu-ne pe rețelele sociale.</p>
+                        <a href="https://www.instagram.com/terra.__quest?igsh=bDYzaW1waGVvdmM2" id="support-instagram-btn" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color:white; text-decoration:none; padding:10px 20px; border-radius:8px; font-family:'Orbitron',sans-serif; font-weight:bold; font-size:0.85rem; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            Support Us on Instagram
+                        </a>
+
+                        <div style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+                            <h3 style="color:#00d4ff; font-family:'Orbitron',sans-serif; margin: 0 0 10px; font-size:1.1rem; display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:1.3rem;">🛡️</span> Securitate & Audit
+                            </h3>
+                            <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom: 15px;">Rulează un audit complet pentru a verifica mecanismele de protecție XSS, CSRF și Integritate.</p>
+                            <button id="run-security-audit-btn" style="background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:#00d4ff; padding:10px 20px; border-radius:8px; font-family:'Orbitron',sans-serif; font-weight:bold; font-size:0.85rem; cursor:pointer; transition:all 0.3s;" onmouseover="this.style.background='rgba(0,212,255,0.2)'" onmouseout="this.style.background='rgba(0,212,255,0.1)'">
+                                🔍 Rulează Audit Securitate
+                            </button>
+                            <div id="security-audit-container" style="margin-top: 20px;"></div>
+                        </div>
+                    </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1382,26 +2013,43 @@
                 <div class="ai-chat-history" id="ai-chat-history">
                     <div class="ai-msg bot-msg" data-i18n="ai.greeting">Hello! I am your GeoAI assistant. Ask me anything about political geography!</div>
                 </div>
-                <div class="ai-controls-bar">
+                <div class="ai-controls-bar" style="background:rgba(8,14,26,0.95);padding:10px 18px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;border-top:1px solid rgba(0,212,255,0.12);">
                     <div class="ai-control-group">
-                        <label for="ai-mode-select" data-i18n="ai.mode_label">Mode:</label>
-                        <select id="ai-mode-select" class="ai-select">
-                            <option value="normal" data-i18n="ai.mode_normal">Normal</option>
-                            <option value="learning" data-i18n="ai.mode_learning">Learning</option>
-                            <option value="assistant" data-i18n="ai.mode_assistant">Assistant</option>
-                            <option value="test" data-i18n="ai.mode_test">Test</option>
+                        <label for="ai-model-select" style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:'JetBrains Mono',monospace;">Model:</label>
+                        <select id="ai-model-select" class="ai-select" style="background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.3);color:#00d4ff;padding:6px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;cursor:pointer;">
+                            <option value="gemini-1.5" style="background:#0a0e17;color:white;">♊ Gemini 1.5 Pro</option>
+                            <option value="claude-3.5" style="background:#0a0e17;color:white;">🎭 Claude 3.5 Sonnet</option>
+                            <option value="gpt-4o" style="background:#0a0e17;color:white;">🧠 GPT-4o Omni</option>
+                            <option value="classic" style="background:#0a0e17;color:white;">📜 Classic Geo-Logic</option>
                         </select>
                     </div>
                     <div class="ai-control-group">
-                        <label for="ai-voice-select" data-i18n="ai.voice_label">Voice:</label>
-                        <select id="ai-voice-select" class="ai-select">
-                            <option value="default">Default System Voice</option>
+                        <label for="ai-mode-select" data-i18n="ai.mode_label" style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:'JetBrains Mono',monospace;">Mode:</label>
+                        <select id="ai-mode-select" class="ai-select" style="background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.3);color:white;padding:6px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;cursor:pointer;">
+                            <option value="normal" data-i18n="ai.mode_normal" style="background:#0a0e17;color:white;">Normal</option>
+                            <option value="learning" data-i18n="ai.mode_learning" style="background:#0a0e17;color:white;">Learning</option>
+                            <option value="assistant" data-i18n="ai.mode_assistant" style="background:#0a0e17;color:white;">Assistant</option>
+                            <option value="test" data-i18n="ai.mode_test" style="background:#0a0e17;color:white;">Test</option>
+                        </select>
+                    </div>
+                    <div class="ai-control-group">
+                        <label for="ai-voice-select" data-i18n="ai.voice_label" style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:'JetBrains Mono',monospace;">Voice:</label>
+                        <select id="ai-voice-select" class="ai-select" style="background:rgba(0,0,0,0.4);border:1px solid rgba(0,212,255,0.3);color:white;padding:6px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;cursor:pointer;">
+                            <option value="default" style="background:#0a0e17;color:white;">Default System Voice</option>
+                            <option value="female-ro" style="background:#0a0e17;color:white;">Română (Femeie)</option>
+                            <option value="male-ro" style="background:#0a0e17;color:white;">Română (Bărbat)</option>
+                            <option value="female-en" style="background:#0a0e17;color:white;">English (Female)</option>
+                            <option value="male-en" style="background:#0a0e17;color:white;">English (Male)</option>
                         </select>
                     </div>
                 </div>
-                <div class="ai-input-area">
-                    <input type="text" id="ai-input" placeholder="Type your geography question here..." data-i18n="ai.placeholder" />
-                    <button class="btn btn-primary" id="ai-send-btn" data-i18n="ai.btn_send">Send</button>
+                <div class="ai-input-area" style="position:relative; display:flex; gap:10px; padding:15px; background:rgba(0,0,0,0.2);">
+                    <button id="ai-mic-btn" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.3s; color:var(--text-secondary);" title="Speak (Romanian/English)">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+                    </button>
+                    <input type="text" id="ai-input" placeholder="Type your geography question here..." data-i18n="ai.placeholder" style="flex:1; background:rgba(0,0,0,0.3); border:1px solid rgba(0,212,255,0.2); border-radius:12px; padding:12px 20px; color:white; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'"/>
+                    <button class="btn btn-primary" id="ai-send-btn" data-i18n="ai.btn_send" style="padding:0 25px; border-radius:12px;">Send</button>
+                    <div id="mic-status" style="position:absolute; bottom:-20px; left:65px; font-size:0.65rem; font-family:'JetBrains Mono',monospace; color:#ff4466; display:none; animation:pulse 1s infinite;">🔴 Ascult...</div>
                 </div>
             </div>
         </section>
@@ -1428,7 +2076,7 @@
                 <!-- Legend -->
                 <div class="worldmap-legend glass-card" id="worldmap-legend">
                     <div class="legend-title" data-i18n="worldmap.legend_title">MAP LEGEND</div>
-                    <div class="legend-items" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div class="legend-items">
                         <div class="legend-item" data-type="Constitutional Monarchy"><span class="legend-dot" style="background:#4a90d9"></span><span data-i18n="worldmap.types.const_monarchy">Constitutional Monarchy</span></div>
                         <div class="legend-item" data-type="Absolute Monarchy"><span class="legend-dot" style="background:#8b44cc"></span><span data-i18n="worldmap.types.abs_monarchy">Absolute Monarchy</span></div>
                         <div class="legend-item" data-type="Presidential Republic"><span class="legend-dot" style="background:#e05c3a"></span><span data-i18n="worldmap.types.pres_republic">Presidential Republic</span></div>
@@ -1485,10 +2133,7 @@
         <!-- FOOTER -->
         <footer style="margin-top:auto;padding:25px;text-align:center;font-family:'Orbitron',sans-serif;color:var(--text-secondary);border-top:1px solid rgba(0,212,255,0.1);background:rgba(10,14,23,0.8);backdrop-filter:blur(10px);">
             <div style="font-size:0.9rem;letter-spacing:1px;margin-bottom:8px;">
-                🚀 Supported and created with ❤️ by <span style="color:var(--neon-blue);font-weight:700;text-shadow:0 0 10px rgba(0,212,255,0.5);">DanielAT76 :))</span>
-            </div>
-            <div style="font-size:0.85rem;color:var(--gold-bright);margin-bottom:8px;font-style:italic;">
-                Cu deosebit respect și recunoștință pentru doamna profesor coordonator Grigorie Otilia.
+                🚀 Supported and created with ❤️ by <span style="color:var(--neon-blue);font-weight:700;text-shadow:0 0 10px rgba(0,212,255,0.5);">DanielAT76 and zWortexx</span>
             </div>
             <div style="font-size:1rem;font-weight:bold;color:var(--neon-blue);font-family:'JetBrains Mono',monospace;">
                 💙 CNMTV 💙
@@ -1527,9 +2172,11 @@
     <!-- Background Music -->
     <audio id="ambient-music" loop></audio>
 
-    <script src="historical-map.js"></script>
-    <script src="app.js" type="module"></script>
-    <script src="logo-animation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="historical-map.js?v=2"></script>
+    <script src="app.js?v=1305" type="module"></script>
+    <script src="security.js?v=1305" type="module"></script>
+    <script src="logo-animation.js?v=2"></script>
     <!-- Global UI helpers (non-module) -->
     <script>
         function switchAuthTab(tab) {

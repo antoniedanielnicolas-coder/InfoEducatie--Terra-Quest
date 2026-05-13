@@ -192,10 +192,21 @@ function renderWorldMap() {
     fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
         .then(r => r.json())
         .then(data => {
+            const getCountryInfo = (feature) => {
+                const iso = feature.properties['ISO3166-1-Alpha-3'] || feature.properties.ISO_A3;
+                let info = countryData[iso];
+                if (!info) {
+                    const props = feature.properties;
+                    const possibleNames = [props.ADMIN, props.name, props.SOVEREIGN, props.BRK_NAME, props.NAME, props.FORMAL_EN].filter(Boolean);
+                    const nameMatch = Object.values(countryData).find(c => possibleNames.includes(c.name));
+                    if (nameMatch) info = nameMatch;
+                }
+                return info;
+            };
+
             geoJsonLayer = L.geoJSON(data, {
                 style: feature => {
-                    const iso = feature.properties['ISO3166-1-Alpha-3'] || feature.properties.ISO_A3;
-                    let info = countryData[iso];
+                    let info = getCountryInfo(feature);
                     if (!info) {
                         info = {
                             type: 'Altele / Neclasificate',
@@ -203,7 +214,9 @@ function renderWorldMap() {
                             flag: '🏳️',
                             name: feature.properties.ADMIN || feature.properties.name || feature.properties.SOVEREIGN || 'Unknown'
                         };
-                        countryData[iso] = info;
+                        // Caching it by whatever ID we have so it's fast next time
+                        const id = feature.properties['ISO3166-1-Alpha-3'] || feature.properties.name;
+                        if (id) countryData[id] = info;
                     }
                     return {
                         fillColor: info.color,
@@ -214,8 +227,7 @@ function renderWorldMap() {
                     };
                 },
                 onEachFeature: (feature, layer) => {
-                    const iso = feature.properties['ISO3166-1-Alpha-3'] || feature.properties.ISO_A3;
-                    const info = countryData[iso];
+                    const info = getCountryInfo(feature);
                     if (info) {
                         layer.featureInfo = info;
                         layer.bindTooltip(`<strong>${info.flag} ${info.name}</strong><br>${info.type}`, { sticky: true });
@@ -253,11 +265,6 @@ function renderWorldMap() {
 
             // Add Legend Filter Logic
             document.querySelectorAll('.legend-item').forEach(item => {
-                // Ensure we don't add multiple listeners if init is called multiple times
-                item.replaceWith(item.cloneNode(true));
-            });
-
-            document.querySelectorAll('.legend-item').forEach(item => {
                 item.style.cursor = 'pointer';
                 item.style.transition = 'all 0.3s ease';
                 item.addEventListener('click', () => {
@@ -286,8 +293,7 @@ function renderWorldMap() {
 
                     if (geoJsonLayer) {
                         geoJsonLayer.eachLayer(layer => {
-                            const iso = layer.feature.properties['ISO3166-1-Alpha-3'] || layer.feature.properties.ISO_A3;
-                            const info = countryData[iso];
+                            const info = getCountryInfo(layer.feature);
                             if (info) {
                                 if (!window.activeFilter || info.type === window.activeFilter) {
                                     layer.setStyle({

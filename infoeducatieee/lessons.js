@@ -1,5 +1,5 @@
 // =====================================================
-// GeoInformatica - Lessons & Modules Data
+// TerraQuest - Lessons & Modules Data
 // Comprehensive Political Geography Curriculum (Grades 9-12)
 // =====================================================
 

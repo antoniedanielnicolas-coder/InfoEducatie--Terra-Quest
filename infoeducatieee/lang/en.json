@@ -8,7 +8,8 @@
     "profile": "Profile",
     "ai": "AI Agent",
     "worldmap": "World Map",
-    "settings": "Settings"
+    "settings": "Settings",
+    "coaching": "Coaching"
   },
   "home": {
     "title_line1": "Master the",
@@ -17,6 +18,10 @@
     "desc": "Dive into an immersive journey through state systems, territorial disputes, geopolitical blocs, and the forces that shape our world. Prepare to learn geography with cutting-edge interactive tools.",
     "btn_learn": "Begin Learning",
     "btn_play": "Play Games",
+    "correct_toast": "✅ Correct! +5 Coins",
+    "timeline_chal_desc": "Drag events into the correct chronological order.",
+    "check_order": "Check Order",
+    "time_up": "Time's up!",
     "stat_lessons": "Lessons",
     "stat_countries": "Countries",
     "stat_questions": "Questions",
@@ -253,5 +258,46 @@
     "placeholder_name": "👤 Agent Name",
     "reset_desc": "Enter your email and we'll send you a password reset link.",
     "music_selection": "Background Music"
+  },
+  "geo_sim": {
+    "sidebar_title": "Geopolitical Blocs",
+    "sidebar_desc": "Drag each bloc to its correct zone on the map.",
+    "progress": "Progress:",
+    "drag_bottom_hint": "↕ Drag blocs from the left onto the marked zones",
+    "placed": "placed!",
+    "success_placed": "placed correctly!",
+    "success_perfect": "🏆 Perfect! All blocs placed correctly! +25 Bonus Coins!",
+    "error_wrong": "❌ Wrong zone! Try again.",
+    "items": {
+      "eu_label": "European Union",
+      "eu_desc": "European economic & political bloc",
+      "eu_zone": "Western Europe",
+      "eu_hint": "Centre of EU power",
+      "nato_label": "NATO",
+      "nato_desc": "North Atlantic military alliance",
+      "nato_zone": "NATO Eastern Flank",
+      "nato_hint": "Collective defence",
+      "dmz_label": "Demilitarized Zone",
+      "dmz_desc": "Border between North & South Korea",
+      "dmz_zone": "Korean Peninsula",
+      "dmz_hint": "38th parallel",
+      "49th_label": "49th Parallel",
+      "49th_desc": "USA–Canada border",
+      "49th_zone": "North America",
+      "49th_hint": "Longest peaceful border",
+      "bri_label": "Belt & Road",
+      "bri_desc": "China's Belt & Road Initiative",
+      "bri_zone": "Central Asia",
+      "bri_hint": "Infrastructure & influence"
+    }
+  },
+  "games_content": {
+    "timeline": {
+      "westphalia": "Peace of Westphalia",
+      "berlin": "Berlin Conference",
+      "un": "UN Founded",
+      "ussr": "Fall of USSR",
+      "brexit": "Brexit"
+    }
   }
 }

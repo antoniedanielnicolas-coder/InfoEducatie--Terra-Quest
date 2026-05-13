@@ -583,21 +583,64 @@ async function initApp() {
     if (overlay) {
         overlay.addEventListener('click', (e) => {
             const isBtnClick = e.target.closest('#start-experience-btn');
-            const isFingerprintClick = e.target.closest('.fingerprint-wrap') || e.target.closest('.group'); // .group is from the static index.html fingerprint
+            const isFingerprintClick = e.target.closest('.fingerprint-wrap') || e.target.closest('.group'); 
             
             if (isBtnClick || isFingerprintClick) {
-                startAmbientMusic();
-                playSound('click');
+                if (overlay.dataset.authenticating) return;
+                overlay.dataset.authenticating = "true";
                 
-                // Animate overlay out
-                overlay.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
-                overlay.style.opacity = '0';
-                overlay.style.transform = 'scale(1.1)';
+                playSound('click'); // Can also add a specific scan sound later
                 
-                setTimeout(() => {
-                    overlay.remove();
-                    initGlobe();
-                }, 1000);
+                const bioSection = document.getElementById('welcome-biometric');
+                const loadSection = document.getElementById('welcome-loading');
+                const progFill = document.getElementById('welcome-progress-fill');
+                const progText = document.getElementById('welcome-progress-pct');
+                const statusText = document.getElementById('welcome-loading-text');
+
+                // Switch to Loading View
+                if (bioSection) bioSection.style.display = 'none';
+                if (loadSection) {
+                    loadSection.classList.remove('hidden');
+                    loadSection.style.display = 'flex';
+                }
+
+                let progress = 0;
+                
+                const interval = setInterval(() => {
+                    progress += Math.random() * 8 + 4; // increment fast enough for a short load
+                    if (progress > 100) progress = 100;
+                    
+                    if (progFill) progFill.style.width = `${progress}%`;
+                    if (progText) progText.innerText = `${Math.floor(progress)}%`;
+
+                    if (statusText) {
+                        if (progress > 30 && progress < 60) {
+                            statusText.innerText = "Loading Topographical Data...";
+                        } else if (progress > 60 && progress < 90) {
+                            statusText.innerText = "Decrypting Modules...";
+                        } else if (progress >= 100) {
+                            statusText.innerText = "Access Granted.";
+                            statusText.style.color = "#00e676";
+                        }
+                    }
+
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        startAmbientMusic();
+                        playSound('correct'); 
+
+                        setTimeout(() => {
+                            overlay.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
+                            overlay.style.opacity = '0';
+                            overlay.style.transform = 'scale(1.1)';
+                            
+                            setTimeout(() => {
+                                overlay.remove();
+                                initGlobe();
+                            }, 1000);
+                        }, 500);
+                    }
+                }, 100);
             }
         });
     }
@@ -664,8 +707,45 @@ async function initApp() {
         const amount = e.detail.amount;
         userXP += amount;
         localStorage.setItem('userXP', userXP);
-        showToast(`Lesson Completed! +${amount} XP`, "success");
+        showToast(currentLang === 'ro' ? `Ai primit +${amount} XP` : `Received +${amount} XP`, "success");
         updateStats();
+
+        // Animated XP Arrow
+        const xpNavEl = document.querySelector('.nav-xp');
+        if (xpNavEl) {
+            const arrow = document.createElement('div');
+            arrow.innerText = `⬆ +${amount} XP`;
+            arrow.style.position = 'absolute';
+            arrow.style.left = '50%';
+            arrow.style.bottom = '-10px';
+            arrow.style.transform = 'translateX(-50%)';
+            arrow.style.color = '#00e676';
+            arrow.style.fontWeight = 'bold';
+            arrow.style.fontSize = '1.2rem';
+            arrow.style.textShadow = '0 0 10px #00e676';
+            arrow.style.zIndex = '9999';
+            arrow.style.animation = 'floatUpXP 1.5s ease-out forwards';
+            arrow.style.pointerEvents = 'none';
+            
+            // Inject keyframes if not exists
+            if (!document.getElementById('xp-arrow-keyframe')) {
+                const style = document.createElement('style');
+                style.id = 'xp-arrow-keyframe';
+                style.innerHTML = `
+                    @keyframes floatUpXP {
+                        0% { opacity: 0; transform: translate(-50%, 10px) scale(0.5); }
+                        20% { opacity: 1; transform: translate(-50%, 0px) scale(1.2); }
+                        80% { opacity: 1; transform: translate(-50%, -30px) scale(1); }
+                        100% { opacity: 0; transform: translate(-50%, -50px) scale(0.8); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            xpNavEl.style.position = 'relative';
+            xpNavEl.appendChild(arrow);
+            setTimeout(() => arrow.remove(), 1500);
+        }
     });
 
     // Market Logic
@@ -744,19 +824,56 @@ async function initApp() {
         });
     }
 
+    // Banner Upload logic
+    const bannerUpload = document.getElementById('banner-upload');
+    const dossierBanner = document.getElementById('dossier-banner');
+    if (bannerUpload && dossierBanner) {
+        bannerUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    dossierBanner.style.backgroundImage = `url('${event.target.result}')`;
+                    playSound('click');
+                    showToast("Banner updated!", "success");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     // Dossier UI Elements
     const saveDossierBtn = document.getElementById('save-dossier-btn');
     if (saveDossierBtn) {
-        saveDossierBtn.addEventListener('click', () => {
+        saveDossierBtn.addEventListener('click', async () => {
             playSound('click');
-            saveDossierBtn.innerHTML = "✅ Saved";
-            showToast(t('profile.saved'), "success");
-            setTimeout(() => {
-                saveDossierBtn.innerHTML = `
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                    Save Dossier
-                `;
-            }, 2000);
+            saveDossierBtn.disabled = true;
+            const originalText = saveDossierBtn.innerHTML;
+            saveDossierBtn.innerHTML = "📸 Generare...";
+            
+            try {
+                const card = document.querySelector('#page-profile .relative.rounded-2xl.overflow-hidden');
+                if (card) {
+                    const canvas = await html2canvas(card, {
+                        useCORS: true,
+                        backgroundColor: '#0a0e17',
+                        scale: 2 // Higher quality
+                    });
+                    
+                    const link = document.createElement('a');
+                    link.download = `Agent_Dossier_${document.getElementById('profile-name').innerText}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    showToast("Dosarul a fost salvat ca imagine!", "success");
+                }
+            } catch (err) {
+                console.error("Screenshot error:", err);
+                showToast("Eroare la generarea imaginii.", "error");
+            } finally {
+                saveDossierBtn.disabled = false;
+                saveDossierBtn.innerHTML = originalText;
+            }
         });
     }
 
@@ -1075,7 +1192,7 @@ async function initApp() {
         const allCards = mentorGrid.querySelectorAll('.mentor-card');
         let shown = 0;
         allCards.forEach(card => {
-            const cardInterests = card.getAttribute('data-interests').split(',');
+            const cardInterests = card.getAttribute('data-interests')?.split(',') || [];
             const matches = selected.length === 0 || selected.some(s => cardInterests.includes(s));
             card.style.display = matches ? '' : 'none';
             card.style.opacity = '0';
@@ -1089,6 +1206,95 @@ async function initApp() {
         });
         const titleEl = document.getElementById('coaching-result-title');
         if (titleEl) titleEl.textContent = `${shown} Mentor${shown !== 1 ? 'i' : ''} Recomandat${shown !== 1 ? 'i' : ''}`;
+    }
+
+    // ── UNIVERSAL CHAT LOGIC ───────────────────────────────────────
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatMessages = document.getElementById('community-chat-messages');
+    const chatAttachBtn = document.getElementById('chat-attach-btn');
+    const chatFileInput = document.getElementById('chat-file-input');
+    const chatAttachPreview = document.getElementById('chat-attachment-preview');
+    const chatRemoveAttach = document.getElementById('chat-remove-attachment');
+    let currentAttachment = null;
+
+    if (chatInput && chatSendBtn && chatMessages) {
+        const sendMessage = () => {
+            const text = chatInput.value.trim();
+            if (!text && !currentAttachment) return;
+            
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            let attachHtml = '';
+            
+            if (currentAttachment) {
+                attachHtml = `<div style="margin-top:8px; border-radius:8px; overflow:hidden; border:1px solid rgba(0,212,255,0.3); max-width:200px;"><img src="${currentAttachment}" style="width:100%; display:block;"></div>`;
+            }
+
+            const msgHtml = `
+                <div style="display:flex; gap:10px; animation: fadeIn 0.3s ease;">
+                    <div style="width:30px; height:30px; background:#00d4ff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">👤</div>
+                    <div style="background:rgba(0,212,255,0.1); padding:10px 14px; border-radius:0 12px 12px 12px; border:1px solid rgba(0,212,255,0.2);">
+                        <div style="font-size:0.75rem; color:#00d4ff; font-weight:bold; margin-bottom:4px;">Tu <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la ${time}</span></div>
+                        <div style="font-size:0.85rem; color:white; line-height:1.4;">${text}</div>
+                        ${attachHtml}
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.insertAdjacentHTML('beforeend', msgHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            chatInput.value = '';
+            currentAttachment = null;
+            chatAttachPreview.classList.add('hidden');
+            playSound('click');
+
+            // Simulate reply
+            setTimeout(() => {
+                const replyHtml = `
+                    <div style="display:flex; gap:10px; animation: fadeIn 0.3s ease;">
+                        <div style="width:30px; height:30px; background:#d4a843; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">🕵️‍♂️</div>
+                        <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:0 12px 12px 12px;">
+                            <div style="font-size:0.75rem; color:#d4a843; font-weight:bold; margin-bottom:4px;">Elena V. <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
+                            <div style="font-size:0.85rem; color:white; line-height:1.4;">Interesant punct de vedere! Hai să detaliem asta pe chat privat sau într-o sesiune scurtă dacă vrei.</div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.insertAdjacentHTML('beforeend', replyHtml);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                playSound('correct'); // subtle notification sound
+            }, 3000);
+        };
+
+        chatSendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Attachment Logic
+        if (chatAttachBtn && chatFileInput) {
+            chatAttachBtn.addEventListener('click', () => chatFileInput.click());
+            
+            chatFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        currentAttachment = ev.target.result;
+                        chatAttachPreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (chatRemoveAttach) {
+            chatRemoveAttach.addEventListener('click', () => {
+                currentAttachment = null;
+                chatFileInput.value = '';
+                chatAttachPreview.classList.add('hidden');
+            });
+        }
     }
 
     // ── SHOP DOTS ────────────────────────────────────────────────
@@ -1267,8 +1473,48 @@ if (document.readyState === 'loading') {
     initApp();
 }
 
-// Global error handler for module loading
-window.addEventListener('unhandledrejection', event => {
-    console.error('Unhandled rejection in app.js:', event.reason);
+// Friend Link Sharing Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const shareBtn = document.getElementById('share-friend-link-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            const qrCode = document.getElementById('my-qr-text').innerText;
+            if (!qrCode || qrCode === '—' || qrCode.length < 5) {
+                showToast("Autentifică-te pentru a genera link-ul!", "error");
+                return;
+            }
+            const link = window.location.origin + window.location.pathname + "?addFriend=" + qrCode;
+            navigator.clipboard.writeText(link).then(() => {
+                showToast("Link-ul de prietenie a fost copiat!", "success");
+            }).catch(() => {
+                // Fallback if clipboard API fails
+                alert("Link: " + link);
+            });
+        });
+    }
+
+    // Handle Friend Add from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const friendToAdd = urlParams.get('addFriend');
+    if (friendToAdd) {
+        onAuthReady(async (user) => {
+            if (user) {
+                showToast("Procesare cerere de prietenie...", "info");
+                try {
+                    const result = await addFriend(friendToAdd);
+                    if (result) {
+                        showToast("Prieten adăugat cu succes!", "success");
+                    }
+                } catch (e) {
+                    console.error("Friend link error:", e);
+                }
+                // Clean URL
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            } else {
+                showToast("Conectează-te pentru a adăuga acest prieten!", "warning");
+            }
+        });
+    }
 });
 

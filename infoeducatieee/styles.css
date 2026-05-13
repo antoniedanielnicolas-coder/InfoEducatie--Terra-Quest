@@ -1,5 +1,5 @@
 /* ============================
-   GEOINFORMATICA - Core Styles
+   TERRAQUEST - Core Styles
    Theme: Digital Geopolitics
    ============================ */
 
@@ -274,7 +274,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 10px;
+    padding: 8px 14px;
     border-radius: var(--radius-sm);
     text-decoration: none;
     color: var(--text-secondary);
@@ -282,27 +282,26 @@ body {
     font-size: 0.9rem;
     transition: all var(--transition-fast);
     position: relative;
+    border: 1px solid transparent;
 }
 .nav-link:hover {
     color: var(--text-primary);
     background: var(--neon-blue-subtle);
+    border-color: rgba(0, 212, 255, 0.2);
 }
 .nav-link.active {
     color: var(--neon-blue);
-    background: var(--neon-blue-subtle);
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3), inset 0 0 10px rgba(0, 212, 255, 0.1);
+    border-radius: 12px;
 }
-.nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 2px;
-    background: var(--neon-blue);
-    border-radius: 1px;
-    box-shadow: 0 0 8px var(--neon-blue-glow);
+.nav-link:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
+    border-color: var(--neon-blue);
 }
+
 .nav-icon {
     font-size: 1rem;
 }
@@ -780,3 +779,82 @@ body {
 .toast-success { border-color: var(--success); box-shadow: 0 0 20px rgba(0, 230, 118, 0.2); }
 .toast-error { border-color: var(--error); box-shadow: 0 0 20px rgba(255, 68, 102, 0.2); }
 
+
+/* Responsive Layout Fixes for Mobile & Tablet */
+@media (max-width: 1024px) {
+    .shop-cat-panel {
+        padding: 0 20px !important;
+    }
+    .shop-item {
+        width: 120px !important;
+        height: 140px !important;
+    }
+    #shop-cat-label {
+        font-size: 1.8rem !important;
+        letter-spacing: 10px !important;
+    }
+    #shop-prev-btn, #shop-next-btn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Scale down the entire shelf container to fit 3 items horizontally */
+    .shop-cat-panel > div {
+        transform: scale(0.8);
+        transform-origin: top center;
+        margin-bottom: -20px !important;
+    }
+    .shop-item {
+        width: 110px !important;
+        height: 130px !important;
+    }
+    #shop-balance {
+        font-size: 1.1rem !important;
+    }
+    #shop-cat-label {
+        font-size: 1.5rem !important;
+        letter-spacing: 6px !important;
+    }
+    
+    /* Coaching section */
+    #coaching-questionnaire {
+        padding: 20px !important;
+    }
+    #interest-tags label span {
+        padding: 6px 12px !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Navigation */
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Scale down even further for very small screens */
+    .shop-cat-panel > div {
+        transform: scale(0.65);
+        transform-origin: top center;
+        margin-bottom: -40px !important;
+    }
+    
+    .shop-tab-btn {
+        padding: 5px 12px !important;
+        font-size: 0.55rem !important;
+        letter-spacing: 1px !important;
+    }
+
+    /* Adjust page padding for mobile */
+    .page {
+        padding: 10px !important;
+    }
+    
+    #page-shop {
+        padding: 0 !important;
+    }
+}

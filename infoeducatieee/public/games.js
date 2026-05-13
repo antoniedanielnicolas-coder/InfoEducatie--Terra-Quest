@@ -1,5 +1,5 @@
 import { playSound } from './sounds.js';
-import { t } from './i18n.js';
+import { t, currentLang } from './i18n.js';
 import { showToast } from './utils.js';
 import { initSeterra, cleanupSeterra } from './seterra.js';
 
@@ -385,14 +385,14 @@ function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
 
 // --- GAME 3: REGIME GUESSER ---
 const regimeQuestions = [
-    { name: "United Kingdom", img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1000", type: "Monarchy" },
-    { name: "France", img: "https://images.unsplash.com/photo-1502602898657-3e907fa0a586?q=80&w=1000", type: "Republic" },
-    { name: "Saudi Arabia", img: "https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?q=80&w=1000", type: "Monarchy" },
-    { name: "United States", img: "https://images.unsplash.com/photo-1596422846543-7dc3baab0706?q=80&w=1000", type: "Republic" },
-    { name: "Japan", img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000", type: "Monarchy" },
-    { name: "Germany", img: "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?q=80&w=1000", type: "Republic" },
-    { name: "Spain", img: "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=1000", type: "Monarchy" },
-    { name: "Italy", img: "https://images.unsplash.com/photo-1516483638261-f40af5edca57?q=80&w=1000", type: "Republic" },
+    { name: "United Kingdom", img: "https://upload.wikimedia.org/wikipedia/commons/a/a4/United_Kingdom_on_the_globe_%28Europe_centered%29.svg", type: "Monarchy" },
+    { name: "France", img: "https://upload.wikimedia.org/wikipedia/commons/1/1a/France_on_the_globe_%28Europe_centered%29.svg", type: "Republic" },
+    { name: "Saudi Arabia", img: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Saudi_Arabia_on_the_globe_%28Afro-Eurasia_centered%29.svg", type: "Monarchy" },
+    { name: "United States", img: "https://upload.wikimedia.org/wikipedia/commons/d/dc/USA_orthographic.svg", type: "Republic" },
+    { name: "Japan", img: "https://upload.wikimedia.org/wikipedia/commons/6/62/Japan_%28orthographic_projection%29.svg", type: "Monarchy" },
+    { name: "Germany", img: "https://upload.wikimedia.org/wikipedia/commons/1/14/Germany_on_the_globe_%28Europe_centered%29.svg", type: "Republic" },
+    { name: "Spain", img: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Spain_on_the_globe_%28Europe_centered%29.svg", type: "Monarchy" },
+    { name: "Italy", img: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Italy_on_the_globe_%28Europe_centered%29.svg", type: "Republic" },
 ];
 
 let regimeIndex = 0;
@@ -413,20 +413,29 @@ function renderRegimeQuestion() {
     const q = regimeQuestions[regimeIndex];
     
     container.innerHTML = `
-        <div class="regime-game" style="display:flex;flex-direction:column;align-items:center;padding:20px;gap:20px;">
-            <h2 style="font-family:'Orbitron',sans-serif;color:var(--neon-blue);margin:0;">${q.name}</h2>
-            <div style="font-size:0.9rem;color:var(--text-secondary); margin-top:-10px;">Is this state a Monarchy or a Republic?</div>
+        <div class="regime-game" style="display:flex;flex-direction:column;align-items:center;padding:20px;gap:20px;animation:fadeIn 0.5s ease;">
+            <h2 style="font-family:'Orbitron',sans-serif;color:var(--neon-blue);margin:0;text-align:center;">${q.name}</h2>
+            <div style="font-size:0.9rem;color:var(--text-secondary); margin-top:-10px;text-align:center;">Is this state a Monarchy or a Republic?</div>
             
-            <div id="regime-image-container" style="position:relative;width:100%;max-width:600px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;box-shadow:0 0 30px rgba(0,212,255,0.2);border:2px solid rgba(0,212,255,0.3);transition:all 0.5s ease;">
-                <img src="${q.img}" style="width:100%;height:100%;object-fit:cover;" />
-                <div id="regime-stamp" style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(5);opacity:0;font-size:5rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;font-family:'Orbitron',sans-serif;transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);text-shadow:0 0 20px black, 0 0 40px black;pointer-events:none;"></div>
+            <div id="regime-image-container" style="position:relative;width:100%;max-width:600px;height:340px;border-radius:20px;overflow:hidden;box-shadow:0 0 30px rgba(0,212,255,0.2);border:2px solid rgba(0,212,255,0.3);transition:all 0.5s ease;background-color:rgba(10,14,23,0.8);display:flex;align-items:center;justify-content:center;">
+                <!-- Loading Spinner -->
+                <div id="regime-loader" style="position:absolute;width:40px;height:40px;border:3px solid rgba(0,212,255,0.2);border-top-color:var(--neon-blue);border-radius:50%;animation:spin 1s linear infinite;"></div>
+                
+                <img id="regime-img" src="${q.img}" 
+                    style="width:100%;height:100%;object-fit:contain;padding:20px;opacity:0;transition:opacity 0.3s ease;" 
+                    onload="this.style.opacity='1'; document.getElementById('regime-loader').style.display='none';"
+                    onerror="this.src='https://via.placeholder.com/600x340/0a0e17/00d4ff?text=Image+Not+Available'; document.getElementById('regime-loader').style.display='none';" />
+                
+                <div id="regime-stamp" style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(5);opacity:0;font-size:5rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;font-family:'Orbitron',sans-serif;transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);text-shadow:0 0 20px black, 0 0 40px black;pointer-events:none;z-index:10;"></div>
             </div>
             
-            <div style="display:flex;gap:20px;width:100%;max-width:500px;margin-top:20px;">
-                <button class="btn btn-primary" onclick="guessRegime('Monarchy')" style="flex:1;font-size:1.2rem;padding:15px;background:linear-gradient(135deg, #8b44cc, #6a2c9e);border-color:#8b44cc;">👑 Monarchy</button>
-                <button class="btn btn-primary" onclick="guessRegime('Republic')" style="flex:1;font-size:1.2rem;padding:15px;background:linear-gradient(135deg, #2eaa6e, #1a7a4a);border-color:#2eaa6e;">🏛️ Republic</button>
+            <div style="display:flex;gap:15px;width:100%;max-width:500px;margin-top:10px;">
+                <button class="btn btn-primary" onclick="guessRegime('Monarchy')" style="flex:1;font-size:1.1rem;padding:15px;background:linear-gradient(135deg, #8b44cc, #6a2c9e);border-color:#8b44cc;border-radius:14px;box-shadow:0 4px 15px rgba(139,68,204,0.3);">👑 Monarchy</button>
+                <button class="btn btn-primary" onclick="guessRegime('Republic')" style="flex:1;font-size:1.1rem;padding:15px;background:linear-gradient(135deg, #2eaa6e, #1a7a4a);border-color:#2eaa6e;border-radius:14px;box-shadow:0 4px 15px rgba(46,170,110,0.3);">🏛️ Republic</button>
             </div>
-            <div style="font-size:1rem;color:var(--gold-bright);margin-top:10px;">Progress: ${regimeIndex + 1}/${regimeQuestions.length}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.9rem;color:var(--gold-bright);background:rgba(212,168,67,0.1);padding:5px 15px;border-radius:20px;border:1px solid rgba(212,168,67,0.2);">
+                Progress: ${regimeIndex + 1}/${regimeQuestions.length}
+            </div>
         </div>
     `;
 }
@@ -486,6 +495,218 @@ function updateGameStats() {
     document.dispatchEvent(new CustomEvent('coinsGained', { detail: { amount: gameData.coins } }));
 }
 
+// --- GAME: SPY MAP ---
+function initSpyMap() {
+    const container = document.getElementById('game-container');
+    const layers = [
+        { id: 'military', label: 'Baze Militare', emoji: '🪖', color: '#ff4466', xp: 0, points: [
+            { top: '25%', left: '45%', name: 'NATO HQ, Bruxelles' },
+            { top: '20%', left: '72%', name: 'Baza Ramstein, Germania' },
+            { top: '38%', left: '80%', name: 'Camp Humphreys, Coreea' },
+            { top: '30%', left: '20%', name: 'Pentagon, SUA' }
+        ]},
+        { id: 'oil', label: 'Rezerve de Petrol', emoji: '🛢️', color: '#d4a843', xp: 100, points: [
+            { top: '32%', left: '58%', name: 'Ghawar, Arabia Saudită' },
+            { top: '28%', left: '62%', name: 'Câmpia Mesopotamiei, Irak' },
+            { top: '45%', left: '15%', name: 'Venezuela – cel mai mare rezervor' },
+            { top: '22%', left: '55%', name: 'Marea Caspică, Kazahstan' }
+        ]},
+        { id: 'conflict', label: 'Zone de Conflict', emoji: '⚔️', color: '#b829e3', xp: 300, points: [
+            { top: '28%', left: '55%', name: 'Ucraina – Frontul de Est' },
+            { top: '36%', left: '58%', name: 'Siria – Conflict civil' },
+            { top: '40%', left: '46%', name: 'Sudan – Criză umanitară' },
+            { top: '38%', left: '76%', name: 'Marea Chinei de Sud – Dispute' }
+        ]},
+        { id: 'alliances', label: 'Alianțe Strategice', emoji: '🤝', color: '#00e676', xp: 500, points: [
+            { top: '18%', left: '22%', name: 'G7 – SUA, Canada, Europa, Japonia' },
+            { top: '35%', left: '65%', name: 'BRICS – Brazilia, Rusia, India, China, SA' },
+            { top: '30%', left: '42%', name: 'UE – 27 state membre' },
+            { top: '22%', left: '68%', name: 'SCO – Organizația Shanghai' }
+        ]}
+    ];
+
+    const userXP = parseInt(localStorage.getItem('userXP') || '0');
+
+    container.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:16px;padding:10px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                <h2 style="font-family:'Orbitron',sans-serif;color:#ff4466;margin:0;font-size:1.2rem;">🕵️ SPY MAP — Harta Secretă</h2>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:rgba(255,255,255,0.4);">XP curent: <strong style="color:#d4a843;">${userXP}</strong></span>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                ${layers.map(l => {
+                    const unlocked = userXP >= l.xp;
+                    return `<button onclick="toggleSpyLayer('${l.id}',this)" data-layer="${l.id}"
+                        style="padding:8px 16px;border-radius:20px;border:2px solid ${unlocked ? l.color : 'rgba(255,255,255,0.15)'};
+                        background:${unlocked ? l.color+'22' : 'rgba(255,255,255,0.04)'};
+                        color:${unlocked ? l.color : 'rgba(255,255,255,0.25)'};
+                        font-family:'Orbitron',sans-serif;font-size:0.6rem;cursor:${unlocked ? 'pointer' : 'not-allowed'};
+                        letter-spacing:1px;transition:all 0.3s;">
+                        ${l.emoji} ${l.label}${!unlocked ? ` 🔒 ${l.xp}XP` : ''}
+                    </button>`;
+                }).join('')}
+            </div>
+            <div style="position:relative;background:linear-gradient(135deg,#0a1628,#0d1f3c);border:1px solid rgba(0,212,255,0.3);border-radius:16px;overflow:hidden;height:420px;">
+                <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.25;pointer-events:none;" viewBox="0 0 800 500">
+                    <image href="https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg" width="800" height="500" preserveAspectRatio="none" style="filter:invert(50%) sepia(100%) saturate(300%) hue-rotate(160deg) brightness(80%);"/>
+                    <rect width="100%" height="100%" fill="url(#spygrid)" opacity="0.2"/>
+                    <defs><pattern id="spygrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0L0 0 0 40" fill="none" stroke="#00d4ff" stroke-width="0.4"/></pattern></defs>
+                </svg>
+                <div id="spy-points-container" style="position:absolute;inset:0;"></div>
+                <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:0.7rem;color:rgba(0,212,255,0.4);font-family:'JetBrains Mono',monospace;">👆 Selectează un strat de informații pentru a debloca punctele de pe hartă</div>
+            </div>
+            <div id="spy-info-box" style="display:none;background:rgba(255,68,102,0.08);border:1px solid rgba(255,68,102,0.3);border-radius:12px;padding:14px;font-size:0.85rem;color:rgba(255,255,255,0.8);"></div>
+        </div>
+    `;
+
+    window._spyLayers = layers;
+    window._activeSpyLayer = null;
+}
+
+window.toggleSpyLayer = function(layerId, btn) {
+    const layers = window._spyLayers;
+    const layer = layers.find(l => l.id === layerId);
+    const userXP = parseInt(localStorage.getItem('userXP') || '0');
+    if (userXP < layer.xp) { showToast(`🔒 Ai nevoie de ${layer.xp} XP pentru a debloca!`, 'error'); return; }
+
+    // toggle
+    const isSame = window._activeSpyLayer === layerId;
+    window._activeSpyLayer = isSame ? null : layerId;
+
+    document.querySelectorAll('[data-layer]').forEach(b => b.style.fontWeight = 'normal');
+    if (!isSame) btn.style.fontWeight = 'bold';
+
+    const ptsContainer = document.getElementById('spy-points-container');
+    ptsContainer.innerHTML = '';
+    const infoBox = document.getElementById('spy-info-box');
+
+    if (!isSame) {
+        gameData.coins += 5; updateGameStats();
+        layer.points.forEach(pt => {
+            const dot = document.createElement('div');
+            dot.style.cssText = `position:absolute;top:${pt.top};left:${pt.left};transform:translate(-50%,-50%);cursor:pointer;`;
+            dot.innerHTML = `<div style="width:14px;height:14px;border-radius:50%;background:${layer.color};box-shadow:0 0 12px ${layer.color};animation:pulse 2s infinite;" title="${pt.name}"></div>`;
+            dot.addEventListener('click', () => {
+                infoBox.style.display = 'block';
+                infoBox.innerHTML = `<strong style="color:${layer.color};">${layer.emoji} ${pt.name}</strong><br><span style="color:rgba(255,255,255,0.5);font-size:0.75rem;">${layer.label} — Intel confirmat</span>`;
+                gameData.score += 2; updateGameStats();
+            });
+            ptsContainer.appendChild(dot);
+        });
+        infoBox.style.display = 'none';
+    }
+};
+
+// --- GAME: GEO-WARS ---
+const geoWarsCountries = [
+    { name: 'România', flag: '🇷🇴', region: 'Europa', decisions: [
+        { text: 'Extindeți infrastructura NATO în estul țării?', options: ['Da — securitate sporită', 'Nu — neutralitate'], correct: 0, xp: 15 },
+        { text: 'Acceptați refugiați economici din afara UE?', options: ['Da — umanitar', 'Nu — securitate frontieră'], correct: 0, xp: 10 },
+        { text: 'Semnați un acord comercial cu China (BRI)?', options: ['Da — investiții', 'Nu — presiune occidentală'], correct: 1, xp: 20 }
+    ]},
+    { name: 'Germania', flag: '🇩🇪', region: 'Europa', decisions: [
+        { text: 'Continuați Nordstream 2 cu Rusia?', options: ['Da — gaz ieftin', 'Nu — presiune aliați'], correct: 1, xp: 20 },
+        { text: 'Creșteți bugetul apărării la 2% PIB NATO?', options: ['Da — responsabilitate', 'Nu — prioritate socială'], correct: 0, xp: 15 },
+        { text: 'Primiți mai mult de 1M refugiați sirieni?', options: ['Da — deschidere', 'Nu — crize politică'], correct: 0, xp: 10 }
+    ]},
+    { name: 'China', flag: '🇨🇳', region: 'Asia', decisions: [
+        { text: 'Revendicați insulele disputate din Marea Chinei de Sud?', options: ['Da — suveranitate', 'Nu — relații regionale'], correct: 0, xp: 20 },
+        { text: 'Extindeți BRI în Africa Subsahariană?', options: ['Da — influență globală', 'Nu — costuri mari'], correct: 0, xp: 15 },
+        { text: 'Recunoașteți Taiwanul ca stat independent?', options: ['Da', 'Nu — linie roșie'], correct: 1, xp: 25 }
+    ]},
+    { name: 'SUA', flag: '🇺🇸', region: 'America de Nord', decisions: [
+        { text: 'Staționați trupe în Europa de Est?', options: ['Da — securitate aliați', 'Nu — retragere strategică'], correct: 0, xp: 20 },
+        { text: 'Impuneți sancțiuni economice Rusiei?', options: ['Da — presiune diplomatică', 'Nu — dialog'], correct: 0, xp: 15 },
+        { text: 'Aderați la Acordul de la Paris?', options: ['Da — climat', 'Nu — economie națională'], correct: 0, xp: 10 }
+    ]}
+];
+
+let geoWarsCountry = null;
+let geoWarsDIndex = 0;
+let geoWarsTimer = null;
+let geoWarsTimeLeft = 15;
+
+function initGeoWars() {
+    const idx = Math.floor(Math.random() * geoWarsCountries.length);
+    geoWarsCountry = geoWarsCountries[idx];
+    geoWarsDIndex = 0;
+    renderGeoWarsDecision();
+}
+
+function renderGeoWarsDecision() {
+    if (geoWarsDIndex >= geoWarsCountry.decisions.length) {
+        document.getElementById('game-container').innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px;text-align:center;">
+                <div style="font-size:4rem;">${geoWarsCountry.flag}</div>
+                <h2 style="font-family:'Orbitron',sans-serif;color:#00e676;">Campanie Completă!</h2>
+                <p style="color:rgba(255,255,255,0.6);">Ai gestionat cu succes criza geopolitică a ${geoWarsCountry.name}!</p>
+                <div style="font-size:1.2rem;color:#d4a843;font-family:'JetBrains Mono',monospace;">+${gameData.coins} Monede | +${gameData.score} XP</div>
+            </div>`;
+        if (geoWarsTimer) clearInterval(geoWarsTimer);
+        return;
+    }
+    const d = geoWarsCountry.decisions[geoWarsDIndex];
+    geoWarsTimeLeft = 15;
+    if (geoWarsTimer) clearInterval(geoWarsTimer);
+
+    document.getElementById('game-container').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:20px;padding:20px;max-width:640px;margin:0 auto;">
+            <div style="display:flex;align-items:center;gap:14px;width:100%;">
+                <span style="font-size:3rem;">${geoWarsCountry.flag}</span>
+                <div>
+                    <div style="font-family:'Orbitron',sans-serif;color:white;font-size:1.1rem;">${geoWarsCountry.name}</div>
+                    <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">${geoWarsCountry.region} | Decizia ${geoWarsDIndex+1}/${geoWarsCountry.decisions.length}</div>
+                </div>
+                <div style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:#ff4466;" id="gw-timer">⏱ 15s</div>
+            </div>
+            <div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:16px;padding:24px;width:100%;text-align:center;">
+                <p style="font-size:1rem;color:white;margin:0;line-height:1.6;">${d.text}</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;">
+                ${d.options.map((opt, i) => `
+                    <button onclick="geoWarsDecide(${i})" style="padding:16px;border-radius:12px;border:2px solid rgba(0,212,255,0.3);background:rgba(0,212,255,0.06);color:white;font-family:'Rajdhani',sans-serif;font-size:1rem;cursor:pointer;transition:all 0.2s;line-height:1.4;"
+                        onmouseover="this.style.background='rgba(0,212,255,0.18)';this.style.borderColor='rgba(0,212,255,0.7)'"
+                        onmouseout="this.style.background='rgba(0,212,255,0.06)';this.style.borderColor='rgba(0,212,255,0.3)'">
+                        ${i === 0 ? '🟦' : '🟥'} ${opt}
+                    </button>
+                `).join('')}
+            </div>
+            <div style="width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+                <div id="gw-timebar" style="height:100%;background:#ff4466;width:100%;transition:width 1s linear;"></div>
+            </div>
+        </div>`;
+
+    geoWarsTimer = setInterval(() => {
+        geoWarsTimeLeft--;
+        const el = document.getElementById('gw-timer');
+        const bar = document.getElementById('gw-timebar');
+        if (el) el.textContent = `⏱ ${geoWarsTimeLeft}s`;
+        if (bar) bar.style.width = `${(geoWarsTimeLeft/15)*100}%`;
+        if (geoWarsTimeLeft <= 0) {
+            clearInterval(geoWarsTimer);
+            showToast('⏰ Timp expirat! Decizie implicită luată.', 'error');
+            geoWarsDIndex++;
+            setTimeout(renderGeoWarsDecision, 1000);
+        }
+    }, 1000);
+}
+
+window.geoWarsDecide = function(choice) {
+    if (geoWarsTimer) clearInterval(geoWarsTimer);
+    const d = geoWarsCountry.decisions[geoWarsDIndex];
+    if (choice === d.correct) {
+        playSound('correct');
+        gameData.coins += 10; gameData.score += d.xp;
+        updateGameStats();
+        showToast(`✅ Decizie corectă! +${d.xp} XP`, 'success');
+    } else {
+        playSound('wrong');
+        showToast('❌ Consecințe diplomatice negative!', 'error');
+    }
+    geoWarsDIndex++;
+    setTimeout(renderGeoWarsDecision, 1200);
+};
+
 export function startGame(gameId) {
     currentGame = gameId;
     gameData = { score: 0, coins: 0 };
@@ -502,6 +723,8 @@ export function startGame(gameId) {
     if (gameId === 'timeline-challenge') initTimelineChallenge();
     if (gameId === 'city-guesser') initCityGuesser();
     if (gameId === 'shape-guesser') initShapeGuesser();
+    if (gameId === 'spy-map') initSpyMap();
+    if (gameId === 'geo-wars') initGeoWars();
     if (gameId === 'seterra-europe') initSeterra('europe', gameData, updateGameStats);
     if (gameId === 'seterra-africa') initSeterra('africa', gameData, updateGameStats);
     if (gameId === 'seterra-americas') initSeterra('americas', gameData, updateGameStats);
@@ -528,11 +751,11 @@ function initTimelineChallenge() {
     timeLeft = hasChronos ? 70 : 60;
     
     const events = [
-        { id: '1', year: 1648, text: t('games_content.timeline.westphalia') || "Peace of Westphalia" },
-        { id: '2', year: 1884, text: t('games_content.timeline.berlin') || "Berlin Conference" },
-        { id: '3', year: 1945, text: t('games_content.timeline.un') || "UN Founded" },
-        { id: '4', year: 1991, text: t('games_content.timeline.ussr') || "Fall of USSR" },
-        { id: '5', year: 2020, text: t('games_content.timeline.brexit') || "Brexit" }
+        { id: '1', year: 1648, text: currentLang === 'ro' ? "Pacea de la Westfalia" : "Peace of Westphalia" },
+        { id: '2', year: 1884, text: currentLang === 'ro' ? "Conferința de la Berlin" : "Berlin Conference" },
+        { id: '3', year: 1945, text: currentLang === 'ro' ? "Fondarea ONU" : "UN Founded" },
+        { id: '4', year: 1991, text: currentLang === 'ro' ? "Căderea URSS" : "Fall of USSR" },
+        { id: '5', year: 2020, text: currentLang === 'ro' ? "Ieșirea UK din UE (Brexit)" : "Brexit" }
     ];
     
     // Shuffle events
@@ -544,7 +767,7 @@ function initTimelineChallenge() {
                 <h2 style="font-family:'Orbitron',sans-serif;color:var(--neon-blue);margin:0;">Timeline Challenge</h2>
                 <div style="font-size:1.5rem;font-weight:bold;color:var(--gold-bright);font-family:'JetBrains Mono',monospace;">⏱️ <span id="timeline-timer">${timeLeft}</span>s</div>
             </div>
-            <p style="color:var(--text-secondary);margin-bottom:20px;font-size:0.9rem;">${t('games.timeline_chal_desc')}</p>
+            <p style="color:var(--text-secondary);margin-bottom:20px;font-size:0.9rem;">${currentLang === 'ro' ? 'Aranjează evenimentele geopolitice în ordine cronologică (cel mai vechi sus).' : 'Arrange the geopolitical events in chronological order (oldest at top).'}</p>
             <div id="timeline-sortable" style="display:flex;flex-direction:column;gap:10px;">
                 ${shuffled.map(ev => `
                     <div class="timeline-item-sort glass-card" data-year="${ev.year}" style="padding:15px;cursor:grab;display:flex;align-items:center;gap:15px;border:1px solid rgba(0,212,255,0.2);">
@@ -553,7 +776,7 @@ function initTimelineChallenge() {
                     </div>
                 `).join('')}
             </div>
-            <button id="check-timeline-btn" class="btn btn-primary" style="width:100%;margin-top:20px;padding:15px;font-size:1.1rem;">${t('games.check_order') || 'Check Order'}</button>
+            <button id="check-timeline-btn" class="btn btn-primary" style="width:100%;margin-top:20px;padding:15px;font-size:1.1rem;">${currentLang === 'ro' ? 'Verifică Ordinea' : 'Check Order'}</button>
         </div>
     `;
     
@@ -572,7 +795,7 @@ function initTimelineChallenge() {
         if (timeLeft <= 0) {
             clearInterval(timelineTimer);
             playSound('wrong');
-            showToast(t('games.time_up') || "Time's up!", "error");
+            showToast(currentLang === 'ro' ? "Timpul a expirat!" : "Time's up!", "error");
             document.getElementById('check-timeline-btn').disabled = true;
         }
     }, 1000);
@@ -603,10 +826,10 @@ function initTimelineChallenge() {
             gameData.coins += 20;
             gameData.score += 50;
             updateGameStats();
-            showToast("Timeline sorted correctly! +20 Coins", "success");
+            showToast(currentLang === 'ro' ? "Ordine perfectă! +20 Monede" : "Timeline sorted correctly! +20 Coins", "success");
         } else {
             playSound('wrong');
-            showToast("Incorrect order. Try again!", "error");
+            showToast(currentLang === 'ro' ? "Ordine incorectă. Mai încearcă!" : "Incorrect order. Try again!", "error");
         }
     });
 }
