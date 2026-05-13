@@ -84,39 +84,37 @@ const historicalEras = [
 let currentEra = 0;
 let historicalMap = null;
 let geojsonLayer = null;
+let historicalMapInitialized = false;
 
-window.switchMapTab = function(tab) {
-    const currentTab = document.getElementById('worldmap-tab-current');
-    const historicTab = document.getElementById('worldmap-tab-historic');
-    const btnCurrent = document.getElementById('tab-current-map');
-    const btnHistoric = document.getElementById('tab-historic-map');
+export function initHistoryMap() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (link.dataset.page !== 'historymap') {
+                historicalMapInitialized = false;
+            }
+        });
+    });
 
-    if (tab === 'current') {
-        currentTab.style.display = 'block';
-        historicTab.style.display = 'none';
-        btnCurrent.style.background = 'var(--blue-gradient)';
-        btnCurrent.style.color = '#0a0e17';
-        btnHistoric.style.background = 'transparent';
-        btnHistoric.style.color = 'var(--text-secondary)';
-    } else {
-        currentTab.style.display = 'none';
-        historicTab.style.display = 'block';
-        btnHistoric.style.background = 'linear-gradient(135deg,#d4a843,#a17e2e)';
-        btnHistoric.style.color = '#0a0e17';
-        btnCurrent.style.background = 'transparent';
-        btnCurrent.style.color = 'var(--text-secondary)';
-        
-        // Render current era map when tab is opened
-        if (!historicalMap) {
-            initHistoricalMap();
-        } else {
-            historicalMap.invalidateSize();
-        }
-        showHistoricalEra(currentEra);
+    const historymapLink = document.querySelector('[data-page="historymap"]');
+    if (historymapLink) {
+        historymapLink.addEventListener('click', () => {
+            setTimeout(renderHistoryMap, 200);
+        });
     }
-};
+}
 
-function initHistoricalMap() {
+window.renderHistoryMap = renderHistoryMap;
+
+function renderHistoryMap() {
+    const container = document.getElementById('historical-map-leaflet');
+    if (!container || historicalMapInitialized) return;
+    historicalMapInitialized = true;
+
+    if (historicalMap) {
+        historicalMap.remove();
+    }
+
     historicalMap = L.map('historical-map-leaflet', {
         zoomControl: true,
         attributionControl: false,
@@ -124,56 +122,54 @@ function initHistoricalMap() {
         maxZoom: 6
     }).setView([20, 0], 2);
 
-    // Simple dark base tiles (physical or basic borders)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
         subdomains: 'abcd',
         maxZoom: 20
     }).addTo(historicalMap);
+
+    showHistoricalEra(currentEra);
 }
 
 window.showHistoricalEra = function(eraIndex) {
     currentEra = eraIndex;
     const era = historicalEras[eraIndex];
 
-    // Build buttons if not exist
     const btnContainer = document.getElementById('era-buttons');
-    if (btnContainer.children.length === 0) {
-        btnContainer.innerHTML = historicalEras.map((e, i) => `
-            <button onclick="showHistoricalEra(${i})" class="era-btn ${i === eraIndex ? 'era-btn-active' : ''}" 
-                style="padding:8px 16px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;cursor:pointer;transition:all 0.2s;
-                border:1px solid ${i === eraIndex ? e.color : 'rgba(255,255,255,0.2)'};
-                background:${i === eraIndex ? e.color+'30' : 'transparent'};
-                color:${i === eraIndex ? e.color : 'var(--text-secondary)'};">
-                ${e.label}
-            </button>
-        `).join('');
-    } else {
-        // Update styling
-        Array.from(btnContainer.children).forEach((btn, i) => {
-            const e = historicalEras[i];
-            if (i === eraIndex) {
-                btn.style.border = `1px solid ${e.color}`;
-                btn.style.background = `${e.color}30`;
-                btn.style.color = e.color;
-            } else {
-                btn.style.border = '1px solid rgba(255,255,255,0.2)';
-                btn.style.background = 'transparent';
-                btn.style.color = 'var(--text-secondary)';
-            }
-        });
+    if (btnContainer) {
+        if (btnContainer.children.length === 0) {
+            btnContainer.innerHTML = historicalEras.map((e, i) => `
+                <button onclick="showHistoricalEra(${i})" class="era-btn ${i === eraIndex ? 'era-btn-active' : ''}" 
+                    style="padding:8px 16px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;cursor:pointer;transition:all 0.2s;
+                    border:1px solid ${i === eraIndex ? e.color : 'rgba(255,255,255,0.2)'};
+                    background:${i === eraIndex ? e.color+'30' : 'transparent'};
+                    color:${i === eraIndex ? e.color : 'var(--text-secondary)'};">
+                    ${e.label}
+                </button>
+            `).join('');
+        } else {
+            Array.from(btnContainer.children).forEach((btn, i) => {
+                const e = historicalEras[i];
+                if (i === eraIndex) {
+                    btn.style.border = `1px solid ${e.color}`;
+                    btn.style.background = `${e.color}30`;
+                    btn.style.color = e.color;
+                } else {
+                    btn.style.border = '1px solid rgba(255,255,255,0.2)';
+                    btn.style.background = 'transparent';
+                    btn.style.color = 'var(--text-secondary)';
+                }
+            });
+        }
     }
 
-    // Update description
     const descEl = document.getElementById('era-description');
     if (descEl) {
         descEl.style.borderLeftColor = era.color;
         descEl.innerHTML = era.description;
     }
 
-    // Load GeoJSON for this era
     loadEraGeoJSON(era);
 
-    // Render event cards
     const eventsEl = document.getElementById('era-events');
     if (eventsEl) {
         eventsEl.innerHTML = era.events.map(ev => `
@@ -190,42 +186,19 @@ window.showHistoricalEra = function(eraIndex) {
 
 async function loadEraGeoJSON(era) {
     if (!historicalMap) return;
-
-    // Show loading state (could add a spinner in production)
-    
     try {
         const response = await fetch(era.geojson);
         const data = await response.json();
-
-        // Remove old layer
-        if (geojsonLayer) {
-            historicalMap.removeLayer(geojsonLayer);
-        }
-
-        // Add new GeoJSON layer
+        if (geojsonLayer) historicalMap.removeLayer(geojsonLayer);
         geojsonLayer = L.geoJSON(data, {
-            style: function (feature) {
-                return {
-                    color: era.color, // Border color
-                    weight: 1.5,
-                    opacity: 0.8,
-                    fillColor: era.color,
-                    fillOpacity: 0.1
-                };
-            },
-            onEachFeature: function (feature, layer) {
-                // Determine country name depending on properties in GeoJSON
+            style: () => ({ color: era.color, weight: 1.5, opacity: 0.8, fillColor: era.color, fillOpacity: 0.1 }),
+            onEachFeature: (feature, layer) => {
                 const name = feature.properties.NAME || feature.properties.name || feature.properties.ADMIN || "Unknown Territory";
-                layer.bindTooltip(name, {
-                    className: 'geo-popup',
-                    direction: 'auto'
-                });
+                layer.bindTooltip(name, { className: 'geo-popup', direction: 'auto' });
             }
         }).addTo(historicalMap);
-        
     } catch (error) {
         console.error("Failed to load historical GeoJSON:", error);
-        // Fallback or error message could be shown to the user here
     }
 }
 
@@ -233,5 +206,3 @@ function hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}` : '0,212,255';
 }
-
-// Map will be auto-initialized when tab is switched.

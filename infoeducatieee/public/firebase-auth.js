@@ -98,6 +98,77 @@ async function ensureUserProfile(user) {
     }
 }
 
+// Update presence periodically
+setInterval(async () => {
+    if (auth && auth.currentUser && db) {
+        const ts = serverTimestamp();
+        // Update user profile
+        const userRef = doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userRef, { lastSeen: ts, online: true }).catch(() => {});
+        
+        // Update player presence for map
+        const playerRef = doc(db, 'players', auth.currentUser.uid);
+        await setDoc(playerRef, { 
+            lastSeen: ts, 
+            online: true,
+            displayName: auth.currentUser.displayName,
+            photoURL: auth.currentUser.photoURL
+        }, { merge: true }).catch(() => {});
+    }
+}, 60000); // Every minute
+
+export async function updateLocation(lat, lng) {
+    if (!db || !currentUser) return;
+    const ts = serverTimestamp();
+    
+    // Update Users collection
+    const userRef = doc(db, 'users', currentUser.uid);
+    await updateDoc(userRef, { lat, lng, lastSeen: ts });
+
+    // Update Players collection for Map
+    const playerRef = doc(db, 'players', currentUser.uid);
+    await setDoc(playerRef, { 
+        lat, 
+        lng, 
+        lastSeen: ts, 
+        online: true,
+        displayName: currentUser.displayName,
+        photoURL: currentUser.photoURL,
+        rank: currentUser.rank || 'Agent'
+    }, { merge: true });
+}
+
+export function listenToFriendsLocations(callback) {
+    if (!db || !currentUser) return;
+    const userRef = doc(db, 'users', currentUser.uid);
+    
+    // First, listen to the current user's friend list
+    return onSnapshot(userRef, (userSnap) => {
+        if (!userSnap.exists()) return;
+        const friendsIds = userSnap.data().friends || [];
+        
+        if (friendsIds.length === 0) {
+            callback([]);
+            return;
+        }
+
+        // Firestore 'in' query is limited to 10-30 IDs usually. 
+        // For a prototype, we'll take the first 10 friends.
+        const friendsQuery = query(
+            collection(db, 'users'),
+            where('uid', 'in', friendsIds.slice(0, 10))
+        );
+
+        onSnapshot(friendsQuery, (friendsSnap) => {
+            const friends = friendsSnap.docs.map(d => ({
+                ...d.data(),
+                id: d.id
+            }));
+            callback(friends);
+        });
+    });
+}
+
 // ─── Update Auth UI ─────────────────────────────────────────────────────────────
 function updateAuthUI(user) {
     const authSection = document.getElementById('auth-section');

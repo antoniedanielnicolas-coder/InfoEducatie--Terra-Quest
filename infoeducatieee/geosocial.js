@@ -1,0 +1,101 @@
+import { db, currentUser, updateLocation } from './firebase-auth.js';
+import { collection, onSnapshot, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+let socialMapInstance = null;
+let socialMapInitialized = false;
+let syncUnsub = null;
+let markersMap = new Map(); // Store markers by playerId
+
+export function initSocialMap() {
+    const worldmapLink = document.querySelector('[data-page="worldmap"]');
+    if (worldmapLink) {
+        worldmapLink.addEventListener('click', () => {
+            setTimeout(renderSocialMap, 200);
+        });
+    }
+}
+
+window.renderSocialMap = renderSocialMap;
+
+export function renderSocialMap() {
+    const container = document.getElementById('social-world-map');
+    if (!container || socialMapInitialized) return;
+    socialMapInitialized = true;
+
+    if (socialMapInstance) socialMapInstance.remove();
+
+    socialMapInstance = L.map('social-world-map', {
+        center: [20, 10],
+        zoom: 2,
+        minZoom: 2,
+        maxZoom: 10,
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CartoDB'
+    }).addTo(socialMapInstance);
+
+    // Initialise Sync
+    initSocialSync();
+
+    // Initialise My Location
+    if ("geolocation" in navigator) {
+        navigator.geolocation.watchPosition((pos) => {
+            updateLocation(pos.coords.latitude, pos.coords.longitude);
+        }, null, { enableHighAccuracy: true });
+    }
+}
+
+function initSocialSync() {
+    if (syncUnsub) syncUnsub();
+
+    const playersRef = collection(db, "players");
+    // Listen for all players except me (optional, but requested for 'others')
+    syncUnsub = onSnapshot(playersRef, (snapshot) => {
+        if (!socialMapInstance) return;
+
+        snapshot.docChanges().forEach((change) => {
+            const playerId = change.doc.id;
+            const data = change.doc.data();
+
+            // Skip if it's my own marker (optional, usually you want to see others)
+            if (currentUser && playerId === currentUser.uid) return;
+
+            if (change.type === "removed" || (data.online === false)) {
+                // Remove marker
+                if (markersMap.has(playerId)) {
+                    socialMapInstance.removeLayer(markersMap.get(playerId));
+                    markersMap.delete(playerId);
+                }
+            } else {
+                // Add or Update marker
+                if (data.lat && data.lng) {
+                    const statusColor = '#00d4ff';
+                    const markerHtml = `
+                        <div style="position:relative;width:40px;height:40px;">
+                            <div style="width:100%;height:100%;border-radius:50%;border:2px solid ${statusColor};overflow:hidden;background:#121a2e;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px ${statusColor}66;">
+                                ${data.photoURL ? `<img src="${data.photoURL}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:1.2rem;">👤</span>`}
+                            </div>
+                            <div style="position:absolute;bottom:0;right:0;width:10px;height:10px;background:#00e676;border-radius:50%;border:2px solid #0a0e17;"></div>
+                        </div>`;
+
+                    if (markersMap.has(playerId)) {
+                        markersMap.get(playerId).setLatLng([data.lat, data.lng]);
+                    } else {
+                        const newMarker = L.marker([data.lat, data.lng], {
+                            icon: L.divIcon({
+                                className: 'player-marker',
+                                html: markerHtml,
+                                iconSize: [40, 40],
+                                iconAnchor: [20, 40]
+                            })
+                        }).addTo(socialMapInstance);
+                        
+                        newMarker.bindPopup(`<b style="color:#00d4ff;">${data.displayName || 'Unknown Agent'}</b><br>${data.rank || 'Agent'}`);
+                        markersMap.set(playerId, newMarker);
+                    }
+                }
+            }
+        });
+    });
+}

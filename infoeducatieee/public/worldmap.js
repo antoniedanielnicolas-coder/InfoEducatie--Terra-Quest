@@ -143,11 +143,12 @@ const countryData = {
 
 let worldMapInstance = null;
 let mapInitialized = false;
+let friendsLayer = null;
+let friendUnsub = null;
 let geoJsonLayer = null;
 window.activeFilter = null;
 
 export function initWorldMap() {
-    // Reset initialization flag when navigating to other pages
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -160,9 +161,53 @@ export function initWorldMap() {
     const worldmapLink = document.querySelector('[data-page="worldmap"]');
     if (worldmapLink) {
         worldmapLink.addEventListener('click', () => {
-            setTimeout(renderWorldMap, 150);
+            setTimeout(() => {
+                window.switchMapTab('political');
+            }, 150);
         });
     }
+
+    // Global Tab Switcher
+    window.switchMapTab = function(tab) {
+        const sections = {
+            'political': document.getElementById('map-section-political'),
+            'history': document.getElementById('map-section-history'),
+            'social': document.getElementById('map-section-social')
+        };
+        const tabs = {
+            'political': document.getElementById('tab-political-map'),
+            'history': document.getElementById('tab-history-map'),
+            'social': document.getElementById('tab-social-map')
+        };
+
+        // Hide all, deactivate all tabs
+        Object.keys(sections).forEach(key => {
+            if (sections[key]) sections[key].style.display = 'none';
+            if (tabs[key]) {
+                tabs[key].style.background = 'transparent';
+                tabs[key].style.color = 'var(--text-secondary)';
+            }
+        });
+
+        // Show selected
+        if (sections[tab]) sections[tab].style.display = 'block';
+        if (tabs[tab]) {
+            const activeColor = tab === 'political' ? 'var(--blue-gradient)' : 
+                               (tab === 'history' ? 'linear-gradient(135deg,#d4a843,#a17e2e)' : 
+                               'linear-gradient(135deg,#d4a843,#ffbb33)');
+            tabs[tab].style.background = activeColor;
+            tabs[tab].style.color = '#0a0e17';
+        }
+
+        // Trigger Render
+        if (tab === 'political') {
+            renderWorldMap();
+        } else if (tab === 'history') {
+            if (window.renderHistoryMap) window.renderHistoryMap();
+        } else if (tab === 'social') {
+            if (window.renderSocialMap) window.renderSocialMap();
+        }
+    };
 }
 
 function renderWorldMap() {
@@ -170,7 +215,6 @@ function renderWorldMap() {
     if (!container || mapInitialized) return;
     mapInitialized = true;
 
-    // Remove existing map if any
     if (worldMapInstance) {
         worldMapInstance.remove();
     }
@@ -262,6 +306,22 @@ function renderWorldMap() {
                     }
                 }
             }).addTo(worldMapInstance);
+
+            // Snap Map Toggle Logic
+            const snapToggle = document.getElementById('snap-map-toggle');
+            if (snapToggle) {
+                snapToggle.addEventListener('click', () => {
+                    if (worldMapInstance.hasLayer(friendsLayer)) {
+                        worldMapInstance.removeLayer(friendsLayer);
+                        snapToggle.style.background = 'rgba(212,168,67,0.1)';
+                        snapToggle.style.borderColor = 'rgba(212,168,67,0.3)';
+                    } else {
+                        worldMapInstance.addLayer(friendsLayer);
+                        snapToggle.style.background = 'rgba(212,168,67,0.3)';
+                        snapToggle.style.borderColor = 'rgba(212,168,67,0.8)';
+                    }
+                });
+            }
 
             // Add Legend Filter Logic
             document.querySelectorAll('.legend-item').forEach(item => {

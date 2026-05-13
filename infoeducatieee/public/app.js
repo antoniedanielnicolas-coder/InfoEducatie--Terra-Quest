@@ -6,6 +6,8 @@ import { initSounds, playSound, startAmbientMusic, stopAmbientMusic, setSoundThe
 import { startGame, endGame } from './games.js';
 import { showToast } from './utils.js';
 import { initWorldMap } from './worldmap.js';
+import { initHistoryMap } from './historical-map.js';
+import { initSocialMap } from './geosocial.js';
 import {
     onAuthReady, signInWithGoogle, signInWithEmail,
     registerWithEmail, resetPassword, logOut,
@@ -35,6 +37,8 @@ async function initApp() {
         initQuizzes();
         initAI();
         initWorldMap();
+        initHistoryMap();
+        initSocialMap();
         
         // Hide preloader normally
         setTimeout(() => {

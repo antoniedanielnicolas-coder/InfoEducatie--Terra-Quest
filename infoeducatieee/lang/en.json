@@ -8,6 +8,8 @@
     "profile": "Profile",
     "ai": "AI Agent",
     "worldmap": "World Map",
+    "historymap": "History Map",
+    "socialmap": "GeoSocial",
     "settings": "Settings",
     "coaching": "Coaching"
   },
