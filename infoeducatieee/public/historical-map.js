@@ -1,4 +1,5 @@
-﻿
+
+
 const historicalEras = [
     {
         year: 1914,
@@ -93,7 +94,6 @@ export function initHistoryMap() {
         });
     });
 
-<<<<<<< HEAD
     const historymapLink = document.querySelector('[data-page="historymap"]');
     if (historymapLink) {
         historymapLink.addEventListener('click', () => {
@@ -111,29 +111,6 @@ function renderHistoryMap() {
 
     if (historicalMap) {
         historicalMap.remove();
-=======
-    if (tab === 'current') {
-        currentTab.style.display = 'block';
-        historicTab.style.display = 'none';
-        btnCurrent.style.background = 'var(--blue-gradient)';
-        btnCurrent.style.color = '#0a0e17';
-        btnHistoric.style.background = 'transparent';
-        btnHistoric.style.color = 'var(--text-secondary)';
-    } else {
-        currentTab.style.display = 'none';
-        historicTab.style.display = 'block';
-        btnHistoric.style.background = 'linear-gradient(135deg,#d4a843,#a17e2e)';
-        btnHistoric.style.color = '#0a0e17';
-        btnCurrent.style.background = 'transparent';
-        btnCurrent.style.color = 'var(--text-secondary)';
-        
-        if (!historicalMap) {
-            initHistoricalMap();
-        } else {
-            historicalMap.invalidateSize();
-        }
-        showHistoricalEra(currentEra);
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
     }
 
     historicalMap = L.map('historical-map-leaflet', {
@@ -156,7 +133,6 @@ window.showHistoricalEra = function(eraIndex) {
     const era = historicalEras[eraIndex];
 
     const btnContainer = document.getElementById('era-buttons');
-<<<<<<< HEAD
     if (btnContainer) {
         if (btnContainer.children.length === 0) {
             btnContainer.innerHTML = historicalEras.map((e, i) => `
@@ -182,31 +158,6 @@ window.showHistoricalEra = function(eraIndex) {
                 }
             });
         }
-=======
-    if (btnContainer.children.length === 0) {
-        btnContainer.innerHTML = historicalEras.map((e, i) => `
-            <button onclick="showHistoricalEra(${i})" class="era-btn ${i === eraIndex ? 'era-btn-active' : ''}" 
-                style="padding:8px 16px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:0.75rem;cursor:pointer;transition:all 0.2s;
-                border:1px solid ${i === eraIndex ? e.color : 'rgba(255,255,255,0.2)'};
-                background:${i === eraIndex ? e.color+'30' : 'transparent'};
-                color:${i === eraIndex ? e.color : 'var(--text-secondary)'};">
-                ${e.label}
-            </button>
-        `).join('');
-    } else {
-        Array.from(btnContainer.children).forEach((btn, i) => {
-            const e = historicalEras[i];
-            if (i === eraIndex) {
-                btn.style.border = `1px solid ${e.color}`;
-                btn.style.background = `${e.color}30`;
-                btn.style.color = e.color;
-            } else {
-                btn.style.border = '1px solid rgba(255,255,255,0.2)';
-                btn.style.background = 'transparent';
-                btn.style.color = 'var(--text-secondary)';
-            }
-        });
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
     }
 
     const descEl = document.getElementById('era-description');
@@ -233,7 +184,6 @@ window.showHistoricalEra = function(eraIndex) {
 
 async function loadEraGeoJSON(era) {
     if (!historicalMap) return;
-<<<<<<< HEAD
     try {
         const response = await fetch(era.geojson);
         const data = await response.json();
@@ -241,29 +191,6 @@ async function loadEraGeoJSON(era) {
         geojsonLayer = L.geoJSON(data, {
             style: () => ({ color: era.color, weight: 1.5, opacity: 0.8, fillColor: era.color, fillOpacity: 0.1 }),
             onEachFeature: (feature, layer) => {
-=======
-
-    
-    try {
-        const response = await fetch(era.geojson);
-        const data = await response.json();
-
-        if (geojsonLayer) {
-            historicalMap.removeLayer(geojsonLayer);
-        }
-
-        geojsonLayer = L.geoJSON(data, {
-            style: function (feature) {
-                return {
-                    color: era.color,
-                    weight: 1.5,
-                    opacity: 0.8,
-                    fillColor: era.color,
-                    fillOpacity: 0.1
-                };
-            },
-            onEachFeature: function (feature, layer) {
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
                 const name = feature.properties.NAME || feature.properties.name || feature.properties.ADMIN || "Unknown Territory";
                 layer.bindTooltip(name, { className: 'geo-popup', direction: 'auto' });
             }
@@ -277,7 +204,4 @@ function hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}` : '0,212,255';
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b

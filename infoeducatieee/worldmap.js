@@ -1,4 +1,4 @@
-﻿
+
 
 import { t } from './i18n.js';
 
@@ -295,7 +295,6 @@ function renderWorldMap() {
                 }
             }).addTo(worldMapInstance);
 
-<<<<<<< HEAD
             // Snap Map Toggle Logic
             const snapToggle = document.getElementById('snap-map-toggle');
             if (snapToggle) {
@@ -313,8 +312,6 @@ function renderWorldMap() {
             }
 
             // Add Legend Filter Logic
-=======
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
             document.querySelectorAll('.legend-item').forEach(item => {
                 item.style.cursor = 'pointer';
                 item.style.transition = 'all 0.3s ease';

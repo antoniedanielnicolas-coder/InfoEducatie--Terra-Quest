@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2060,17 +2060,10 @@
                 <p class="page-subtitle">Explorați politica actuală, istoria și socialul global</p>
             </div>
 
-<<<<<<< HEAD
             <!-- Tab Switcher -->
             <div style="display:flex;gap:0;max-width:600px;margin:0 auto 30px;background:rgba(255,255,255,0.04);border-radius:12px;padding:4px;border:1px solid rgba(0,212,255,0.15);">
                 <button id="tab-political-map" onclick="switchMapTab('political')" style="flex:1;padding:10px;border:none;border-radius:10px;background:var(--blue-gradient);color:#0a0e17;font-family:'Orbitron',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.3s;">
                     🌍 Political
-=======
-            
-            <div style="display:flex;gap:0;max-width:500px;margin:0 auto 30px;background:rgba(255,255,255,0.04);border-radius:12px;padding:4px;border:1px solid rgba(0,212,255,0.15);">
-                <button id="tab-current-map" onclick="switchMapTab('current')" style="flex:1;padding:10px 20px;border:none;border-radius:10px;background:var(--blue-gradient);color:#0a0e17;font-family:'Orbitron',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all 0.3s;" data-i18n="worldmap.current_map">
-                    🌍 Current Map
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
                 </button>
                 <button id="tab-history-map" onclick="switchMapTab('history')" style="flex:1;padding:10px;border:none;border-radius:10px;background:transparent;color:var(--text-secondary);font-family:'Orbitron',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.3s;">
                     📜 History
@@ -2080,16 +2073,9 @@
                 </button>
             </div>
 
-<<<<<<< HEAD
             <!-- ===== POLITICAL MAP TAB ===== -->
             <div id="map-section-political">
                 <div class="worldmap-legend glass-card">
-=======
-            
-            <div id="worldmap-tab-current">
-                
-                <div class="worldmap-legend glass-card" id="worldmap-legend">
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
                     <div class="legend-title" data-i18n="worldmap.legend_title">MAP LEGEND</div>
                     <div class="legend-items">
                         <div class="legend-item" data-type="Constitutional Monarchy"><span class="legend-dot" style="background:#4a90d9"></span><span data-i18n="worldmap.types.const_monarchy">Constitutional Monarchy</span></div>
@@ -2106,7 +2092,6 @@
                 <div id="world-political-map" class="map-container" style="height:600px; border-radius:20px; border:1px solid rgba(0,212,255,0.3); overflow:hidden;"></div>
             </div>
 
-<<<<<<< HEAD
             <!-- ===== HISTORY MAP TAB ===== -->
             <div id="map-section-history" style="display:none;">
                 <div class="glass-card" style="padding:20px; margin-bottom:20px;">
@@ -2127,45 +2112,6 @@
                     <div class="lg:col-span-3">
                         <div id="social-world-map" class="map-container" style="height:600px; border-radius:15px; border:1px solid rgba(212,168,67,0.3);"></div>
                     </div>
-=======
-                
-                <div id="world-political-map" style="width:100%;height:620px;border-radius:20px;border:1px solid rgba(0,212,255,0.3);overflow:hidden;box-shadow:0 0 60px rgba(0,212,255,0.15);margin-top:20px;"></div>
-
-                
-                <div id="country-info-panel" class="glass-card" style="margin-top:20px;padding:20px;display:none;">
-                    <div style="display:flex;align-items:center;gap:15px;">
-                        <div id="country-flag" style="font-size:3rem;"></div>
-                        <div>
-                            <h3 id="country-name" style="margin:0;font-size:1.4rem;color:var(--neon-blue);"></h3>
-                            <p id="country-type" style="margin:4px 0 0;color:var(--text-secondary);font-size:0.9rem;"></p>
-                        </div>
-                        <div id="country-cities" style="margin-left:auto;font-size:0.85rem;color:var(--text-secondary);"></div>
-                    </div>
-                </div>
-            </div>
-
-            
-            <div id="worldmap-tab-historic" style="display:none;">
-                <div class="glass-card" style="padding:30px;margin-bottom:20px;">
-                    <h3 style="font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--gold-bright);margin:0 0 20px;letter-spacing:2px;text-transform:uppercase;">📜 World Political History Timeline</h3>
-                    
-                    
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:25px;" id="era-buttons">
-                        
-                    </div>
-
-                    
-                    <div id="era-description" style="background:rgba(0,0,0,0.3);border-radius:12px;padding:16px;margin-bottom:20px;border-left:4px solid var(--gold);font-size:0.9rem;line-height:1.6;color:var(--text-primary);">
-                        <strong style="color:var(--gold-bright);">1648 — Peace of Westphalia</strong><br>
-                        The treaty that created the modern nation-state system. Europe is dominated by large empires: the Holy Roman Empire, the Ottoman Empire, France, and Spain. The concept of sovereign borders is newly established. North and South America are largely colonized territories.
-                    </div>
-
-                    
-                    <div id="historical-map-leaflet" style="width:100%;height:500px;border-radius:16px;border:1px solid rgba(0,212,255,0.2);overflow:hidden;background:#0a0e17;box-shadow:0 0 60px rgba(0,212,255,0.15);z-index:1;position:relative;"></div>
-
-                    
-                    <div id="era-events" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px;"></div>
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
                 </div>
             </div>
         </section>

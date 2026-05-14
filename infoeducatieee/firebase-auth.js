@@ -1,4 +1,4 @@
-﻿import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
     getAuth,
     signInWithPopup,
@@ -94,7 +94,6 @@ async function ensureUserProfile(user) {
     }
 }
 
-<<<<<<< HEAD
 // Update presence periodically
 setInterval(async () => {
     if (auth && auth.currentUser && db) {
@@ -167,8 +166,6 @@ export function listenToFriendsLocations(callback) {
 }
 
 // ─── Update Auth UI ─────────────────────────────────────────────────────────────
-=======
->>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
 function updateAuthUI(user) {
     const authSection = document.getElementById('auth-section');
     const loggedInSection = document.getElementById('logged-in-section');
