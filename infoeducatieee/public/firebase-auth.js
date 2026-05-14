@@ -25,7 +25,8 @@ import {
     serverTimestamp,
     onSnapshot,
     orderBy,
-    limit
+    limit,
+    documentId
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -76,24 +77,28 @@ async function ensureUserProfile(user) {
     if (!db) return;
     const userRef = doc(db, 'users', user.uid);
     const snap = await getDoc(userRef);
+    const userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || user.email.split('@')[0],
+        photoURL: user.photoURL || '',
+        qrCode: snap.exists() && snap.data().qrCode ? snap.data().qrCode : `TERRA_${user.uid.slice(0, 8).toUpperCase()}`,
+        online: true,
+        lastSeen: serverTimestamp()
+    };
+
     if (!snap.exists()) {
         await setDoc(userRef, {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || user.email.split('@')[0],
-            photoURL: user.photoURL || '',
-            qrCode: `TERRA_${user.uid.slice(0, 8).toUpperCase()}`,
+            ...userData,
             friends: [],
             friendRequests: [],
             xp: 0,
             coins: 0,
             rank: 'Bronze I',
-            online: true,
-            lastSeen: serverTimestamp(),
             createdAt: serverTimestamp()
         });
     } else {
-        await updateDoc(userRef, { online: true, lastSeen: serverTimestamp() });
+        await updateDoc(userRef, userData);
     }
 }
 
@@ -101,11 +106,9 @@ async function ensureUserProfile(user) {
 setInterval(async () => {
     if (auth && auth.currentUser && db) {
         const ts = serverTimestamp();
-        // Update user profile
         const userRef = doc(db, 'users', auth.currentUser.uid);
         await updateDoc(userRef, { lastSeen: ts, online: true }).catch(() => {});
         
-        // Update player presence for map
         const playerRef = doc(db, 'players', auth.currentUser.uid);
         await setDoc(playerRef, { 
             lastSeen: ts, 
@@ -114,7 +117,7 @@ setInterval(async () => {
             photoURL: auth.currentUser.photoURL
         }, { merge: true }).catch(() => {});
     }
-}, 60000); // Every minute
+}, 30000); // Every 30 seconds for better responsiveness
 
 export async function updateLocation(lat, lng) {
     if (!db || !currentUser) return;
@@ -259,18 +262,28 @@ export async function logOut() {
 
 export async function searchUserByEmail(email) {
     if (!db) return null;
-    const q = query(collection(db, 'users'), where('email', '==', email.trim().toLowerCase()));
-    const snap = await getDocs(q);
-    if (snap.empty) return null;
-    return { id: snap.docs[0].id, ...snap.docs[0].data() };
+    try {
+        const q = query(collection(db, 'users'), where('email', '==', email.trim().toLowerCase()));
+        const snap = await getDocs(q);
+        if (snap.empty) return null;
+        return { uid: snap.docs[0].id, ...snap.docs[0].data() };
+    } catch (e) {
+        console.error("Search error:", e);
+        return null;
+    }
 }
 
 export async function searchUserByQR(qrCode) {
     if (!db) return null;
-    const q = query(collection(db, 'users'), where('qrCode', '==', qrCode.trim().toUpperCase()));
-    const snap = await getDocs(q);
-    if (snap.empty) return null;
-    return { id: snap.docs[0].id, ...snap.docs[0].data() };
+    try {
+        const q = query(collection(db, 'users'), where('qrCode', '==', qrCode.trim().toUpperCase()));
+        const snap = await getDocs(q);
+        if (snap.empty) return null;
+        return { uid: snap.docs[0].id, ...snap.docs[0].data() };
+    } catch (e) {
+        console.error("QR Search error:", e);
+        return null;
+    }
 }
 
 export async function addFriend(targetUid) {
@@ -304,16 +317,52 @@ export async function getFriendsList() {
 
 export function listenToFriends(callback) {
     if (!db || !currentUser) return;
-    return onSnapshot(doc(db, 'users', currentUser.uid), async (snap) => {
+    
+    let innerUnsub = null;
+    
+    // Listen to user's own doc for friend list changes
+    const unsub = onSnapshot(doc(db, 'users', currentUser.uid), (snap) => {
         if (!snap.exists()) return;
         const friendIds = snap.data().friends || [];
-        const friends = [];
-        for (const uid of friendIds) {
-            const fSnap = await getDoc(doc(db, 'users', uid));
-            if (fSnap.exists()) friends.push({ id: uid, ...fSnap.data() });
+        
+        // Cancel previous inner listener
+        if (innerUnsub) { innerUnsub(); innerUnsub = null; }
+        
+        if (friendIds.length === 0) {
+            callback([]);
+            return;
         }
-        callback(friends);
+
+        // Use documentId() to query by document ID directly — avoids needing 'uid' field
+        const batchIds = friendIds.slice(0, 30);
+        const q = query(collection(db, 'users'), where(documentId(), 'in', batchIds));
+        innerUnsub = onSnapshot(q, (friendsSnap) => {
+            const friends = friendsSnap.docs.map(d => {
+                const data = d.data();
+                let isOnline = data.online;
+                if (isOnline && data.lastSeen) {
+                    const lastSeenDate = data.lastSeen.toDate ? data.lastSeen.toDate() : new Date(data.lastSeen);
+                    const diffMinutes = (new Date() - lastSeenDate) / 1000 / 60;
+                    if (diffMinutes > 3) isOnline = false;
+                }
+                return { uid: d.id, ...data, online: isOnline };
+            });
+            callback(friends);
+        }, (err) => {
+            console.error('[Friends] Listener error:', err);
+            // Fallback: fetch one by one
+            Promise.all(friendIds.map(uid => getDoc(doc(db, 'users', uid))))
+                .then(snaps => {
+                    const friends = snaps.filter(s => s.exists()).map(s => ({ uid: s.id, ...s.data() }));
+                    callback(friends);
+                }).catch(console.error);
+        });
     });
+
+    return () => {
+        unsub();
+        if (innerUnsub) innerUnsub();
+    };
 }
 
 export async function getMyQRCode() {
@@ -321,6 +370,39 @@ export async function getMyQRCode() {
     const snap = await getDoc(doc(db, 'users', currentUser.uid));
     return snap.exists() ? snap.data().qrCode : null;
 }
+
+// ─── Universal Chat ──────────────────────────────────────────────────────────
+
+export async function sendChatMessage(text) {
+    if (!db || !currentUser) return;
+    if (!text || !text.trim()) return;
+    const chatRef = collection(db, 'global_chat');
+    await setDoc(doc(chatRef), {
+        text: text.trim().slice(0, 300),
+        uid: currentUser.uid,
+        displayName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Agent',
+        photoURL: currentUser.photoURL || '',
+        createdAt: serverTimestamp()
+    });
+}
+
+export function listenToChat(callback) {
+    if (!db) return () => {};
+    const q = query(
+        collection(db, 'global_chat'),
+        orderBy('createdAt', 'desc'),
+        limit(60)
+    );
+    return onSnapshot(q, (snap) => {
+        const messages = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .reverse(); // oldest first
+        callback(messages);
+    }, (err) => {
+        console.error('[Chat] Listener error:', err);
+    });
+}
+
 
 export async function syncUserProgress(xp, coins) {
     if (!db || !currentUser) return;

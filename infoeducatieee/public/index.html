@@ -953,46 +953,50 @@
                 </div> 
 
                 
-                <div class="glass-card" style="display:flex; flex-direction:column; height:600px; border:1px solid rgba(0,212,255,0.3); border-radius:16px; overflow:hidden;">
-                    <div style="background:rgba(0,0,0,0.4); padding:15px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:1.4rem;">💬</span>
-                        <div>
-                            <h3 style="margin:0; font-family:'Orbitron',sans-serif; color:white; font-size:1rem;">Chat Universal</h3>
-                            <div style="color:#00e676; font-size:0.7rem; font-family:'JetBrains Mono',monospace;">● 42 ONLINE</div>
-                        </div>
-                    </div>
-                    
-                    <div id="community-chat-messages" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:15px;">
-                        
-                        <div style="display:flex; gap:10px;">
-                            <div style="width:30px; height:30px; background:#d4a843; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">🕵️‍♂️</div>
-                            <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:0 12px 12px 12px;">
-                                <div style="font-size:0.75rem; color:#d4a843; font-weight:bold; margin-bottom:4px;">Elena V. <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la 14:22</span></div>
-                                <div style="font-size:0.85rem; color:white; line-height:1.4;">Azi dezbatem conflictul din Marea Chinei de Sud! Cine are nelămuriri despre rutele comerciale de acolo?</div>
+                <div style="display:flex;flex-direction:column;height:560px;background:rgba(5,10,20,0.75);backdrop-filter:blur(20px);border:1px solid rgba(0,212,255,0.15);border-radius:20px;overflow:hidden;box-shadow:0 0 40px rgba(0,212,255,0.05);">
+                    <!-- Chat header -->
+                    <div style="background:rgba(0,0,0,0.3);padding:14px 20px;border-bottom:1px solid rgba(0,212,255,0.08);display:flex;align-items:center;justify-content:space-between;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="width:36px;height:36px;background:linear-gradient(135deg,#00d4ff22,#0077ff22);border:1px solid rgba(0,212,255,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💬</div>
+                            <div>
+                                <h3 style="margin:0;font-family:'Orbitron',sans-serif;color:white;font-size:0.95rem;font-weight:700;letter-spacing:2px;">CHAT UNIVERSAL</h3>
+                                <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+                                    <div style="width:6px;height:6px;background:#00e676;border-radius:50%;animation:pulse 2s infinite;"></div>
+                                    <span id="chat-online-count" style="color:#00e676;font-size:0.62rem;font-family:'JetBrains Mono',monospace;font-weight:700;">LIVE</span>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div style="display:flex; gap:10px;">
-                            <div style="width:30px; height:30px; background:#00e676; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">👨‍🎓</div>
-                            <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:0 12px 12px 12px;">
-                                <div style="font-size:0.75rem; color:#00e676; font-weight:bold; margin-bottom:4px;">Andrei G. <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la 14:25</span></div>
-                                <div style="font-size:0.85rem; color:white; line-height:1.4;">Eu am o problemă la testul despre resursele petroliere. Nu înțeleg de ce OPEC influențează prețul așa tare. O să las un screenshot imediat.</div>
-                            </div>
+                        <div style="font-size:0.65rem;color:rgba(255,255,255,0.2);font-family:'JetBrains Mono',monospace;">CHANNEL: GLOBAL</div>
+                    </div>
+
+                    <!-- Messages scrollable area -->
+                    <div id="community-chat-messages"
+                        style="flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(0,212,255,0.15) transparent;">
+                        <div id="chat-loading-msg" style="text-align:center;color:rgba(255,255,255,0.2);font-size:0.75rem;font-family:'JetBrains Mono',monospace;padding:60px 0 0;">
+                            <div style="font-size:1.5rem;margin-bottom:8px;">💬</div>
+                            Loghează-te pentru a participa în chat
                         </div>
                     </div>
-                    
-                    <div style="background:rgba(0,0,0,0.4); padding:10px; border-top:1px solid rgba(255,255,255,0.05);">
-                        <div style="display:flex; gap:8px;">
-                            <button id="chat-attach-btn" title="Atașează Screenshot" style="background:transparent; border:none; color:var(--neon-blue); font-size:1.2rem; cursor:pointer; padding:5px; transition:0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">📎</button>
-                            <input type="file" id="chat-file-input" accept="image/*" style="display:none;">
-                            <input type="text" id="chat-input" placeholder="Scrie un mesaj sau trimite un screenshot..." style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:0 15px; color:white; font-size:0.85rem; outline:none;">
-                            <button id="chat-send-btn" class="btn btn-primary" style="padding:8px 15px; font-size:0.85rem; border-radius:20px;">Trimite</button>
+
+                    <!-- Input area -->
+                    <div style="background:rgba(0,0,0,0.3);padding:12px 16px;border-top:1px solid rgba(0,212,255,0.08);">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div id="chat-avatar-mini" style="width:34px;height:34px;flex-shrink:0;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid rgba(0,212,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;overflow:hidden;">👤</div>
+                            <input id="chat-input"
+                                type="text"
+                                placeholder="Scrie un mesaj pentru toți..."
+                                maxlength="300"
+                                style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(0,212,255,0.12);border-radius:12px;padding:10px 16px;color:white;font-family:'JetBrains Mono',monospace;font-size:0.82rem;outline:none;transition:border-color 0.2s;"
+                                onfocus="this.style.borderColor='rgba(0,212,255,0.4)'"
+                                onblur="this.style.borderColor='rgba(0,212,255,0.12)'"
+                            />
+                            <button id="chat-send-btn"
+                                style="background:linear-gradient(135deg,#00d4ff,#0077ff);color:#0a0e17;border:none;border-radius:12px;padding:10px 20px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.75rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;"
+                                onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                                ➤ Trimite
+                            </button>
                         </div>
-                        
-                        <div id="chat-attachment-preview" class="hidden" style="margin-top:10px; padding-left:40px; display:flex; align-items:center; gap:10px;">
-                            <div style="font-size:0.7rem; color:var(--success);">✅ Imagine atașată</div>
-                            <button id="chat-remove-attachment" style="background:none; border:none; color:var(--error); font-size:0.7rem; cursor:pointer;">[Șterge]</button>
-                        </div>
+                        <div id="chat-char-count" style="text-align:right;font-size:0.6rem;color:rgba(255,255,255,0.2);font-family:'JetBrains Mono',monospace;margin-top:4px;">0 / 300</div>
                     </div>
                 </div>
             </div> 
@@ -1811,7 +1815,7 @@
                             <div class="border-t border-white/10 pt-4 mb-4">
                                 <h4 class="text-xs text-gray-400 uppercase tracking-widest mb-3">🔍 Adaugă Prieten</h4>
                                 <div style="display:flex; gap:8px; margin-bottom:8px;">
-                                    <input id="friend-search-input" type="text" placeholder="Email sau cod QR (GEO_XXXXXXXX)"
+                                    <input id="friend-search-input" type="text" placeholder="Email sau cod QR (ex: TERRA_7LAINSTL)"
                                         style="flex:1; background:rgba(0,0,0,0.3); border:1px solid rgba(0,212,255,0.2); border-radius:8px; padding:10px 14px; color:white; font-family:'JetBrains Mono',monospace; font-size:0.8rem; outline:none;">
                                     <button id="friend-search-btn" style="background:linear-gradient(90deg,#00d4ff,#0077ff); color:#0a0e17; border:none; border-radius:8px; padding:10px 16px; font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.75rem; cursor:pointer; white-space:nowrap;">Caută</button>
                                 </div>
@@ -2158,10 +2162,10 @@
     <audio id="ambient-music" loop></audio>
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script src="historical-map.js?v=2"></script>
-    <script src="app.js?v=1305" type="module"></script>
-    <script src="security.js?v=1305" type="module"></script>
-    <script src="logo-animation.js?v=2"></script>
+    <script src="historical-map.js?v=3"></script>
+    <script src="app.js?v=1306" type="module"></script>
+    <script src="security.js?v=1306" type="module"></script>
+    <script src="logo-animation.js?v=3"></script>
     
     <script>
         function switchAuthTab(tab) {

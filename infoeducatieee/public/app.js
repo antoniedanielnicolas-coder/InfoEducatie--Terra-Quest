@@ -13,7 +13,8 @@ import {
     registerWithEmail, resetPassword, logOut,
     searchUserByEmail, searchUserByQR, addFriend,
     listenToFriends, getMyQRCode, currentUser,
-    syncUserProgress, getLeaderboard, listenToNews
+    syncUserProgress, getLeaderboard, listenToNews,
+    sendChatMessage, listenToChat
 } from './firebase-auth.js';
 
 async function initApp() {
@@ -49,6 +50,74 @@ async function initApp() {
     }
 
     let unsubFriends = null;
+    let unsubChat = null;
+
+    // ─── User colours for chat avatars ───────────────────────────────────────
+    const chatColors = ['#00d4ff','#00e676','#d4a843','#ff4466','#a855f7','#f97316','#22d3ee'];
+    function getUserColor(uid) {
+        let hash = 0;
+        for (let i = 0; i < uid.length; i++) hash = uid.charCodeAt(i) + ((hash << 5) - hash);
+        return chatColors[Math.abs(hash) % chatColors.length];
+    }
+    function getInitials(name) {
+        if (!name) return '?';
+        return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    }
+    function formatChatTime(ts) {
+        if (!ts) return '';
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        return d.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderChatMessages(messages) {
+        const area = document.getElementById('community-chat-messages');
+        if (!area) return;
+        const wasAtBottom = area.scrollHeight - area.scrollTop - area.clientHeight < 60;
+
+        area.innerHTML = messages.map(msg => {
+            const isMe = currentUser && msg.uid === currentUser.uid;
+            const color = getUserColor(msg.uid || 'x');
+            const initials = getInitials(msg.displayName);
+            const time = formatChatTime(msg.createdAt);
+
+            if (isMe) {
+                return `
+                <div style="display:flex;flex-direction:row-reverse;align-items:flex-end;gap:8px;animation:fadeSlideIn 0.25s ease both;">
+                    <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,${color}33,${color}66);border:1px solid ${color}55;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:${color};flex-shrink:0;">${initials}</div>
+                    <div style="max-width:70%;">
+                        <div style="background:linear-gradient(135deg,${color}22,${color}11);border:1px solid ${color}33;padding:10px 14px;border-radius:14px 4px 14px 14px;word-break:break-word;">
+                            <div style="font-size:0.85rem;color:white;line-height:1.5;">${escapeHtml(msg.text)}</div>
+                        </div>
+                        <div style="text-align:right;font-size:0.6rem;color:rgba(255,255,255,0.25);font-family:'JetBrains Mono',monospace;margin-top:3px;">${time}</div>
+                    </div>
+                </div>`;
+            } else {
+                return `
+                <div style="display:flex;align-items:flex-end;gap:8px;animation:fadeSlideIn 0.25s ease both;">
+                    <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,${color}33,${color}66);border:1px solid ${color}55;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:${color};flex-shrink:0;">${initials}</div>
+                    <div style="max-width:70%;">
+                        <div style="font-size:0.68rem;color:${color};font-weight:700;margin-bottom:3px;font-family:'Orbitron',sans-serif;letter-spacing:0.5px;">${escapeHtml(msg.displayName || 'Agent')}</div>
+                        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:10px 14px;border-radius:4px 14px 14px 14px;word-break:break-word;">
+                            <div style="font-size:0.85rem;color:white;line-height:1.5;">${escapeHtml(msg.text)}</div>
+                        </div>
+                        <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);font-family:'JetBrains Mono',monospace;margin-top:3px;">${time}</div>
+                    </div>
+                </div>`;
+            }
+        }).join('');
+
+        if (wasAtBottom || messages.length <= 5) {
+            area.scrollTop = area.scrollHeight;
+        }
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
 
     function formatNewsDate(ts) {
         if (!ts) return '';
@@ -125,6 +194,29 @@ async function initApp() {
             unsubFriends = listenToFriends((friends) => {
                 renderFriendsList(friends);
             });
+
+            // Start chat listener
+            if (unsubChat) unsubChat();
+            const loadMsg = document.getElementById('chat-loading-msg');
+            if (loadMsg) loadMsg.remove();
+            unsubChat = listenToChat((messages) => {
+                renderChatMessages(messages);
+            });
+
+            // Update chat avatar
+            const chatAvatar = document.getElementById('chat-avatar-mini');
+            if (chatAvatar && user.photoURL) {
+                chatAvatar.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+            } else if (chatAvatar) {
+                const color = getUserColor(user.uid);
+                const initials = getInitials(user.displayName || user.email);
+                chatAvatar.style.background = `linear-gradient(135deg,${color}44,${color}22)`;
+                chatAvatar.style.border = `1px solid ${color}55`;
+                chatAvatar.style.color = color;
+                chatAvatar.style.fontSize = '0.72rem';
+                chatAvatar.style.fontWeight = '700';
+                chatAvatar.textContent = initials;
+            }
         } else {
             const loginPrompt = document.getElementById('friends-login-prompt');
             if (loginPrompt) loginPrompt.style.display = 'block';
@@ -132,6 +224,11 @@ async function initApp() {
             if (dynList) dynList.innerHTML = '';
             const badge = document.getElementById('friends-count-badge');
             if (badge) badge.textContent = '0 prieteni';
+
+            // Reset chat
+            if (unsubChat) { unsubChat(); unsubChat = null; }
+            const area = document.getElementById('community-chat-messages');
+            if (area) area.innerHTML = `<div id="chat-loading-msg" style="text-align:center;color:rgba(255,255,255,0.2);font-size:0.75rem;font-family:'JetBrains Mono',monospace;padding:60px 0 0;"><div style="font-size:1.5rem;margin-bottom:8px;">💬</div>Loghează-te pentru a participa în chat</div>`;
         }
     });
 
@@ -208,6 +305,58 @@ async function initApp() {
         });
     }
 
+    // ─── Universal Chat Send Logic ────────────────────────────────────────────
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatCharCount = document.getElementById('chat-char-count');
+
+    if (chatInput) {
+        // Character counter
+        chatInput.addEventListener('input', () => {
+            const len = chatInput.value.length;
+            if (chatCharCount) {
+                chatCharCount.textContent = `${len} / 300`;
+                chatCharCount.style.color = len > 260 ? '#ff4466' : len > 200 ? '#d4a843' : 'rgba(255,255,255,0.2)';
+            }
+        });
+
+        // Send on Enter
+        chatInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                await handleChatSend();
+            }
+        });
+    }
+
+    if (chatSendBtn) {
+        chatSendBtn.addEventListener('click', handleChatSend);
+    }
+
+    async function handleChatSend() {
+        if (!currentUser) {
+            showToast('Loghează-te pentru a scrie în chat.', 'error');
+            return;
+        }
+        const text = chatInput?.value?.trim();
+        if (!text) return;
+
+        chatSendBtn.disabled = true;
+        chatSendBtn.style.opacity = '0.6';
+        try {
+            await sendChatMessage(text);
+            chatInput.value = '';
+            if (chatCharCount) chatCharCount.textContent = '0 / 300';
+        } catch (err) {
+            console.error('[Chat] Send error:', err);
+            showToast('Mesajul nu a putut fi trimis.', 'error');
+        } finally {
+            chatSendBtn.disabled = false;
+            chatSendBtn.style.opacity = '1';
+        }
+    }
+
+
     const friendSearchBtn = document.getElementById('friend-search-btn');
     const friendSearchInput = document.getElementById('friend-search-input');
     const friendSearchResult = document.getElementById('friend-search-result');
@@ -219,13 +368,22 @@ async function initApp() {
             if (!currentUser) { showToast('Loghează-te pentru a căuta prieteni.', 'error'); return; }
 
             friendSearchBtn.textContent = '⏳';
+            friendSearchBtn.disabled = true;
             let found = null;
-            if (query.startsWith('GEO_') || query.startsWith('geo_')) {
-                found = await searchUserByQR(query);
-            } else {
-                found = await searchUserByEmail(query);
+            
+            try {
+                if (query.toUpperCase().startsWith('TERRA_') || query.toUpperCase().startsWith('GEO_')) {
+                    found = await searchUserByQR(query);
+                } else {
+                    found = await searchUserByEmail(query);
+                }
+            } catch (err) {
+                console.error("Search error:", err);
+                showToast("Eroare la căutare. Reîncearcă.", "error");
+            } finally {
+                friendSearchBtn.textContent = 'Caută';
+                friendSearchBtn.disabled = false;
             }
-            friendSearchBtn.textContent = 'Caută';
 
             if (!found) {
                 if (friendSearchResult) {
@@ -259,10 +417,15 @@ async function initApp() {
                         </button>
                     </div>`;
                 document.getElementById('add-friend-confirm-btn')?.addEventListener('click', async () => {
-                    await addFriend(found.uid);
-                    showToast(`✅ ${found.displayName} adăugat ca prieten!`, 'success');
-                    friendSearchResult.style.display = 'none';
-                    friendSearchInput.value = '';
+                    try {
+                        await addFriend(found.uid);
+                        showToast(`✅ ${found.displayName} adăugat ca prieten!`, 'success');
+                        friendSearchResult.style.display = 'none';
+                        friendSearchInput.value = '';
+                    } catch (err) {
+                        console.error("Add friend error:", err);
+                        showToast("Eroare la adăugarea prietenului.", "error");
+                    }
                 });
             }
         });
@@ -280,24 +443,44 @@ async function initApp() {
         if (!dynList) return;
 
         if (friends.length === 0) {
-            dynList.innerHTML = `<div style="text-align:center;color:#555;font-size:0.8rem;font-family:'JetBrains Mono',monospace;padding:8px;">Niciun prieten adăugat încă.</div>`;
+            dynList.innerHTML = `
+                <div style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.8rem;font-family:'JetBrains Mono',monospace;padding:24px;border:1px dashed rgba(255,255,255,0.1);border-radius:12px;">
+                    Niciun prieten adăugat încă.<br>
+                    <span style="font-size:0.7rem;opacity:0.7;">Partajează codul tău pentru a începe!</span>
+                </div>`;
             return;
         }
+
         dynList.innerHTML = friends.map(f => {
-            const online = f.online === true;
+            const isOnline = f.online === true;
+            const statusColor = isOnline ? '#00e676' : '#555';
+            const statusGlow = isOnline ? '0 0 10px rgba(0,230,118,0.3)' : 'none';
+            
             return `
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(10,14,23,0.8);padding:10px 12px;border-radius:10px;border:1px solid ${online ? 'rgba(0,230,118,0.2)' : 'rgba(255,255,255,0.05)'};">
-                    <div style="display:flex;align-items:center;gap:10px;">
+                <div class="friend-item" style="display:flex;align-items:center;justify-content:space-between;background:rgba(15,23,42,0.6);backdrop-filter:blur(10px);padding:12px 16px;border-radius:12px;border:1px solid ${isOnline ? 'rgba(0,230,118,0.15)' : 'rgba(255,255,255,0.05)'};transition:all 0.3s ease;animation:fadeSlideIn 0.3s ease both;margin-bottom:8px;position:relative;overflow:hidden;">
+                    ${isOnline ? '<div style="position:absolute;top:0;left:0;width:2px;height:100%;background:#00e676;box-shadow:0 0 10px #00e676;"></div>' : ''}
+                    <div style="display:flex;align-items:center;gap:12px;">
                         <div style="position:relative;">
-                            <div style="width:36px;height:36px;background:linear-gradient(135deg,#00d4ff,#0077ff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
-                            <div style="position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;background:${online ? '#00e676' : '#555'};border-radius:50%;border:2px solid #0a0e17;"></div>
+                            <div style="width:40px;height:40px;background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid rgba(0,212,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+                                ${f.photoURL ? `<img src="${f.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : '👤'}
+                            </div>
+                            <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;background:${statusColor};border-radius:50%;border:2px solid #0a0e17;box-shadow:${statusGlow};"></div>
                         </div>
                         <div>
-                            <div style="font-weight:700;color:white;font-size:0.85rem;">${f.displayName || 'Agent'}</div>
-                            <div style="font-size:0.7rem;color:${online ? '#00e676' : '#555'};font-family:'JetBrains Mono',monospace;">${online ? '● ONLINE' : '○ Offline'}</div>
+                            <div style="font-weight:700;color:white;font-size:0.9rem;letter-spacing:0.5px;">${f.displayName || 'Agent Anonim'}</div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <span style="font-size:0.65rem;color:${statusColor};font-family:'Orbitron',sans-serif;font-weight:700;letter-spacing:1px;">
+                                    ${isOnline ? 'ONLINE' : 'OFFLINE'}
+                                </span>
+                                <span style="width:3px;height:3px;background:rgba(255,255,255,0.2);border-radius:50%;"></span>
+                                <span style="font-size:0.65rem;color:rgba(255,255,255,0.4);font-family:'JetBrains Mono',monospace;">${f.qrCode || 'Fără Cod'}</span>
+                            </div>
                         </div>
                     </div>
-                    <div style="font-size:0.75rem;color:#00d4ff;font-family:'JetBrains Mono',monospace;">${f.rank || 'Bronze I'}</div>
+                    <div style="text-align:right;">
+                        <div style="font-size:0.75rem;color:#00d4ff;font-family:'Orbitron',sans-serif;font-weight:700;">${f.rank || 'Bronze I'}</div>
+                        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace;">${f.xp || 0} XP</div>
+                    </div>
                 </div>`;
         }).join('');
     }
@@ -1251,91 +1434,7 @@ async function initApp() {
         if (titleEl) titleEl.textContent = `${shown} Mentor${shown !== 1 ? 'i' : ''} Recomandat${shown !== 1 ? 'i' : ''}`;
     }
 
-    const chatInput = document.getElementById('chat-input');
-    const chatSendBtn = document.getElementById('chat-send-btn');
-    const chatMessages = document.getElementById('community-chat-messages');
-    const chatAttachBtn = document.getElementById('chat-attach-btn');
-    const chatFileInput = document.getElementById('chat-file-input');
-    const chatAttachPreview = document.getElementById('chat-attachment-preview');
-    const chatRemoveAttach = document.getElementById('chat-remove-attachment');
-    let currentAttachment = null;
-
-    if (chatInput && chatSendBtn && chatMessages) {
-        const sendMessage = () => {
-            const text = chatInput.value.trim();
-            if (!text && !currentAttachment) return;
-            
-            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            let attachHtml = '';
-            
-            if (currentAttachment) {
-                attachHtml = `<div style="margin-top:8px; border-radius:8px; overflow:hidden; border:1px solid rgba(0,212,255,0.3); max-width:200px;"><img src="${currentAttachment}" style="width:100%; display:block;"></div>`;
-            }
-
-            const msgHtml = `
-                <div style="display:flex; gap:10px; animation: fadeIn 0.3s ease;">
-                    <div style="width:30px; height:30px; background:#00d4ff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">👤</div>
-                    <div style="background:rgba(0,212,255,0.1); padding:10px 14px; border-radius:0 12px 12px 12px; border:1px solid rgba(0,212,255,0.2);">
-                        <div style="font-size:0.75rem; color:#00d4ff; font-weight:bold; margin-bottom:4px;">Tu <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la ${time}</span></div>
-                        <div style="font-size:0.85rem; color:white; line-height:1.4;">${text}</div>
-                        ${attachHtml}
-                    </div>
-                </div>
-            `;
-            
-            chatMessages.insertAdjacentHTML('beforeend', msgHtml);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            chatInput.value = '';
-            currentAttachment = null;
-            chatAttachPreview.classList.add('hidden');
-            playSound('click');
-
-            setTimeout(() => {
-                const replyHtml = `
-                    <div style="display:flex; gap:10px; animation: fadeIn 0.3s ease;">
-                        <div style="width:30px; height:30px; background:#d4a843; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;">🕵️‍♂️</div>
-                        <div style="background:rgba(255,255,255,0.05); padding:10px 14px; border-radius:0 12px 12px 12px;">
-                            <div style="font-size:0.75rem; color:#d4a843; font-weight:bold; margin-bottom:4px;">Elena V. <span style="color:rgba(255,255,255,0.3); font-weight:normal; font-size:0.65rem;">Astăzi la ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>
-                            <div style="font-size:0.85rem; color:white; line-height:1.4;">Interesant punct de vedere! Hai să detaliem asta pe chat privat sau într-o sesiune scurtă dacă vrei.</div>
-                        </div>
-                    </div>
-                `;
-                chatMessages.insertAdjacentHTML('beforeend', replyHtml);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                playSound('correct');
-            }, 3000);
-        };
-
-        chatSendBtn.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-
-        if (chatAttachBtn && chatFileInput) {
-            chatAttachBtn.addEventListener('click', () => chatFileInput.click());
-            
-            chatFileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        currentAttachment = ev.target.result;
-                        chatAttachPreview.classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        if (chatRemoveAttach) {
-            chatRemoveAttach.addEventListener('click', () => {
-                currentAttachment = null;
-                chatFileInput.value = '';
-                chatAttachPreview.classList.add('hidden');
-            });
-        }
-    }
+    // Legacy chat logic removed to prevent duplicate identifier error and because new universal chat is active above.
 
     // Legacy shop code removed to fix arrow navigation
 

@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Users collection ───────────────────────────────────────────────────
+    match /users/{userId} {
+      // Anyone logged in can READ any user doc (needed for friend search by email/QR)
+      allow read: if request.auth != null;
+
+      // Only the owner can create their own doc
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Owner can update everything; others can only update the 'friends' array (add/remove)
+      allow update: if request.auth != null && (
+        request.auth.uid == userId ||
+        // Allow other authenticated users to add/remove themselves from friends list
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['friends']))
+      );
+
+      allow delete: if request.auth.uid == userId;
+    }
+
+    // ─── Players collection (for map presence) ──────────────────────────────
+    match /players/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ─── App News (read-only for users, write only from server/admin) ───────
+    match /app_news/{newsId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ─── Leaderboard queries (public read) ──────────────────────────────────
+    match /leaderboard/{entry} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ─── Global Chat ─────────────────────────────────────────────────────────
+    match /global_chat/{msgId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() <= 300;
+      allow update, delete: if false;
+    }
+  }
+}
