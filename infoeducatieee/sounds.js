@@ -1,5 +1,4 @@
 ﻿
-
 let audioCtx = null;
 let isMuted = localStorage.getItem('isMuted') === 'true';
 let currentSoundTheme = localStorage.getItem('soundTheme') || 'cyber';
