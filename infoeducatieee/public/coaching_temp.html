@@ -1,0 +1,89 @@
+﻿
+        <section id="page-coaching" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Geo <span class="gradient-text">Coaching</span></h1>
+                <p class="page-subtitle">Conectează-te cu experți, profesori și colegi pentru a-ți aprofunda cunoștințele.</p>
+            </div>
+
+            
+            <div id="coaching-questionnaire" class="glass-card" style="max-width: 600px; margin: 0 auto 40px; padding: 30px; border: 1px solid var(--neon-blue);">
+                <h2 style="font-family:'Orbitron',sans-serif; color:var(--neon-blue); margin-bottom:15px; font-size:1.5rem;">Interese în Geografie</h2>
+                <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem;">Pentru a-ți recomanda cei mai buni mentori, spune-ne cu cine dorești să interacționezi.</p>
+                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:25px;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="colegi" style="width:18px; height:18px;">
+                        <span>Colegi (pentru studiu în echipă)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="profesori" style="width:18px; height:18px;">
+                        <span>Profesori de Geografie</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="experti" style="width:18px; height:18px;">
+                        <span>Experți în Geopolitică</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" name="interest" value="geologi" style="width:18px; height:18px;">
+                        <span>Geologi</span>
+                    </label>
+                </div>
+                <button id="coaching-submit-btn" class="btn btn-primary" style="width:100%;">Salvează Preferințele</button>
+            </div>
+
+            
+            <div id="coaching-dashboard" class="hidden">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+                    
+                    <div class="glass-card mentor-card mentor-profesori" style="padding:20px; border-left:4px solid var(--neon-blue); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#00d4ff,#0077ff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">👨‍🏫</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Prof. Alexandru M.</h3>
+                                <div style="color:var(--neon-blue); font-size:0.8rem;">Profesor de Geografie</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Specializat în geografia Europei și schimbări climatice. Disponibil pentru sesiuni de 30 min.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    
+                    <div class="glass-card mentor-card mentor-experti" style="padding:20px; border-left:4px solid var(--gold-bright); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#d4a843,#a17e2e); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🕵️‍♂️</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Elena V.</h3>
+                                <div style="color:var(--gold-bright); font-size:0.8rem;">Expert Geopolitică</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Analist relații internaționale. Te poate ajuta să înțelegi conflictele moderne.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    
+                    <div class="glass-card mentor-card mentor-colegi" style="padding:20px; border-left:4px solid var(--success); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#00e676,#00a352); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">👨‍🎓</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Andrei G.</h3>
+                                <div style="color:var(--success); font-size:0.8rem;">Olimpic (Coleg)</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Medaliat cu aur la OIG. Disponibil pentru schimb de experiență și rezolvare teste.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+
+                    
+                    <div class="glass-card mentor-card mentor-geologi" style="padding:20px; border-left:4px solid var(--danger); display:flex; flex-direction:column; gap:15px;">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div style="width:50px; height:50px; background:linear-gradient(135deg,#ff4466,#cc0033); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🧗</div>
+                            <div>
+                                <h3 style="margin:0; color:white; font-size:1.1rem;">Dr. Mihai T.</h3>
+                                <div style="color:var(--danger); font-size:0.8rem;">Geolog</div>
+                            </div>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Expert în resurse naturale și topografie. Îți poate oferi o perspectivă practică.</p>
+                        <button class="btn btn-outline" style="width:100%; font-size:0.85rem; padding:8px;">Trimite Mesaj</button>
+                    </div>
+                </div>
+            </div>
+        </section>
