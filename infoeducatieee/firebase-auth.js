@@ -29,14 +29,17 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBEn2s1P6s_8q6vVUeEvlunL26uKQQGyYM",
-    authDomain: "geoinformatica-bd3b3.firebaseapp.com",
-    projectId: "geoinformatica-bd3b3",
-    storageBucket: "geoinformatica-bd3b3.firebasestorage.app",
-    messagingSenderId: "212610399880",
-    appId: "1:212610399880:web:d42b9080669d709f1fa93d",
-    measurementId: "G-7L520VNY0Y"
+  apiKey: "AIzaSyALeqYG4l3tEyn-rh35kVlOS54QiiYBvnw",
+  authDomain: "terraquest-1.firebaseapp.com",
+  databaseURL: "https://terraquest-1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "terraquest-1",
+  storageBucket: "terraquest-1.firebasestorage.app",
+  messagingSenderId: "871453954070",
+  appId: "1:871453954070:web:32f26c5e844e5b52876537",
+  measurementId: "G-EYL16CE5X8"
 };
+
+console.log("[Firebase] Project Initialized:", firebaseConfig.projectId);
 
 let app, auth, db;
 
@@ -45,7 +48,7 @@ try {
     auth = getAuth(app);
     db = getFirestore(app);
 } catch (e) {
-    console.warn('Firebase init error (check config):', e);
+    console.error('Firebase init error:', e);
 }
 
 export { auth, db };
@@ -186,26 +189,28 @@ function updateAuthUI(user) {
 }
 
 export async function signInWithGoogle() {
-    if (!auth) return showAuthError('Firebase nu este configurat. Verifică firebase-auth.js.');
+    console.log("[Auth] Attempting Google Sign-In...");
+    if (!auth) {
+        showAuthError('Firebase Auth not initialized.');
+        return;
+    }
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
         const result = await signInWithPopup(auth, provider);
+        console.log("[Auth] Google Sign-In Success:", result.user.email);
         showAuthSuccess(`Bun venit, ${result.user.displayName}! ✅`);
         return result.user;
     } catch (err) {
-        console.error('Google sign-in error:', err.code, err.message);
+        console.error('[Auth] Google Sign-In Error:', err.code, err.message);
         if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+            showAuthError('Autentificarea a fost anulată de utilizator.');
         } else if (err.code === 'auth/popup-blocked') {
-            showAuthError('⚠️ Popup-ul a fost blocat de browser. Permite popup-uri pentru acest site și încearcă din nou.');
+            showAuthError('⚠️ Popup-ul a fost blocat de browser. Permite popup-uri și încearcă din nou.');
         } else if (err.code === 'auth/unauthorized-domain') {
-            showAuthError('❌ Domeniu neautorizat! Firebase Console → Authentication → Settings → Authorized Domains → adaugă "localhost".');
-        } else if (err.code === 'auth/operation-not-allowed') {
-            showAuthError('❌ Google Sign-In nu este activat! Firebase Console → Authentication → Sign-in method → Google → Activează.');
-        } else if (err.code === 'auth/invalid-api-key' || err.code === 'auth/configuration-not-found') {
-            showAuthError('❌ Configurație Firebase invalidă. Verifică firebaseConfig din firebase-auth.js.');
+            showAuthError('❌ Domeniu neautorizat! Adaugă domeniul curent în Firebase Console.');
         } else {
-            showAuthError(getErrorMessage(err.code));
+            showAuthError(`Eroare la logare: ${err.message}`);
         }
     }
 }

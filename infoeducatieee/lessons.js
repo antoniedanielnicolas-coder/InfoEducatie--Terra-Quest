@@ -1,5 +1,4 @@
 ﻿
-
 import { playSound } from './sounds.js';
 import { showToast } from './utils.js';
 import { currentLang, t } from './i18n.js';
@@ -7,7 +6,6 @@ import { currentLang, t } from './i18n.js';
 let currentYear = "10";
 
 export const modulesData = [
-
   { id: 101, year: "9", title: { en: "Module 1: Earth as a Planet", ro: "Modulul 1: Pământul ca Planetă" }, desc: { en: "The Universe, Solar System, and Earth's place in space.", ro: "Universul, Sistemul Solar și locul Pământului în spațiu." }, icon: "🌍", color: "#4a90d9" },
   { id: 102, year: "9", title: { en: "Module 2: Lithosphere", ro: "Modulul 2: Litosfera" }, desc: { en: "Plate tectonics, volcanoes, and earthquakes.", ro: "Tectonica plăcilor, vulcani și cutremure." }, icon: "🌋", color: "#e05c3a" },
   { id: 103, year: "9", title: { en: "Module 3: Atmosphere", ro: "Modulul 3: Atmosfera" }, desc: { en: "Climate, weather, and climate change.", ro: "Clima, vremea și schimbările climatice." }, icon: "🌪️", color: "#2eaa6e" },

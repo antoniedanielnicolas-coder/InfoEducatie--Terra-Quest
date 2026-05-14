@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ╔══════════════════════════════════════════════════════════════╗
  * ║  TerraQuest — Security Module v1.0                           ║
  * ║  Demonstrable security features for InfoEducație evaluation  ║
@@ -201,7 +201,7 @@ function checkCSPHeader() {
     if (!csp) {
         csp = document.createElement('meta');
         csp.httpEquiv = 'Content-Security-Policy';
-        csp.content = "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;";
+        csp.content = "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net https://apis.google.com https://*.firebaseapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: https://*.googleapis.com https://*.firebaseio.com; frame-src 'self' https://*.firebaseapp.com https://accounts.google.com;";
         document.head.appendChild(csp);
         return { name: 'Content Security Policy', passed: true, details: 'CSP meta tag injected dynamically' };
     }

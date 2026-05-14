@@ -56,17 +56,17 @@ export async function initI18n() {
   try {
     const enResponse = await fetch('./lang/en.json');
     if (enResponse.ok) {
-      const enData = await enResponse.json();
-      translations.en = mergeDeep(translations.en, enData);
-      console.log("[i18n] English JSON loaded.");
+        const enData = await enResponse.json();
+        translations.en = mergeDeep(translations.en, enData);
+        console.log("[i18n] English JSON loaded.");
     }
 
     const roResponse = await fetch('./lang/ro.json');
     if (roResponse.ok) {
-      translations.ro = await roResponse.json();
-      console.log("[i18n] Romanian JSON loaded.");
+        translations.ro = await roResponse.json();
+        console.log("[i18n] Romanian JSON loaded.");
     } else {
-      console.warn("[i18n] Romanian JSON missing, using English fallback.");
+        console.warn("[i18n] Romanian JSON missing, using English fallback.");
     }
 
     updateDOMTranslations();
@@ -77,15 +77,15 @@ export async function initI18n() {
 }
 
 function mergeDeep(target, source) {
-  for (const key in source) {
-    if (source[key] && typeof source[key] === 'object') {
-      if (!target[key]) target[key] = {};
-      mergeDeep(target[key], source[key]);
-    } else {
-      target[key] = source[key];
+    for (const key in source) {
+        if (source[key] && typeof source[key] === 'object') {
+            if (!target[key]) target[key] = {};
+            mergeDeep(target[key], source[key]);
+        } else {
+            target[key] = source[key];
+        }
     }
-  }
-  return target;
+    return target;
 }
 
 export function setLanguage(lang) {
@@ -102,16 +102,16 @@ export function t(key) {
   let value = translations[currentLang];
   let found = true;
   if (value) {
-    for (const k of keys) {
-      if (value && value[k]) {
-        value = value[k];
-      } else {
-        found = false;
-        break;
+      for (const k of keys) {
+        if (value && value[k]) {
+          value = value[k];
+        } else {
+          found = false;
+          break;
+        }
       }
-    }
   } else {
-    found = false;
+      found = false;
   }
 
   if (found && typeof value === 'string') return value;
