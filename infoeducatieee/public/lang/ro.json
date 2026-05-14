@@ -1,4 +1,17 @@
 {
+  "welcome": {
+    "identify": "Identificare Agent",
+    "awaiting": "Se Așteaptă Autentificarea Biometrică...",
+    "initiate": "Inițializează Conexiunea",
+    "authenticating": "Se Autentifică...",
+    "loading_1": "Se Încarcă Datele Topografice...",
+    "loading_2": "Se Decriptează Modulele...",
+    "loading_3": "Acces Acordat."
+  },
+  "preloader": {
+    "title": "TerraQuest",
+    "subtitle": "Se Inițializează Sistemele Geopolitice..."
+  },
   "nav": {
     "home": "Acasă",
     "lessons": "Lecții",

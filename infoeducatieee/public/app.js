@@ -322,6 +322,10 @@ async function initApp() {
         if (xpDisplay) xpDisplay.innerText = userXP;
         
         if (navLevel) navLevel.innerText = `Lv. ${level}`;
+        
+        const navXpFill = document.getElementById('nav-xp-fill');
+        if (navXpFill) navXpFill.style.width = `${(currentLevelXP / nextLevelXP) * 100}%`;
+        
         const lvlNumDossier = document.getElementById('level-number-dossier');
         if(lvlNumDossier) lvlNumDossier.innerText = level;
         
@@ -665,11 +669,11 @@ async function initApp() {
 
                     if (statusText) {
                         if (progress > 30 && progress < 60) {
-                            statusText.innerText = "Loading Topographical Data...";
+                            statusText.innerText = t('welcome.loading_1');
                         } else if (progress > 60 && progress < 90) {
-                            statusText.innerText = "Decrypting Modules...";
+                            statusText.innerText = t('welcome.loading_2');
                         } else if (progress >= 100) {
-                            statusText.innerText = "Access Granted.";
+                            statusText.innerText = t('welcome.loading_3');
                             statusText.style.color = "#00e676";
                         }
                     }

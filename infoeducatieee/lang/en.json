@@ -1,4 +1,17 @@
 {
+  "welcome": {
+    "identify": "Identify Agent",
+    "awaiting": "Awaiting Biometric Authentication...",
+    "initiate": "Initiate Connection",
+    "authenticating": "Authenticating...",
+    "loading_1": "Loading Topographical Data...",
+    "loading_2": "Decrypting Modules...",
+    "loading_3": "Access Granted."
+  },
+  "preloader": {
+    "title": "TerraQuest",
+    "subtitle": "Initializing Geopolitical Systems..."
+  },
   "nav": {
     "home": "Home",
     "lessons": "Lessons",
