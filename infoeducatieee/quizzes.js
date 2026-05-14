@@ -1,4 +1,4 @@
-﻿import { gradesData, testSets } from './data/quizzes.js?v=4';
+import { gradesData, testSets } from './data/quizzes.js?v=4';
 import { currentLang, t } from './i18n.js';
 import { playSound } from './sounds.js';
 
@@ -287,9 +287,10 @@ function startTest(testId) {
     
     document.getElementById('test-title').innerText = testData.name[currentLang] || testData.name.en;
     
-    document.getElementById('test-submit-btn').style.display = 'none';
-    document.getElementById('test-next-btn').style.display = 'inline-flex';
-    document.getElementById('test-next-btn').disabled = true;
+    const submitBtn = document.getElementById('test-submit-btn');
+    if (submitBtn) submitBtn.style.display = 'none';
+    const nextBtn = document.getElementById('test-next-btn');
+    if (nextBtn) { nextBtn.style.display = 'inline-flex'; nextBtn.disabled = true; }
     
     loadQuestion();
 }
@@ -356,7 +357,7 @@ function loadQuestion() {
     const alreadyAnswered = typeof q.userSelectedIdx !== 'undefined';
     nextBtn.disabled = !alreadyAnswered;
 
-    if (q.type === 'multiple_choice' || q.type === 'true_false') {
+    if (q.type === 'multiple_choice' || q.type === 'true_false' || (!q.type && q.options)) {
         const options = q.options[currentLang] || q.options.en;
         options.forEach((optText, idx) => {
             const btn = document.createElement('button');

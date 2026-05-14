@@ -1,4 +1,4 @@
-﻿import { playSound } from './sounds.js';
+import { playSound } from './sounds.js';
 import { t, currentLang } from './i18n.js';
 import { showToast } from './utils.js';
 import { initSeterra, cleanupSeterra } from './seterra.js';
@@ -236,11 +236,11 @@ function initGeoSimulator() {
                 <!-- Drop Zones -->
                 ${geoSimItems.map((item, i) => {
                     const positions = [
-                        { top: '28%', left: '42%' },
-                        { top: '22%', left: '58%' },
-                        { top: '38%', left: '80%' },
-                        { top: '22%', left: '14%' },
-                        { top: '35%', left: '68%' }
+                        { top: '22%', left: '52%' },  // EU — Western Europe (Brussels area)
+                        { top: '18%', left: '47%' },  // NATO — North Atlantic / NW Europe
+                        { top: '27%', left: '80%' },  // DMZ — Korean Peninsula
+                        { top: '21%', left: '21%' },  // 49th Parallel — US-Canada border
+                        { top: '28%', left: '73%' }   // BRI — China / East Asia
                     ];
                     const pos = positions[i];
                     return `
@@ -373,102 +373,133 @@ function handleGeoSimDrop(draggedId, zoneAccepts, zoneEl) {
 }
 
 const regimeQuestions = [
-    { name: "United Kingdom", img: "https://upload.wikimedia.org/wikipedia/commons/a/a4/United_Kingdom_on_the_globe_%28Europe_centered%29.svg", type: "Monarchy" },
-    { name: "France", img: "https://upload.wikimedia.org/wikipedia/commons/1/1a/France_on_the_globe_%28Europe_centered%29.svg", type: "Republic" },
-    { name: "Saudi Arabia", img: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Saudi_Arabia_on_the_globe_%28Afro-Eurasia_centered%29.svg", type: "Monarchy" },
-    { name: "United States", img: "https://upload.wikimedia.org/wikipedia/commons/d/dc/USA_orthographic.svg", type: "Republic" },
-    { name: "Japan", img: "https://upload.wikimedia.org/wikipedia/commons/6/62/Japan_%28orthographic_projection%29.svg", type: "Monarchy" },
-    { name: "Germany", img: "https://upload.wikimedia.org/wikipedia/commons/1/14/Germany_on_the_globe_%28Europe_centered%29.svg", type: "Republic" },
-    { name: "Spain", img: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Spain_on_the_globe_%28Europe_centered%29.svg", type: "Monarchy" },
-    { name: "Italy", img: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Italy_on_the_globe_%28Europe_centered%29.svg", type: "Republic" },
+    { name: "United Kingdom", flag: "🇬🇧", type: "Monarchy", capital: "London", region: "Western Europe", population: "67M", hint: "Has a king/queen AND an elected parliament. Invented parliamentary democracy." },
+    { name: "France", flag: "🇫🇷", type: "Republic", capital: "Paris", region: "Western Europe", population: "68M", hint: "Abolished its monarchy during the 1789 Revolution. The president is head of state." },
+    { name: "Saudi Arabia", flag: "🇸🇦", type: "Monarchy", capital: "Riyadh", region: "Middle East", population: "35M", hint: "Ruled by the House of Saud since 1932. No elected parliament at national level." },
+    { name: "United States", flag: "🇺🇸", type: "Republic", capital: "Washington D.C.", region: "North America", population: "335M", hint: "Founded in 1776 after breaking from the British monarchy. President is both head of state and government." },
+    { name: "Japan", flag: "🇯🇵", type: "Monarchy", capital: "Tokyo", region: "East Asia", population: "125M", hint: "The Emperor's role is symbolic — the world's oldest continuous hereditary monarchy (over 2600 years)." },
+    { name: "Germany", flag: "🇩🇪", type: "Republic", capital: "Berlin", region: "Central Europe", population: "84M", hint: "Became a republic after WWI in 1918. The Chancellor is the actual head of government." },
+    { name: "Spain", flag: "🇪🇸", type: "Monarchy", capital: "Madrid", region: "Southern Europe", population: "47M", hint: "A constitutional monarchy restored in 1975 after Franco's dictatorship. The king is Felipe VI." },
+    { name: "Italy", flag: "🇮🇹", type: "Republic", capital: "Rome", region: "Southern Europe", population: "59M", hint: "Voted to abolish its monarchy in a 1946 referendum. Now a Parliamentary Republic." },
+    { name: "Sweden", flag: "🇸🇪", type: "Monarchy", capital: "Stockholm", region: "Northern Europe", population: "10M", hint: "Constitutional monarchy since 1809. The king has no political power but represents the nation." },
+    { name: "Brazil", flag: "🇧🇷", type: "Republic", capital: "Brasília", region: "South America", population: "215M", hint: "An Empire until 1889, when it became a republic. The president serves as head of state." },
+    { name: "Australia", flag: "🇦🇺", type: "Monarchy", capital: "Canberra", region: "Oceania", population: "26M", hint: "Officially a constitutional monarchy with the British monarch as head of state." },
+    { name: "China", flag: "🇨🇳", type: "Republic", capital: "Beijing", region: "East Asia", population: "1.4B", hint: "The People's Republic since 1949. A single-party state — technically a republic." },
 ];
 
 let regimeIndex = 0;
+let regimeShuffled = [];
 
 function initRegimeGuesser() {
     regimeIndex = 0;
+    regimeShuffled = [...regimeQuestions].sort(() => Math.random() - 0.5);
     renderRegimeQuestion();
 }
 
 function renderRegimeQuestion() {
-    if (regimeIndex >= regimeQuestions.length) {
-        showToast("Game Complete! Great job.", "success");
-        setTimeout(endGame, 2000);
+    if (regimeIndex >= regimeShuffled.length) {
+        document.getElementById('game-container').innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px;text-align:center;">
+                <div style="font-size:4rem;">🏆</div>
+                <h2 style="font-family:'Orbitron',sans-serif;color:#00e676;">Game Complete!</h2>
+                <p style="color:rgba(255,255,255,0.6);">You identified all political regimes correctly!</p>
+                <div style="font-size:1.2rem;color:#d4a843;font-family:'JetBrains Mono',monospace;">+${gameData.score} XP | +${gameData.coins} Coins</div>
+            </div>`;
+        setTimeout(endGame, 3000);
         return;
     }
-    
+
     const container = document.getElementById('game-container');
-    const q = regimeQuestions[regimeIndex];
-    
+    const q = regimeShuffled[regimeIndex];
+
     container.innerHTML = `
-        <div class="regime-game" style="display:flex;flex-direction:column;align-items:center;padding:20px;gap:20px;animation:fadeIn 0.5s ease;">
-            <h2 style="font-family:'Orbitron',sans-serif;color:var(--neon-blue);margin:0;text-align:center;">${q.name}</h2>
-            <div style="font-size:0.9rem;color:var(--text-secondary); margin-top:-10px;text-align:center;">Is this state a Monarchy or a Republic?</div>
-            
-            <div id="regime-image-container" style="position:relative;width:100%;max-width:600px;height:340px;border-radius:20px;overflow:hidden;box-shadow:0 0 30px rgba(0,212,255,0.2);border:2px solid rgba(0,212,255,0.3);transition:all 0.5s ease;background-color:rgba(10,14,23,0.8);display:flex;align-items:center;justify-content:center;">
-                <!-- Loading Spinner -->
-                <div id="regime-loader" style="position:absolute;width:40px;height:40px;border:3px solid rgba(0,212,255,0.2);border-top-color:var(--neon-blue);border-radius:50%;animation:spin 1s linear infinite;"></div>
-                
-                <img id="regime-img" src="${q.img}" 
-                    style="width:100%;height:100%;object-fit:contain;padding:20px;opacity:0;transition:opacity 0.3s ease;" 
-                    onload="this.style.opacity='1'; document.getElementById('regime-loader').style.display='none';"
-                    onerror="this.src='https://via.placeholder.com/600x340/0a0e17/00d4ff?text=Image+Not+Available'; document.getElementById('regime-loader').style.display='none';" />
-                
-                <div id="regime-stamp" style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(5);opacity:0;font-size:5rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;font-family:'Orbitron',sans-serif;transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);text-shadow:0 0 20px black, 0 0 40px black;pointer-events:none;z-index:10;"></div>
+        <div class="regime-game" style="display:flex;flex-direction:column;align-items:center;padding:20px;gap:18px;animation:fadeIn 0.5s ease;max-width:640px;margin:0 auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+                <h2 style="font-family:'Orbitron',sans-serif;color:var(--neon-blue);margin:0;font-size:1.2rem;">${q.name}</h2>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--gold-bright);">
+                    ${regimeIndex + 1}/${regimeShuffled.length}
+                </div>
             </div>
-            
-            <div style="display:flex;gap:15px;width:100%;max-width:500px;margin-top:10px;">
-                <button class="btn btn-primary" onclick="guessRegime('Monarchy')" style="flex:1;font-size:1.1rem;padding:15px;background:linear-gradient(135deg, #8b44cc, #6a2c9e);border-color:#8b44cc;border-radius:14px;box-shadow:0 4px 15px rgba(139,68,204,0.3);">👑 Monarchy</button>
-                <button class="btn btn-primary" onclick="guessRegime('Republic')" style="flex:1;font-size:1.1rem;padding:15px;background:linear-gradient(135deg, #2eaa6e, #1a7a4a);border-color:#2eaa6e;border-radius:14px;box-shadow:0 4px 15px rgba(46,170,110,0.3);">🏛️ Republic</button>
+            <div style="font-size:0.85rem;color:var(--text-secondary);text-align:center;">Is this state a <strong style="color:#8b44cc;">Monarchy</strong> or a <strong style="color:#2eaa6e;">Republic</strong>?</div>
+
+            <div id="regime-image-container" style="position:relative;width:100%;border-radius:20px;overflow:hidden;
+                box-shadow:0 0 40px rgba(0,212,255,0.15);border:2px solid rgba(0,212,255,0.3);
+                transition:all 0.5s ease;background:radial-gradient(circle at 30% 30%, rgba(0,50,120,0.6), rgba(10,14,23,0.98));
+                padding:30px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;">
+
+                <div style="font-size:7rem;line-height:1;filter:drop-shadow(0 0 20px rgba(255,255,255,0.2));">${q.flag}</div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;max-width:480px;">
+                    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(0,212,255,0.15);border-radius:10px;padding:10px;text-align:center;">
+                        <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Capital</div>
+                        <div style="font-weight:700;color:var(--neon-blue);font-size:0.82rem;">${q.capital}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(212,168,67,0.15);border-radius:10px;padding:10px;text-align:center;">
+                        <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Region</div>
+                        <div style="font-weight:700;color:var(--gold-bright);font-size:0.82rem;">${q.region}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(0,230,118,0.15);border-radius:10px;padding:10px;text-align:center;">
+                        <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Population</div>
+                        <div style="font-weight:700;color:#00e676;font-size:0.82rem;">${q.population}</div>
+                    </div>
+                </div>
+
+                <div id="regime-hint-box" style="display:none;background:rgba(212,168,67,0.08);border-left:3px solid #d4a843;border-radius:0 10px 10px 0;padding:10px 14px;width:100%;max-width:480px;">
+                    <div style="font-size:0.65rem;color:#d4a843;margin-bottom:3px;font-family:'Orbitron',sans-serif;letter-spacing:1px;">HINT</div>
+                    <div style="font-size:0.82rem;color:rgba(255,255,255,0.75);line-height:1.5;">${q.hint}</div>
+                </div>
+
+                <div id="regime-stamp" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(5);opacity:0;font-size:4rem;font-weight:900;text-transform:uppercase;font-family:'Orbitron',sans-serif;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);text-shadow:0 0 20px black,0 0 40px black;pointer-events:none;z-index:10;"></div>
             </div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.9rem;color:var(--gold-bright);background:rgba(212,168,67,0.1);padding:5px 15px;border-radius:20px;border:1px solid rgba(212,168,67,0.2);">
-                Progress: ${regimeIndex + 1}/${regimeQuestions.length}
+
+            <div style="display:flex;gap:12px;width:100%;max-width:480px;">
+                <button class="btn btn-primary regime-btn" onclick="guessRegime('Monarchy')" style="flex:1;font-size:1rem;padding:14px;background:linear-gradient(135deg,#8b44cc,#6a2c9e);border-color:#8b44cc;border-radius:14px;">👑 Monarchy</button>
+                <button class="btn btn-primary regime-btn" onclick="guessRegime('Republic')" style="flex:1;font-size:1rem;padding:14px;background:linear-gradient(135deg,#2eaa6e,#1a7a4a);border-color:#2eaa6e;border-radius:14px;">🏛️ Republic</button>
             </div>
+            <button onclick="document.getElementById('regime-hint-box').style.display='block';this.style.display='none';"
+                style="background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.3);color:#d4a843;border-radius:8px;padding:6px 16px;cursor:pointer;font-size:0.78rem;font-family:'JetBrains Mono',monospace;">
+                💡 Show Hint
+            </button>
         </div>
     `;
 }
 
 window.guessRegime = function(guess) {
-    const q = regimeQuestions[regimeIndex];
+    const q = regimeShuffled[regimeIndex];
     const stamp = document.getElementById('regime-stamp');
     const imgContainer = document.getElementById('regime-image-container');
-    
-    const btns = imgContainer.parentElement.querySelectorAll('button');
-    btns.forEach(b => b.disabled = true);
-    
+
+    document.querySelectorAll('.regime-btn').forEach(b => b.disabled = true);
+
     if (guess === q.type) {
         playSound('correct');
-        stamp.innerText = "CORRECT";
+        stamp.innerText = "✓";
         stamp.style.color = "#00e676";
-        stamp.style.transform = "translate(-50%, -50%) scale(1) rotate(-15deg)";
+        stamp.style.transform = "translate(-50%, -50%) scale(1) rotate(-10deg)";
         stamp.style.opacity = "1";
         imgContainer.style.borderColor = "#00e676";
-        imgContainer.style.boxShadow = "0 0 40px rgba(0, 230, 118, 0.5)";
+        imgContainer.style.boxShadow = "0 0 40px rgba(0,230,118,0.4)";
         gameData.score += 10;
         gameData.coins += 5;
         updateGameStats();
+        showToast(`✅ Correct! ${q.name} is a ${q.type}. +10 XP`, 'success');
     } else {
         playSound('wrong');
-        stamp.innerText = "WRONG";
+        stamp.innerText = "✗";
         stamp.style.color = "#ff4466";
-        stamp.style.transform = "translate(-50%, -50%) scale(1) rotate(15deg)";
+        stamp.style.transform = "translate(-50%, -50%) scale(1) rotate(10deg)";
         stamp.style.opacity = "1";
         imgContainer.style.borderColor = "#ff4466";
-        imgContainer.style.boxShadow = "0 0 40px rgba(255, 68, 102, 0.5)";
-        imgContainer.animate([
-            { transform: 'translateX(0)' },
-            { transform: 'translateX(-10px)' },
-            { transform: 'translateX(10px)' },
-            { transform: 'translateX(-10px)' },
-            { transform: 'translateX(10px)' },
-            { transform: 'translateX(0)' }
-        ], { duration: 400, iterations: 1 });
+        imgContainer.style.boxShadow = "0 0 40px rgba(255,68,102,0.4)";
+        const hintBox = document.getElementById('regime-hint-box');
+        if (hintBox) hintBox.style.display = 'block';
+        showToast(`❌ Wrong! ${q.name} is a ${q.type}.`, 'error');
     }
-    
+
     setTimeout(() => {
         regimeIndex++;
         renderRegimeQuestion();
-    }, 1500);
+    }, 2000);
 }
 
 function updateGameStats() {
@@ -889,10 +920,42 @@ window.guessCity = function(guess, correct) {
 }
 
 const shapeGuesserData = [
-    { name: "Italy", shape: "M 30,10 L 40,20 L 50,40 L 60,60 L 70,80 L 60,90 L 50,80 L 40,70 L 30,50 Z", options: ["Italy", "Greece", "Spain", "France"] },
-    { name: "Japan", shape: "M 80,10 L 70,30 L 60,50 L 50,70 L 40,90 L 30,80 L 40,60 L 50,40 Z", options: ["Japan", "Philippines", "New Zealand", "Madagascar"] },
-    { name: "Chile", shape: "M 40,10 L 50,10 L 50,90 L 40,90 Z", options: ["Chile", "Argentina", "Peru", "Norway"] },
-    { name: "Australia", shape: "M 20,20 L 80,20 L 90,50 L 70,80 L 30,80 L 10,50 Z", options: ["Australia", "Brazil", "India", "USA"] }
+    {
+        name: "Italy",
+        // Boot shape of Italy — recognizable peninsular form
+        shape: "M 44,5 L 50,8 L 54,14 L 52,20 L 48,24 L 50,30 L 54,36 L 58,44 L 62,54 L 64,62 L 60,70 L 54,76 L 48,80 L 53,84 L 51,90 L 46,86 L 42,78 L 38,68 L 34,58 L 32,48 L 35,38 L 37,28 L 36,20 L 39,14 L 43,8 Z",
+        options: ["Italy", "Greece", "Spain", "France"]
+    },
+    {
+        name: "Japan",
+        // Island chain — Kyushu + Shikoku + Honshu + Hokkaido
+        shape: "M 70,12 L 65,18 L 68,24 L 72,18 Z M 58,28 L 53,34 L 56,40 L 62,36 L 60,30 Z M 44,42 L 38,50 L 40,58 L 48,62 L 54,56 L 52,48 L 46,44 Z M 32,64 L 28,72 L 32,78 L 38,74 L 36,68 Z",
+        options: ["Japan", "Philippines", "New Zealand", "Madagascar"]
+    },
+    {
+        name: "Chile",
+        // Long thin strip along the west coast of South America
+        shape: "M 47,5 L 53,5 L 55,15 L 57,28 L 58,42 L 57,56 L 56,68 L 54,80 L 52,90 L 48,90 L 46,80 L 44,68 L 43,56 L 42,42 L 42,28 L 44,15 Z",
+        options: ["Chile", "Argentina", "Peru", "Norway"]
+    },
+    {
+        name: "Australia",
+        // Continent shape — large irregular mass with Gulf of Carpentaria indent
+        shape: "M 22,28 L 32,20 L 48,18 L 62,20 L 74,24 L 80,18 L 84,26 L 86,36 L 84,48 L 78,58 L 82,66 L 78,76 L 68,82 L 55,84 L 42,82 L 30,76 L 20,66 L 14,54 L 12,42 L 15,32 Z",
+        options: ["Australia", "Brazil", "India", "USA"]
+    },
+    {
+        name: "Norway",
+        // Jagged fjord coastline, long and narrow in the south, wider in north
+        shape: "M 48,5 L 55,8 L 60,14 L 58,22 L 62,28 L 58,34 L 62,40 L 56,46 L 58,54 L 52,60 L 54,68 L 48,72 L 44,68 L 46,60 L 42,54 L 44,46 L 40,40 L 44,34 L 40,28 L 44,20 L 42,12 Z",
+        options: ["Norway", "Sweden", "Finland", "Denmark"]
+    },
+    {
+        name: "India",
+        // Triangular subcontinent with wide north and pointed south
+        shape: "M 30,15 L 70,15 L 75,22 L 72,30 L 78,38 L 74,46 L 68,38 L 72,50 L 65,60 L 58,70 L 50,82 L 42,70 L 35,60 L 28,50 L 24,38 L 28,28 Z",
+        options: ["India", "Pakistan", "Bangladesh", "Sri Lanka"]
+    }
 ];
 
 let shapeGuesserIndex = 0;

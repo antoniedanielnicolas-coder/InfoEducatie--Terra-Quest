@@ -1,4 +1,4 @@
-﻿import { initI18n, setLanguage, currentLang, t, updateDOMTranslations } from './i18n.js';
+import { initI18n, setLanguage, currentLang, t, updateDOMTranslations } from './i18n.js';
 import { initLessons } from './lessons.js';
 import { initQuizzes } from './quizzes.js?v=4';
 import { initAI } from './ai-agent.js';
@@ -301,6 +301,9 @@ async function initApp() {
     const navLevel = document.getElementById('nav-level');
     
     function updateStats() {
+        userXP = parseInt(localStorage.getItem('userXP')) || 0;
+        compassCoins = parseInt(localStorage.getItem('compassCoins')) || 0;
+        inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         const level = Math.floor(userXP / 100) + 1;
         const currentLevelXP = userXP % 100;
         const nextLevelXP = 100;
@@ -346,36 +349,98 @@ async function initApp() {
             if(inventory.length === 0) {
                 invList.innerHTML = `<p class="text-gray-500 text-sm col-span-full">${t('profile.no_assets')}</p>`;
             } else {
-                invList.innerHTML = inventory.map(item => `
+                const idMap = {
+                    'ban-world': { name: 'World Map', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-cyber': { name: 'Cyberpunk', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-topo': { name: 'Topographic', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-space': { name: 'Deep Space', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-ocean': { name: 'Ocean View', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-mnt': { name: 'Mountain', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-desert': { name: 'Desert', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-arctic': { name: 'Arctic Banner', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=1000&auto=format&fit=crop' },
+                    'ban-gold': { name: 'Golden Age', icon: '🖼️', type: 'banner', url: 'https://images.unsplash.com/photo-1503756234508-e32369269dde?q=80&w=1000&auto=format&fit=crop' },
+                    'av-explorer': { name: 'Explorer', icon: '👤', type: 'avatar', emoji: '🧗' },
+                    'av-globe': { name: 'Globetrotter', icon: '👤', type: 'avatar', emoji: '🌍' },
+                    'av-agent': { name: 'Secret Agent', icon: '👤', type: 'avatar', emoji: '🕵️' },
+                    'av-scientist': { name: 'Scientist', icon: '👤', type: 'avatar', emoji: '🧑‍🔬' },
+                    'av-ninja': { name: 'Geo Ninja', icon: '👤', type: 'avatar', emoji: '🥷' },
+                    'av-astronaut': { name: 'Astronaut', icon: '👤', type: 'avatar', emoji: '👩‍🚀' },
+                    'av-wizard': { name: 'Geo Wizard', icon: '👤', type: 'avatar', emoji: '🧙‍♂️' },
+                    'av-knight': { name: 'Knight', icon: '👤', type: 'avatar', emoji: '💂' },
+                    'av-champion': { name: 'Champion', icon: '👤', type: 'avatar', emoji: '👑' },
+                    'up-volcanic': { name: 'Volcanic UI', icon: '⚡', type: 'theme', color: 'red' },
+                    'up-emerald': { name: 'Emerald UI', icon: '⚡', type: 'theme', color: 'emerald' },
+                    'up-arctic': { name: 'Arctic UI', icon: '⚡', type: 'theme', color: 'blue' },
+                    'up-chronos': { name: 'Chronos Protocol', icon: '⚡', type: 'passive' },
+                    'up-boost': { name: 'XP Boost', icon: '⚡', type: 'passive' },
+                    'up-compass': { name: 'Compass Pro', icon: '⚡', type: 'passive' },
+                    'up-shield': { name: 'Shield', icon: '⚡', type: 'passive' },
+                    'up-streak': { name: 'Streak Saver', icon: '⚡', type: 'passive' },
+                    'up-hint': { name: 'Hint Pack', icon: '⚡', type: 'passive' }
+                };
+
+                invList.innerHTML = inventory.map(item => {
+                    const data = idMap[item] || { name: item, icon: item.includes('Banner') ? '🖼️' : (item.includes('Avatar') ? '👤' : '🎨') };
+                    return `
                     <div class="inventory-item bg-[#1a2440]/80 border border-[#00d4ff]/30 rounded-lg p-4 cursor-pointer hover:bg-[#00d4ff]/20 transition-all shadow-[0_0_10px_rgba(0,212,255,0.1)] flex flex-col items-center justify-center text-center text-xs font-bold text-white group" data-item="${item}">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">${item.includes('Banner') ? '🖼️' : (item.includes('Avatar') ? '👤' : '🎨')}</div>
-                        ${item}
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">${data.icon}</div>
+                        ${data.name}
                     </div>
-                `).join('');
+                `}).join('');
 
                 document.querySelectorAll('.inventory-item').forEach(itemBox => {
                     itemBox.addEventListener('click', () => {
-                        const itemName = itemBox.getAttribute('data-item');
+                        const itemId = itemBox.getAttribute('data-item');
                         playSound('click');
                         
-                        if (itemName.includes('World Map Banner')) {
+                        const data = idMap[itemId];
+                        
+                        if (data && data.type === 'banner') {
+                            const banner = document.getElementById('dossier-banner');
+                            if (banner) banner.style.backgroundImage = `url('${data.url}')`;
+                            showToast(`Banner Equipped: ${data.name}`, "success");
+                        } else if (data && data.type === 'avatar') {
+                            const avatarEmoji = document.getElementById('avatar-emoji');
+                            if (avatarEmoji) {
+                                avatarEmoji.innerText = data.emoji;
+                                avatarEmoji.classList.remove('hidden');
+                                const imgEl = document.getElementById('avatar-image');
+                                if (imgEl) imgEl.classList.add('hidden');
+                                localStorage.setItem('profileEmoji', data.emoji);
+                                localStorage.removeItem('customAvatar');
+                            }
+                            showToast(`Avatar Equipped: ${data.name}`, "success");
+                        } else if (data && data.type === 'theme') {
+                            const theme = data.color;
+                            if (theme === 'blue') {
+                                document.documentElement.style.setProperty('--neon-blue', '#00d4ff');
+                                document.documentElement.style.setProperty('--blue-gradient', 'linear-gradient(90deg, #00d4ff, #0077ff)');
+                            } else if (theme === 'emerald') {
+                                document.documentElement.style.setProperty('--neon-blue', '#00e676');
+                                document.documentElement.style.setProperty('--blue-gradient', 'linear-gradient(90deg, #00e676, #00a352)');
+                            } else if (theme === 'red') {
+                                document.documentElement.style.setProperty('--neon-blue', '#ff4466');
+                                document.documentElement.style.setProperty('--blue-gradient', 'linear-gradient(90deg, #ff4466, #cc0033)');
+                            }
+                            showToast(`UI Theme Applied: ${data.name}`, "success");
+                        } else if (itemId.includes('World Map Banner')) {
                             const banner = document.getElementById('dossier-banner');
                             if (banner) banner.style.backgroundImage = "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000&auto=format&fit=crop')";
                             showToast("Banner Equipped: World Map", "success");
-                        } else if (itemName.includes('Cyberpunk')) {
+                        } else if (itemId.includes('Cyberpunk')) {
                             const banner = document.getElementById('dossier-banner');
                             if (banner) banner.style.backgroundImage = "url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=1000&auto=format&fit=crop')";
                             showToast("Banner Equipped: Cyberpunk", "success");
-                        } else if (itemName.includes('Topographic Master')) {
+                        } else if (itemId.includes('Topographic Master')) {
                             const banner = document.getElementById('dossier-banner');
                             if (banner) banner.style.backgroundImage = "url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=1000&auto=format&fit=crop')";
                             showToast("Banner Equipped: Topographic Master", "success");
-                        } else if (itemName.includes('Field Explorer')) {
+                        } else if (itemId.includes('Field Explorer')) {
                             const avatarEmoji = document.getElementById('avatar-emoji');
                             if (avatarEmoji) avatarEmoji.innerText = '🧗';
                             showToast("Avatar Equipped: Field Explorer", "success");
-                        } else if (itemName.includes('Chronos Protocol')) {
-                            showToast("Chronos Protocol is a PASSIVE power-up. It applies automatically in games.", "info");
+                        } else {
+                            showToast("Acest item îți oferă un bonus pasiv sau nu poate fi echipat manual.", "info");
                         }
                     });
                 });
@@ -385,6 +450,7 @@ async function initApp() {
         syncUserProgress(userXP, compassCoins);
         updateHomeStatsUI();
     }
+    window.updateStats = updateStats;
 
     function updateHomeStatsUI() {
         const level = Math.floor(userXP / 100) + 1;
@@ -750,6 +816,26 @@ async function initApp() {
         updateStats();
     });
 
+    function checkAvatarCooldown() {
+        const lastSwapTime = parseInt(localStorage.getItem('lastAvatarSwapTime')) || 0;
+        const now = Date.now();
+        const cooldownMs = 24 * 60 * 60 * 1000;
+        
+        if (now - lastSwapTime < cooldownMs) {
+            const remainingMs = cooldownMs - (now - lastSwapTime);
+            const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+            const isRo = typeof currentLang !== 'undefined' ? currentLang === 'ro' : true;
+            const msg = isRo ? 
+                `Atenție: 1 schimbare pe zi! Mai așteaptă ${hours}h ${minutes}m.` : 
+                `Attention: 1 swap per day! Please wait ${hours}h ${minutes}m.`;
+            if (typeof showToast === 'function') showToast(msg, 'error');
+            if (typeof playSound === 'function') playSound('wrong');
+            return false;
+        }
+        return true;
+    }
+
     const avatarUpload = document.getElementById('avatar-upload');
     const avatarImage = document.getElementById('avatar-image');
     const avatarEmoji = document.getElementById('avatar-emoji');
@@ -763,12 +849,17 @@ async function initApp() {
         }
 
         avatarUpload.addEventListener('change', (e) => {
+            if (!checkAvatarCooldown()) {
+                avatarUpload.value = '';
+                return;
+            }
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     const base64Str = event.target.result;
                     localStorage.setItem('customAvatar', base64Str);
+                    localStorage.setItem('lastAvatarSwapTime', Date.now().toString());
                     avatarImage.src = base64Str;
                     avatarImage.classList.remove('hidden');
                     avatarEmoji.classList.add('hidden');
@@ -948,6 +1039,8 @@ async function initApp() {
         const applyBtn = document.getElementById('apply-avatar-btn');
         if (applyBtn) {
             applyBtn.addEventListener('click', () => {
+                if (!checkAvatarCooldown()) return;
+                localStorage.setItem('lastAvatarSwapTime', Date.now().toString());
                 localStorage.setItem('profileEmoji', selectedAvatarEmoji);
                 localStorage.removeItem('customAvatar');
                 if (profileAvatarEmojiEl) {
@@ -1229,36 +1322,7 @@ async function initApp() {
         }
     }
 
-    const shopDotsEl = document.getElementById('shop-dots');
-    if (shopDotsEl && shopContainer) {
-        const cats = shopContainer.querySelectorAll('.shop-category-view');
-        cats.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${i===0?'#00d4ff':'rgba(255,255,255,0.2)'};transition:all 0.3s;cursor:pointer;`;
-            dot.addEventListener('click', () => { currentShopShelfIndex = i; updateShopViewGlobal(); });
-            shopDotsEl.appendChild(dot);
-        });
-    }
-
-    function updateShopViewGlobal() {
-        if (!shopContainer) return;
-        const cats = shopContainer.querySelectorAll('.shop-category-view');
-        shopContainer.style.transform = `translateX(-${currentShopShelfIndex * 100}%)`;
-        if (shopCategoryTitle) shopCategoryTitle.textContent = cats[currentShopShelfIndex]?.getAttribute('data-title') || '';
-        if (shopPrevBtn) shopPrevBtn.style.display = currentShopShelfIndex > 0 ? 'block' : 'none';
-        if (shopNextBtn) shopNextBtn.style.display = currentShopShelfIndex < cats.length - 1 ? 'block' : 'none';
-        if (shopDotsEl) {
-            shopDotsEl.querySelectorAll('div').forEach((d, i) => {
-                d.style.background = i === currentShopShelfIndex ? '#00d4ff' : 'rgba(255,255,255,0.2)';
-                d.style.width = i === currentShopShelfIndex ? '22px' : '8px';
-                d.style.borderRadius = '4px';
-            });
-        }
-    }
-
-    if (shopPrevBtn) { shopPrevBtn.onclick = () => { if(currentShopShelfIndex>0){currentShopShelfIndex--;updateShopViewGlobal();playSound('click');} }; }
-    if (shopNextBtn) { shopNextBtn.onclick = () => { const cats=shopContainer?.querySelectorAll('.shop-category-view'); if(cats&&currentShopShelfIndex<cats.length-1){currentShopShelfIndex++;updateShopViewGlobal();playSound('click');} }; }
-    updateShopViewGlobal();
+    // Legacy shop code removed to fix arrow navigation
 
     function initGlobe() {
         const globeContainer = document.getElementById('globe-container');
@@ -1316,6 +1380,7 @@ window.handleBuy = function(btn) {
         item.style.transition = 'box-shadow 0.3s';
         item.style.boxShadow = '0 0 40px rgba(0,230,118,0.6)';
         setTimeout(() => { item.style.boxShadow = ''; }, 800);
+        if (typeof window.updateStats === 'function') window.updateStats();
         const toast = document.createElement('div');
         toast.textContent = `✅ Ai cumpărat: ${itemName}`;
         toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#00e676;color:#07101d;padding:12px 24px;border-radius:12px;font-family:Orbitron,sans-serif;font-weight:bold;font-size:0.85rem;z-index:9999;box-shadow:0 0 25px rgba(0,230,118,0.5);animation:fadeIn 0.3s ease;';
