@@ -1,5 +1,4 @@
-// firebase-auth.js — Firebase Authentication Module
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+﻿import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
     getAuth,
     signInWithPopup,
@@ -51,7 +50,6 @@ try {
 
 export { auth, db };
 
-// ─── Auth State ─────────────────────────────────────────────────────────────────
 export let currentUser = null;
 
 export function onAuthReady(callback) {
@@ -59,7 +57,6 @@ export function onAuthReady(callback) {
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         
-        // Attempt to seed news (might fail if guest, but helpful for logged-in admins)
         seedInitialNews().catch(() => {});
 
         if (user) {
@@ -72,7 +69,6 @@ export function onAuthReady(callback) {
     });
 }
 
-// ─── Ensure user profile in Firestore ──────────────────────────────────────────
 async function ensureUserProfile(user) {
     if (!db) return;
     const userRef = doc(db, 'users', user.uid);
@@ -98,6 +94,7 @@ async function ensureUserProfile(user) {
     }
 }
 
+<<<<<<< HEAD
 // Update presence periodically
 setInterval(async () => {
     if (auth && auth.currentUser && db) {
@@ -170,6 +167,8 @@ export function listenToFriendsLocations(callback) {
 }
 
 // ─── Update Auth UI ─────────────────────────────────────────────────────────────
+=======
+>>>>>>> 964f32d3273a7b74c9095b87de3cfb3633a2f82b
 function updateAuthUI(user) {
     const authSection = document.getElementById('auth-section');
     const loggedInSection = document.getElementById('logged-in-section');
@@ -181,7 +180,6 @@ function updateAuthUI(user) {
         if (loggedInSection) loggedInSection.style.display = 'flex';
         if (userEmailDisplay) userEmailDisplay.textContent = user.email;
         if (userNameDisplay) userNameDisplay.textContent = user.displayName || user.email.split('@')[0];
-        // Update profile name
         const profileName = document.getElementById('profile-name');
         if (profileName && user.displayName) profileName.textContent = user.displayName;
     } else {
@@ -190,7 +188,6 @@ function updateAuthUI(user) {
     }
 }
 
-// ─── Google Sign-In ──────────────────────────────────────────────────────────
 export async function signInWithGoogle() {
     if (!auth) return showAuthError('Firebase nu este configurat. Verifică firebase-auth.js.');
     const provider = new GoogleAuthProvider();
@@ -202,7 +199,6 @@ export async function signInWithGoogle() {
     } catch (err) {
         console.error('Google sign-in error:', err.code, err.message);
         if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-            // User closed — silent
         } else if (err.code === 'auth/popup-blocked') {
             showAuthError('⚠️ Popup-ul a fost blocat de browser. Permite popup-uri pentru acest site și încearcă din nou.');
         } else if (err.code === 'auth/unauthorized-domain') {
@@ -217,7 +213,6 @@ export async function signInWithGoogle() {
     }
 }
 
-// ─── Email/Password Sign-In ─────────────────────────────────────────────────────
 export async function signInWithEmail(email, password) {
     if (!auth) return showAuthError('Firebase nu este configurat.');
     try {
@@ -229,7 +224,6 @@ export async function signInWithEmail(email, password) {
     }
 }
 
-// ─── Email/Password Register ────────────────────────────────────────────────────
 export async function registerWithEmail(email, password, displayName) {
     if (!auth) return showAuthError('Firebase nu este configurat.');
     try {
@@ -242,7 +236,6 @@ export async function registerWithEmail(email, password, displayName) {
     }
 }
 
-// ─── Password Reset ─────────────────────────────────────────────────────────────
 export async function resetPassword(email) {
     if (!auth) return showAuthError('Firebase nu este configurat.');
     try {
@@ -253,7 +246,6 @@ export async function resetPassword(email) {
     }
 }
 
-// ─── Sign Out ───────────────────────────────────────────────────────────────────
 export async function logOut() {
     if (!auth) return;
     if (currentUser && db) {
@@ -263,7 +255,6 @@ export async function logOut() {
     showAuthSuccess('Ai ieșit din cont.');
 }
 
-// ─── Friends System ─────────────────────────────────────────────────────────────
 export async function searchUserByEmail(email) {
     if (!db) return null;
     const q = query(collection(db, 'users'), where('email', '==', email.trim().toLowerCase()));
@@ -329,7 +320,6 @@ export async function getMyQRCode() {
     return snap.exists() ? snap.data().qrCode : null;
 }
 
-// ─── Phase 2: Progress Sync & Leaderboard ─────────────────────────────────────
 export async function syncUserProgress(xp, coins) {
     if (!db || !currentUser) return;
     try {
@@ -357,7 +347,6 @@ export async function getLeaderboard() {
     }
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────────
 function getErrorMessage(code) {
     const messages = {
         'auth/user-not-found': 'Nu există un cont cu acest email.',
@@ -376,7 +365,6 @@ function getErrorMessage(code) {
     return messages[code] || `A apărut o eroare (${code}). Încearcă din nou.`;
 }
 
-
 function showAuthError(msg) {
     const el = document.getElementById('auth-error-msg');
     if (el) { el.textContent = msg; el.style.display = 'block'; }
@@ -388,7 +376,6 @@ function showAuthSuccess(msg) {
     if (el) { el.textContent = msg; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 3000); }
 }
 
-// ─── Real-time News Feed ─────────────────────────────────────────────────────
 const INITIAL_NEWS = [
     {
         title: '🛡️ Actualizare Securitate - Protocol V2',
@@ -455,7 +442,6 @@ async function seedInitialNews() {
         const snap = await getDocs(query(newsCol, limit(100)));
         const existingTitles = snap.docs.map(d => d.data().title);
 
-        // Check each item in INITIAL_NEWS and add if missing
         for (const item of INITIAL_NEWS) {
             if (!existingTitles.includes(item.title)) {
                 await setDoc(doc(newsCol), {
@@ -466,7 +452,6 @@ async function seedInitialNews() {
             }
         }
         
-        // Clean up old branding in existing docs
         snap.docs.forEach(async (docSnap) => {
             const data = docSnap.data();
             if (data.description && (data.description.includes('GeoQuest') || data.description.includes('GeoInformatica'))) {
@@ -482,7 +467,6 @@ async function seedInitialNews() {
 
 export function listenToNews(callback) {
     if (!db) {
-        // Fallback: return hardcoded items sorted by date
         callback(INITIAL_NEWS.sort((a, b) => b.createdAt - a.createdAt));
         return () => { };
     }

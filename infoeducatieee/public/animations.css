@@ -1,8 +1,5 @@
-/* =====================================================
-   TerraQuest — Enhanced Animations
-   ===================================================== */
+﻿
 
-/* ---- Lesson Card Enhancements ---- */
 .lesson-card {
   position: relative;
   overflow: hidden;
@@ -28,7 +25,6 @@
   box-shadow: 0 20px 50px rgba(0, 212, 255, 0.2), 0 0 0 1px rgba(0,212,255,0.1);
 }
 
-/* Module number badge */
 .lesson-card .module-badge {
   position: absolute;
   top: 14px;
@@ -42,7 +38,6 @@
   z-index: 2;
 }
 
-/* ---- Lesson Detail Enhanced ---- */
 .lesson-section {
   position: relative;
   transition: border-color 0.3s;
@@ -124,7 +119,6 @@
   font-style: normal;
 }
 
-/* ---- Page transitions ---- */
 .page.active {
   animation: pageReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -142,7 +136,6 @@
   }
 }
 
-/* ---- Stagger children ---- */
 .lessons-grid .lesson-card,
 .games-selection .game-card,
 .features-grid .feature-card {
@@ -166,7 +159,6 @@
   }
 }
 
-/* ---- Feature cards ---- */
 .feature-card {
   background: rgba(18, 26, 46, 0.5);
   backdrop-filter: blur(12px);
@@ -228,7 +220,6 @@
   line-height: 1.6;
 }
 
-/* ---- Timeline ---- */
 .timeline {
   position: relative;
   padding-left: 90px;
@@ -322,7 +313,6 @@
   line-height: 1.5;
 }
 
-/* ---- HUD coordinates animation ---- */
 #hud-lat, #hud-lng {
   animation: coordFlicker 8s step-end infinite;
 }
@@ -336,7 +326,6 @@
   100% { opacity: 1; }
 }
 
-/* ---- Nav link enhanced ---- */
 .nav-link {
   position: relative;
   overflow: hidden;
@@ -354,7 +343,6 @@
 
 .nav-link:hover::before, .nav-link.active::before { width: 70%; }
 
-/* ---- Toast enhanced ---- */
 .toast {
   animation: toastSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
@@ -364,12 +352,10 @@
   to   { opacity: 1; transform: translateX(0) scale(1); }
 }
 
-/* ---- Glowing borders on hover ---- */
 .glass-card {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
-/* ---- Stats counter animation ---- */
 .stat-number {
   animation: statReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -379,7 +365,6 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* ---- Module progress bars animated ---- */
 .lesson-fill {
   position: relative;
   overflow: hidden;
@@ -398,7 +383,6 @@
   to { left: 100%; }
 }
 
-/* ---- Game card hover ---- */
 .game-card {
   position: relative;
   overflow: hidden;
@@ -436,14 +420,12 @@
   transform: scale(1.2) translateY(-4px);
 }
 
-/* ---- Features grid ---- */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
 }
 
-/* ---- Preloader enhanced bar ---- */
 .loader-bar-fill {
   position: relative;
   overflow: hidden;
@@ -462,7 +444,6 @@
   to { left: 150%; }
 }
 
-/* ---- Back button ---- */
 .back-btn {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -471,7 +452,6 @@
   transform: translateX(-4px);
 }
 
-/* ---- Option buttons quiz ---- */
 .option-btn {
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -481,18 +461,15 @@
   border-color: rgba(0,212,255,0.4);
 }
 
-/* ---- HUD radar enhanced ---- */
 #global-hud .animate-\[spin_3s_linear_infinite\] {
   position: relative;
 }
 
-/* ---- Page title underline ---- */
 .page-title {
   position: relative;
   display: inline-block;
 }
 
-/* ---- Section entrance ---- */
 @keyframes sectionIn {
   from { opacity: 0; transform: translateY(30px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -502,7 +479,6 @@
   animation: sectionIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ---- Scrollbar enhancement ---- */
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -510,13 +486,11 @@
   background: linear-gradient(to bottom, #00d4ff, #0077ff);
 }
 
-/* ---- Typing dots ---- */
 .typing-dots span {
   display: inline-block;
   font-size: 1.2rem;
 }
 
-/* ---- Scan Animation for Biometric Overlay ---- */
 @keyframes scan {
   0% { top: 0; }
   100% { top: 100%; }
@@ -526,7 +500,6 @@
   animation: scan 2s ease-in-out infinite alternate;
 }
 
-/* ---- HUD Fade In ---- */
 #global-hud {
   animation: fadeIn 2s ease-out both;
 }
@@ -536,7 +509,6 @@
   to { opacity: 1; }
 }
 
-/* ---- Home 3D Animations ---- */
 @keyframes floatOrb1 {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-30px) scale(1.05); }

@@ -1,20 +1,17 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 
 let html = fs.readFileSync('index.html', 'utf8');
 
-// ── 1. FIX ORPHAN HTML (lines 903-908: stray closing divs/section after coaching) ──
 html = html.replace(
   /(<\/section>)\s*\r?\n\s*\r?\n\s*<\/div>\s*\r?\n\s*<\/div>\s*\r?\n\s*\r?\n\s*<\/div>\s*\r?\n\s*<\/section>\s*\r?\n(\s*<!-- PROFILE PAGE -->)/,
   '$1\n\n' + buildShop() + '\n\n$2'
 );
 
-// ── 2. REPLACE COACHING SECTION ──
 html = html.replace(
   /<section id="page-coaching"[\s\S]*?<\/section>/,
   buildCoaching()
 );
 
-// ── 3. FIX AI labels (remove broken data-i18n that resolves to key name) ──
 html = html.replace(
   /<label for="ai-mode-select"[^>]*>Mode:<\/label>/,
   '<label for="ai-mode-select" style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:\'JetBrains Mono\',monospace;">Mod:</label>'
@@ -24,7 +21,6 @@ html = html.replace(
   '<label for="ai-voice-select" style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:\'JetBrains Mono\',monospace;">Voce:</label>'
 );
 
-// ── 4. FIX AI controls bar background (white text bug) ──
 html = html.replace(
   'class="ai-controls-bar"',
   'class="ai-controls-bar" style="background:rgba(8,14,26,0.95);padding:10px 18px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;border-top:1px solid rgba(0,212,255,0.12);"'
@@ -33,7 +29,6 @@ html = html.replace(
 fs.writeFileSync('index.html', html, 'utf8');
 console.log('Done: index.html patched');
 
-// ── 5. FIX lang/en.json ──
 const en = JSON.parse(fs.readFileSync('lang/en.json', 'utf8'));
 if (!en.ai) en.ai = {};
 Object.assign(en.ai, {
@@ -55,7 +50,6 @@ if (fs.existsSync('lang/ro.json')) {
 }
 console.log('Done: lang files patched');
 
-// ══════════════════════════════════════════════════
 function buildShop() {
   return `        <!-- SHOP PAGE -->
         <section id="page-shop" class="page" style="overflow:auto;padding:0;background:#07101d;position:relative;min-height:calc(100vh - 70px);">

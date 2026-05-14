@@ -1,7 +1,6 @@
-import { playSound } from './sounds.js';
+﻿import { playSound } from './sounds.js';
 import { showToast } from './utils.js';
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
 const DB = {
     europe: {
         en: 'Europe — Capitals', ro: 'Europa — Capitale',
@@ -222,7 +221,6 @@ DB.world = {
     caps: [...DB.europe.caps, ...DB.africa.caps, ...DB.americas.caps, ...DB.asia.caps]
 };
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
 let sMap = null, sCurrent = null, sPending = [], sSolved = 0, sTimer = null;
 let sGameData = { score: 0, coins: 0 };
 let sUpdateCb = null;
@@ -232,7 +230,6 @@ function isRO() {
     return f && f.innerText === '🇷🇴';
 }
 
-// ─── MAIN INIT ────────────────────────────────────────────────────────────────
 export function initSeterra(continent, gameDataRef, updateFn) {
     sGameData = gameDataRef;
     sUpdateCb = updateFn;
@@ -275,7 +272,6 @@ export function initSeterra(continent, gameDataRef, updateFn) {
             attribution: '© OpenStreetMap'
         }).addTo(sMap);
 
-        // Draw all capitals as clickable dots
         data.caps.forEach(cap => {
             const m = L.circleMarker([cap.lat, cap.lng], {
                 radius: 7, color: 'rgba(255,255,255,0.25)', weight: 1.5,
@@ -286,7 +282,6 @@ export function initSeterra(continent, gameDataRef, updateFn) {
             m.on('click', () => {
                 if (!sCurrent || m._done) return;
                 if (cap.k === sCurrent.k) {
-                    // ✅ Correct
                     playSound('correct');
                     m._done = true;
                     m.setStyle({ radius: 10, color: '#00e676', fillColor: '#00e676', fillOpacity: 0.95, weight: 2 });
@@ -299,7 +294,6 @@ export function initSeterra(continent, gameDataRef, updateFn) {
                     showToast(`✅ ${cap.k}! +5`, 'success');
                     nextTarget(ro);
                 } else {
-                    // ❌ Wrong
                     playSound('wrong');
                     const orig = { color: m.options.color, fillColor: m.options.fillColor };
                     m.setStyle({ color: '#ff4466', fillColor: '#ff4466' });
