@@ -19,6 +19,10 @@ Funcționalități principale:
 
 ---
 
+## Cum intri pe aplicație?
+
+Deschizi terraquest-1.web.app în orice browser sau o rulezi local.
+
 ## Cum rulezi proiectul?
 
 Ai nevoie de Node.js instalat.
