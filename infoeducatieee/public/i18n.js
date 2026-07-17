@@ -1,4 +1,4 @@
-﻿export const translations = {
+export const translations = {
   en: {
     nav: {
       home: "Home", lessons: "Lessons", games: "Games", tests: "Tests",

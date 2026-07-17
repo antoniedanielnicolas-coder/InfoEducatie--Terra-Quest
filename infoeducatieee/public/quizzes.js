@@ -392,8 +392,7 @@ function loadQuestion() {
     
     const newNextBtn = nextBtn.cloneNode(true);
     nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
-    
-    
+
     newNextBtn.addEventListener('click', () => {
         playSound('click');
         currentQuestionIndex++;

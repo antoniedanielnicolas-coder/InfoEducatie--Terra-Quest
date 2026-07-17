@@ -52,7 +52,7 @@ async function initApp() {
     let unsubFriends = null;
     let unsubChat = null;
 
-    // ─── User colours for chat avatars ───────────────────────────────────────
+    
     const chatColors = ['#00d4ff','#00e676','#d4a843','#ff4466','#a855f7','#f97316','#22d3ee'];
     function getUserColor(uid) {
         let hash = 0;
@@ -195,7 +195,7 @@ async function initApp() {
                 renderFriendsList(friends);
             });
 
-            // Start chat listener
+            
             if (unsubChat) unsubChat();
             const loadMsg = document.getElementById('chat-loading-msg');
             if (loadMsg) loadMsg.remove();
@@ -203,7 +203,7 @@ async function initApp() {
                 renderChatMessages(messages);
             });
 
-            // Update chat avatar
+            
             const chatAvatar = document.getElementById('chat-avatar-mini');
             if (chatAvatar && user.photoURL) {
                 chatAvatar.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
@@ -225,7 +225,7 @@ async function initApp() {
             const badge = document.getElementById('friends-count-badge');
             if (badge) badge.textContent = '0 prieteni';
 
-            // Reset chat
+            
             if (unsubChat) { unsubChat(); unsubChat = null; }
             const area = document.getElementById('community-chat-messages');
             if (area) area.innerHTML = `<div id="chat-loading-msg" style="text-align:center;color:rgba(255,255,255,0.2);font-size:0.75rem;font-family:'JetBrains Mono',monospace;padding:60px 0 0;"><div style="font-size:1.5rem;margin-bottom:8px;">💬</div>Loghează-te pentru a participa în chat</div>`;
@@ -305,13 +305,13 @@ async function initApp() {
         });
     }
 
-    // ─── Universal Chat Send Logic ────────────────────────────────────────────
+    
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
     const chatCharCount = document.getElementById('chat-char-count');
 
     if (chatInput) {
-        // Character counter
+        
         chatInput.addEventListener('input', () => {
             const len = chatInput.value.length;
             if (chatCharCount) {
@@ -320,7 +320,7 @@ async function initApp() {
             }
         });
 
-        // Send on Enter
+        
         chatInput.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -1047,17 +1047,12 @@ async function initApp() {
         }
 
         avatarUpload.addEventListener('change', (e) => {
-            if (!checkAvatarCooldown()) {
-                avatarUpload.value = '';
-                return;
-            }
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     const base64Str = event.target.result;
                     localStorage.setItem('customAvatar', base64Str);
-                    localStorage.setItem('lastAvatarSwapTime', Date.now().toString());
                     avatarImage.src = base64Str;
                     avatarImage.classList.remove('hidden');
                     avatarEmoji.classList.add('hidden');
@@ -1434,9 +1429,9 @@ async function initApp() {
         if (titleEl) titleEl.textContent = `${shown} Mentor${shown !== 1 ? 'i' : ''} Recomandat${shown !== 1 ? 'i' : ''}`;
     }
 
-    // Legacy chat logic removed to prevent duplicate identifier error and because new universal chat is active above.
+    
 
-    // Legacy shop code removed to fix arrow navigation
+    
 
     function initGlobe() {
         const globeContainer = document.getElementById('globe-container');

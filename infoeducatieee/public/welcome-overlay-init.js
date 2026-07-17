@@ -1,4 +1,4 @@
-﻿import { initWelcomeOverlay } from './welcome-overlay.js';
+import { initWelcomeOverlay } from './welcome-overlay.js';
 
 function init() {
   initWelcomeOverlay();

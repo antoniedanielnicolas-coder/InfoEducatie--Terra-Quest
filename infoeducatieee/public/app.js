@@ -6,7 +6,7 @@ import { initSounds, playSound, startAmbientMusic, stopAmbientMusic, setSoundThe
 import { startGame, endGame } from './games.js';
 import { showToast } from './utils.js';
 import { initWorldMap } from './worldmap.js';
-import { initHistoryMap } from './historical-map.js';
+import { initHistoryMap } from './historical-map.js?v=2';
 import { initSocialMap } from './geosocial.js';
 import {
     onAuthReady, signInWithGoogle, signInWithEmail,
@@ -19,7 +19,7 @@ import {
 
 async function initApp() {
     console.log("Initializing App...");
-    
+
     setTimeout(() => {
         const preloader = document.getElementById('preloader');
         if (preloader && !preloader.classList.contains('hidden')) {
@@ -37,7 +37,7 @@ async function initApp() {
         initWorldMap();
         initHistoryMap();
         initSocialMap();
-        
+
         setTimeout(() => {
             const preloader = document.getElementById('preloader');
             if (preloader) preloader.classList.add('hidden');
@@ -52,8 +52,7 @@ async function initApp() {
     let unsubFriends = null;
     let unsubChat = null;
 
-    // ─── User colours for chat avatars ───────────────────────────────────────
-    const chatColors = ['#00d4ff','#00e676','#d4a843','#ff4466','#a855f7','#f97316','#22d3ee'];
+    const chatColors = ['#00d4ff', '#00e676', '#d4a843', '#ff4466', '#a855f7', '#f97316', '#22d3ee'];
     function getUserColor(uid) {
         let hash = 0;
         for (let i = 0; i < uid.length; i++) hash = uid.charCodeAt(i) + ((hash << 5) - hash);
@@ -153,12 +152,12 @@ async function initApp() {
 
     const newsFeedContainer = document.getElementById('news-feed-container');
     if (newsFeedContainer) {
-        listenToNews(function(items) {
+        listenToNews(function (items) {
             if (!items || items.length === 0) {
                 newsFeedContainer.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Nicio noutate disponibila.</p>';
                 return;
             }
-            const sorted = items.slice().sort(function(a, b) {
+            const sorted = items.slice().sort(function (a, b) {
                 if (a.pinned && !b.pinned) return -1;
                 if (!a.pinned && b.pinned) return 1;
                 return 0;
@@ -195,7 +194,6 @@ async function initApp() {
                 renderFriendsList(friends);
             });
 
-            // Start chat listener
             if (unsubChat) unsubChat();
             const loadMsg = document.getElementById('chat-loading-msg');
             if (loadMsg) loadMsg.remove();
@@ -203,7 +201,6 @@ async function initApp() {
                 renderChatMessages(messages);
             });
 
-            // Update chat avatar
             const chatAvatar = document.getElementById('chat-avatar-mini');
             if (chatAvatar && user.photoURL) {
                 chatAvatar.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
@@ -225,7 +222,6 @@ async function initApp() {
             const badge = document.getElementById('friends-count-badge');
             if (badge) badge.textContent = '0 prieteni';
 
-            // Reset chat
             if (unsubChat) { unsubChat(); unsubChat = null; }
             const area = document.getElementById('community-chat-messages');
             if (area) area.innerHTML = `<div id="chat-loading-msg" style="text-align:center;color:rgba(255,255,255,0.2);font-size:0.75rem;font-family:'JetBrains Mono',monospace;padding:60px 0 0;"><div style="font-size:1.5rem;margin-bottom:8px;">💬</div>Loghează-te pentru a participa în chat</div>`;
@@ -236,7 +232,7 @@ async function initApp() {
     if (btnEmailLogin) {
         btnEmailLogin.addEventListener('click', async () => {
             const email = document.getElementById('login-email')?.value?.trim();
-            const pass  = document.getElementById('login-password')?.value;
+            const pass = document.getElementById('login-password')?.value;
             if (!email || !pass) return showToast('Completează email și parolă.', 'error');
             btnEmailLogin.textContent = '⏳ Se conectează...';
             btnEmailLogin.disabled = true;
@@ -271,9 +267,9 @@ async function initApp() {
     const btnRegister = document.getElementById('btn-register');
     if (btnRegister) {
         btnRegister.addEventListener('click', async () => {
-            const name  = document.getElementById('reg-name')?.value?.trim();
+            const name = document.getElementById('reg-name')?.value?.trim();
             const email = document.getElementById('reg-email')?.value?.trim();
-            const pass  = document.getElementById('reg-password')?.value;
+            const pass = document.getElementById('reg-password')?.value;
             if (!name || !email || !pass) return showToast('Completează toate câmpurile.', 'error');
             if (pass.length < 6) return showToast('Parola trebuie să aibă minim 6 caractere.', 'error');
             btnRegister.textContent = '⏳ Se creează contul...';
@@ -305,13 +301,12 @@ async function initApp() {
         });
     }
 
-    // ─── Universal Chat Send Logic ────────────────────────────────────────────
     const chatInput = document.getElementById('chat-input');
     const chatSendBtn = document.getElementById('chat-send-btn');
     const chatCharCount = document.getElementById('chat-char-count');
 
     if (chatInput) {
-        // Character counter
+
         chatInput.addEventListener('input', () => {
             const len = chatInput.value.length;
             if (chatCharCount) {
@@ -320,7 +315,6 @@ async function initApp() {
             }
         });
 
-        // Send on Enter
         chatInput.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -356,7 +350,6 @@ async function initApp() {
         }
     }
 
-
     const friendSearchBtn = document.getElementById('friend-search-btn');
     const friendSearchInput = document.getElementById('friend-search-input');
     const friendSearchResult = document.getElementById('friend-search-result');
@@ -370,7 +363,7 @@ async function initApp() {
             friendSearchBtn.textContent = '⏳';
             friendSearchBtn.disabled = true;
             let found = null;
-            
+
             try {
                 if (query.toUpperCase().startsWith('TERRA_') || query.toUpperCase().startsWith('GEO_')) {
                     found = await searchUserByQR(query);
@@ -436,7 +429,7 @@ async function initApp() {
 
     function renderFriendsList(friends) {
         const dynList = document.getElementById('dynamic-friends-list');
-        const badge   = document.getElementById('friends-count-badge');
+        const badge = document.getElementById('friends-count-badge');
         const loginPrompt = document.getElementById('friends-login-prompt');
         if (loginPrompt) loginPrompt.style.display = 'none';
         if (badge) badge.textContent = `${friends.length} prieten${friends.length !== 1 ? 'i' : ''}`;
@@ -455,7 +448,7 @@ async function initApp() {
             const isOnline = f.online === true;
             const statusColor = isOnline ? '#00e676' : '#555';
             const statusGlow = isOnline ? '0 0 10px rgba(0,230,118,0.3)' : 'none';
-            
+
             return `
                 <div class="friend-item" style="display:flex;align-items:center;justify-content:space-between;background:rgba(15,23,42,0.6);backdrop-filter:blur(10px);padding:12px 16px;border-radius:12px;border:1px solid ${isOnline ? 'rgba(0,230,118,0.15)' : 'rgba(255,255,255,0.05)'};transition:all 0.3s ease;animation:fadeSlideIn 0.3s ease both;margin-bottom:8px;position:relative;overflow:hidden;">
                     ${isOnline ? '<div style="position:absolute;top:0;left:0;width:2px;height:100%;background:#00e676;box-shadow:0 0 10px #00e676;"></div>' : ''}
@@ -485,15 +478,14 @@ async function initApp() {
         }).join('');
     }
 
-    
     let userXP = parseInt(localStorage.getItem('userXP')) || 0;
     let compassCoins = parseInt(localStorage.getItem('compassCoins')) || 0;
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    
+
     const xpDisplay = document.getElementById('profile-xp-current');
     const coinsDisplays = document.querySelectorAll('.coin-count, #shop-balance');
     const navLevel = document.getElementById('nav-level');
-    
+
     function updateStats() {
         userXP = parseInt(localStorage.getItem('userXP')) || 0;
         compassCoins = parseInt(localStorage.getItem('compassCoins')) || 0;
@@ -503,18 +495,18 @@ async function initApp() {
         const nextLevelXP = 100;
 
         if (xpDisplay) xpDisplay.innerText = userXP;
-        
+
         if (navLevel) navLevel.innerText = `Lv. ${level}`;
-        
+
         const navXpFill = document.getElementById('nav-xp-fill');
         if (navXpFill) navXpFill.style.width = `${(currentLevelXP / nextLevelXP) * 100}%`;
-        
+
         const lvlNumDossier = document.getElementById('level-number-dossier');
-        if(lvlNumDossier) lvlNumDossier.innerText = level;
-        
+        if (lvlNumDossier) lvlNumDossier.innerText = level;
+
         const xpFill = document.getElementById('dossier-xp-fill');
         if (xpFill) xpFill.style.width = `${(currentLevelXP / nextLevelXP) * 100}%`;
-        
+
         const xpNeeded = document.getElementById('profile-xp-needed');
         if (xpNeeded) xpNeeded.innerText = (level * 100);
 
@@ -541,10 +533,10 @@ async function initApp() {
         }
 
         coinsDisplays.forEach(d => d.innerText = compassCoins);
-        
+
         const invList = document.getElementById('inventory-list');
-        if(invList) {
-            if(inventory.length === 0) {
+        if (invList) {
+            if (inventory.length === 0) {
                 invList.innerHTML = `<p class="text-gray-500 text-sm col-span-full">${t('profile.no_assets')}</p>`;
             } else {
                 const idMap = {
@@ -590,9 +582,9 @@ async function initApp() {
                     itemBox.addEventListener('click', () => {
                         const itemId = itemBox.getAttribute('data-item');
                         playSound('click');
-                        
+
                         const data = idMap[itemId];
-                        
+
                         if (data && data.type === 'banner') {
                             const banner = document.getElementById('dossier-banner');
                             if (banner) banner.style.backgroundImage = `url('${data.url}')`;
@@ -644,7 +636,7 @@ async function initApp() {
                 });
             }
         }
-        
+
         syncUserProgress(userXP, compassCoins);
         updateHomeStatsUI();
     }
@@ -653,15 +645,15 @@ async function initApp() {
     function updateHomeStatsUI() {
         const level = Math.floor(userXP / 100) + 1;
         const currentLevelXP = userXP % 100;
-        
+
         const homeXpDisplay = document.getElementById('home-xp-display');
         if (homeXpDisplay) homeXpDisplay.innerText = `${userXP} XP`;
         const homeXpBar = document.getElementById('home-xp-bar');
         if (homeXpBar) homeXpBar.style.width = `${(currentLevelXP / 100) * 100}%`;
-        
+
         const homeRankBadge = document.getElementById('home-rank-badge');
         const homeRankName = document.getElementById('home-rank-name');
-        
+
         const rankTitles = [
             { name: "Bronze I", icon: "🥉" },
             { name: "Silver II", icon: "🥈" },
@@ -672,19 +664,19 @@ async function initApp() {
         const rankIdx = Math.min(level - 1, rankTitles.length - 1);
         if (homeRankBadge) homeRankBadge.innerText = rankTitles[rankIdx].icon;
         if (homeRankName) homeRankName.innerText = rankTitles[rankIdx].name;
-        
+
         const homeCoins = document.getElementById('home-coins-display');
         if (homeCoins) homeCoins.innerText = `${compassCoins} 🧭`;
-        
+
         const homeLessonsDone = document.getElementById('home-lessons-done');
         const homeLessonsBar = document.getElementById('home-lessons-bar');
         const homeLessonsProg = document.getElementById('home-lessons-progress');
-        
-        const estimatedLessons = Math.min(Math.floor(userXP / 20), 48); 
+
+        const estimatedLessons = Math.min(Math.floor(userXP / 20), 48);
         if (homeLessonsDone) homeLessonsDone.innerText = `${estimatedLessons}/48`;
         if (homeLessonsBar) homeLessonsBar.style.width = `${(estimatedLessons / 48) * 100}%`;
         if (homeLessonsProg) homeLessonsProg.style.width = `${(estimatedLessons / 48) * 100}%`;
-        
+
         const homeGamesCount = document.getElementById('home-games-count');
         const homeGamesBar = document.getElementById('home-games-bar');
         const estimatedGames = Math.min(Math.floor(userXP / 15), 50);
@@ -695,22 +687,22 @@ async function initApp() {
     async function populateLeaderboardUI() {
         const board = document.getElementById('home-leaderboard');
         if (!board) return;
-        
+
         board.innerHTML = `<div style="text-align:center;color:#555;font-size:0.8rem;font-family:'JetBrains Mono',monospace;padding:20px;">Se încarcă clasamentul...</div>`;
-        
+
         const leaders = await getLeaderboard();
         if (leaders.length === 0) {
             board.innerHTML = `<div style="text-align:center;color:#555;font-size:0.8rem;font-family:'JetBrains Mono',monospace;padding:20px;">Nu există date suficiente.</div>`;
             return;
         }
-        
+
         board.innerHTML = leaders.map((l, index) => {
             const isMe = currentUser && l.id === currentUser.uid;
             let medal = `#${index + 1}`;
             if (index === 0) medal = '🥇';
             if (index === 1) medal = '🥈';
             if (index === 2) medal = '🥉';
-            
+
             return `
                 <div style="display:flex;align-items:center;justify-content:space-between;background:${isMe ? 'rgba(0,212,255,0.1)' : 'rgba(255,255,255,0.03)'};padding:12px;border-radius:10px;border:1px solid ${isMe ? 'rgba(0,212,255,0.3)' : 'transparent'};">
                     <div style="display:flex;align-items:center;gap:12px;">
@@ -752,7 +744,7 @@ async function initApp() {
     const shopPrevBtn = document.getElementById('shop-prev-btn');
     const shopNextBtn = document.getElementById('shop-next-btn');
     const shopCategoryTitle = document.getElementById('shop-category-title');
-    
+
     if (shopContainer && shopPrevBtn && shopNextBtn && shopCategoryTitle) {
         const categories = shopContainer.querySelectorAll('.shop-category-view');
         const totalCategories = categories.length;
@@ -790,7 +782,7 @@ async function initApp() {
             e.preventDefault();
             const targetPageId = link.getAttribute('data-page');
             document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
-            if(link.classList.contains('nav-link')) {
+            if (link.classList.contains('nav-link')) {
                 link.classList.add('active');
             } else {
                 const matchingNav = document.querySelector(`.nav-link[data-page="${targetPageId}"]`);
@@ -801,7 +793,11 @@ async function initApp() {
                 if (page.id === `page-${targetPageId}`) page.classList.add('active');
             });
             window.scrollTo(0, 0);
-            
+
+            // Inchide automat meniul mobil pe ecran mic
+            const navMenu = document.querySelector('.nav-links');
+            if (navMenu) navMenu.classList.remove('open');
+
             if (targetPageId === 'home') {
                 updateHomeStatsUI();
                 populateLeaderboardUI();
@@ -821,14 +817,14 @@ async function initApp() {
     if (overlay) {
         overlay.addEventListener('click', (e) => {
             const isBtnClick = e.target.closest('#start-experience-btn');
-            const isFingerprintClick = e.target.closest('.fingerprint-wrap') || e.target.closest('.group'); 
-            
+            const isFingerprintClick = e.target.closest('.fingerprint-wrap') || e.target.closest('.group');
+
             if (isBtnClick || isFingerprintClick) {
                 if (overlay.dataset.authenticating) return;
                 overlay.dataset.authenticating = "true";
-                
+
                 playSound('click');
-                
+
                 const bioSection = document.getElementById('welcome-biometric');
                 const loadSection = document.getElementById('welcome-loading');
                 const progFill = document.getElementById('welcome-progress-fill');
@@ -842,11 +838,11 @@ async function initApp() {
                 }
 
                 let progress = 0;
-                
+
                 const interval = setInterval(() => {
                     progress += Math.random() * 8 + 4;
                     if (progress > 100) progress = 100;
-                    
+
                     if (progFill) progFill.style.width = `${progress}%`;
                     if (progText) progText.innerText = `${Math.floor(progress)}%`;
 
@@ -864,13 +860,13 @@ async function initApp() {
                     if (progress >= 100) {
                         clearInterval(interval);
                         startAmbientMusic();
-                        playSound('correct'); 
+                        playSound('correct');
 
                         setTimeout(() => {
                             overlay.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
                             overlay.style.opacity = '0';
                             overlay.style.transform = 'scale(1.1)';
-                            
+
                             setTimeout(() => {
                                 overlay.remove();
                                 initGlobe();
@@ -918,12 +914,12 @@ async function initApp() {
         const gameId = e.detail.game;
         const gamesSelection = document.getElementById('games-selection');
         const activeGameContainer = document.getElementById('active-game-container');
-        
+
         if (gamesSelection && activeGameContainer) {
             gamesSelection.classList.add('hidden');
             activeGameContainer.classList.remove('hidden');
             activeGameContainer.innerHTML = '';
-            
+
             startGame(gameId, activeGameContainer);
             showToast(`Lansare joc: ${gameId}...`, 'info');
         }
@@ -951,7 +947,7 @@ async function initApp() {
             arrow.style.zIndex = '9999';
             arrow.style.animation = 'floatUpXP 1.5s ease-out forwards';
             arrow.style.pointerEvents = 'none';
-            
+
             if (!document.getElementById('xp-arrow-keyframe')) {
                 const style = document.createElement('style');
                 style.id = 'xp-arrow-keyframe';
@@ -965,7 +961,7 @@ async function initApp() {
                 `;
                 document.head.appendChild(style);
             }
-            
+
             xpNavEl.style.position = 'relative';
             xpNavEl.appendChild(arrow);
             setTimeout(() => arrow.remove(), 1500);
@@ -1018,14 +1014,14 @@ async function initApp() {
         const lastSwapTime = parseInt(localStorage.getItem('lastAvatarSwapTime')) || 0;
         const now = Date.now();
         const cooldownMs = 24 * 60 * 60 * 1000;
-        
+
         if (now - lastSwapTime < cooldownMs) {
             const remainingMs = cooldownMs - (now - lastSwapTime);
             const hours = Math.floor(remainingMs / (1000 * 60 * 60));
             const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
             const isRo = typeof currentLang !== 'undefined' ? currentLang === 'ro' : true;
-            const msg = isRo ? 
-                `Atenție: 1 schimbare pe zi! Mai așteaptă ${hours}h ${minutes}m.` : 
+            const msg = isRo ?
+                `Atenție: 1 schimbare pe zi! Mai așteaptă ${hours}h ${minutes}m.` :
                 `Attention: 1 swap per day! Please wait ${hours}h ${minutes}m.`;
             if (typeof showToast === 'function') showToast(msg, 'error');
             if (typeof playSound === 'function') playSound('wrong');
@@ -1047,17 +1043,12 @@ async function initApp() {
         }
 
         avatarUpload.addEventListener('change', (e) => {
-            if (!checkAvatarCooldown()) {
-                avatarUpload.value = '';
-                return;
-            }
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     const base64Str = event.target.result;
                     localStorage.setItem('customAvatar', base64Str);
-                    localStorage.setItem('lastAvatarSwapTime', Date.now().toString());
                     avatarImage.src = base64Str;
                     avatarImage.classList.remove('hidden');
                     avatarEmoji.classList.add('hidden');
@@ -1093,7 +1084,7 @@ async function initApp() {
             saveDossierBtn.disabled = true;
             const originalText = saveDossierBtn.innerHTML;
             saveDossierBtn.innerHTML = "📸 Generare...";
-            
+
             try {
                 const card = document.querySelector('#page-profile .relative.rounded-2xl.overflow-hidden');
                 if (card) {
@@ -1102,12 +1093,12 @@ async function initApp() {
                         backgroundColor: '#0a0e17',
                         scale: 2
                     });
-                    
+
                     const link = document.createElement('a');
                     link.download = `Agent_Dossier_${document.getElementById('profile-name').innerText}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
-                    
+
                     showToast("Dosarul a fost salvat ca imagine!", "success");
                 }
             } catch (err) {
@@ -1124,7 +1115,7 @@ async function initApp() {
         btn.addEventListener('click', (e) => {
             playSound('click');
             const theme = e.currentTarget.getAttribute('data-theme');
-            
+
             if (theme === 'blue') {
                 document.documentElement.style.setProperty('--neon-blue', '#00d4ff');
                 document.documentElement.style.setProperty('--blue-gradient', 'linear-gradient(90deg, #00d4ff, #0077ff)');
@@ -1180,13 +1171,13 @@ async function initApp() {
         btn.addEventListener('click', (e) => {
             const key = e.currentTarget.getAttribute('data-theme-key');
             setSoundTheme(key);
-            
+
             document.querySelectorAll('.sound-theme-btn').forEach(b => {
                 b.classList.remove('border-[#00d4ff]', 'bg-[#00d4ff]/20', 'border-[#d4a843]', 'bg-[#d4a843]/20', 'border-[#cc3355]', 'bg-[#cc3355]/20', 'border-[#2eaa6e]', 'bg-[#2eaa6e]/20');
                 b.classList.add('border-white/20', 'bg-transparent');
                 b.style.color = '';
             });
-            
+
             const colorClassMap = {
                 'cyber': ['border-[#00d4ff]', 'bg-[#00d4ff]/20'],
                 'classic': ['border-[#d4a843]', 'bg-[#d4a843]/20'],
@@ -1197,7 +1188,7 @@ async function initApp() {
             e.currentTarget.classList.add(...cClasses);
             e.currentTarget.classList.remove('border-white/20', 'bg-transparent');
             e.currentTarget.style.color = '#fff';
-            
+
             showToast(`Sound theme changed to ${key}`, "info");
         });
     });
@@ -1205,9 +1196,9 @@ async function initApp() {
     const emojis = ['👨‍💼', '👩‍💼', '🕵️‍♂️', '🕵️‍♀️', '🥷', '👩‍🚀', '👨‍🚀', '🧙‍♂️', '🦹', '🦸', '🧜‍♂️', '🧛', '🧟', '🧞', '🧚', '💂‍♂️', '👮', '👷', '🧑‍🔬', '🧑‍💻'];
     const avatarGrid = document.getElementById('avatar-grid');
     let selectedAvatarEmoji = localStorage.getItem('profileEmoji') || '👨‍💼';
-    
+
     const profileAvatarEmojiEl = document.getElementById('avatar-emoji');
-    if(profileAvatarEmojiEl && !localStorage.getItem('customAvatar')) {
+    if (profileAvatarEmojiEl && !localStorage.getItem('customAvatar')) {
         profileAvatarEmojiEl.innerText = selectedAvatarEmoji;
     }
 
@@ -1251,7 +1242,7 @@ async function initApp() {
                 showToast("Avatar successfully updated!", "success");
             });
         }
-        
+
         const randomBtn = document.getElementById('random-avatar-btn');
         if (randomBtn) {
             randomBtn.addEventListener('click', () => {
@@ -1267,10 +1258,10 @@ async function initApp() {
             playSound('click');
             document.querySelectorAll('.shop-tab-tw').forEach(t => t.classList.remove('active', 'bg-gradient-to-r', 'from-[#00d4ff]/20', 'to-[#0077ff]/20', 'border-[#00d4ff]/50', 'text-white'));
             document.querySelectorAll('.shop-tab-tw').forEach(t => t.classList.add('bg-[#121a2e]', 'text-gray-400'));
-            
+
             e.currentTarget.classList.remove('bg-[#121a2e]', 'text-gray-400');
             e.currentTarget.classList.add('active', 'bg-gradient-to-r', 'from-[#00d4ff]/20', 'to-[#0077ff]/20', 'border-[#00d4ff]/50', 'text-white');
-            
+
             const targetType = e.currentTarget.getAttribute('data-tab');
             document.querySelectorAll('.shop-item').forEach(item => {
                 if (targetType === 'all' || item.getAttribute('data-type') + 's' === targetType || (item.getAttribute('data-type') === 'banner' && targetType === 'banners')) {
@@ -1434,14 +1425,10 @@ async function initApp() {
         if (titleEl) titleEl.textContent = `${shown} Mentor${shown !== 1 ? 'i' : ''} Recomandat${shown !== 1 ? 'i' : ''}`;
     }
 
-    // Legacy chat logic removed to prevent duplicate identifier error and because new universal chat is active above.
-
-    // Legacy shop code removed to fix arrow navigation
-
     function initGlobe() {
         const globeContainer = document.getElementById('globe-container');
         if (!globeContainer || !window.Globe) return;
-        if(globeContainer.innerHTML !== '') return;
+        if (globeContainer.innerHTML !== '') return;
         const world = Globe()(globeContainer)
             .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
             .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
@@ -1462,7 +1449,7 @@ async function initApp() {
     }
 }
 
-window.handleBuy = function(btn) {
+window.handleBuy = function (btn) {
     const item = btn.closest('.shop-item');
     if (!item) return;
     const price = parseInt(btn.getAttribute('data-price') || item.getAttribute('data-price') || 0);
@@ -1514,7 +1501,7 @@ window.handleBuy = function(btn) {
 let _shopCatIndex = 0;
 const _shopCatLabels = ['BANNERE', 'AVATARE', 'UPGRADES'];
 
-window.switchShopCat = function(idx, btn) {
+window.switchShopCat = function (idx, btn) {
     _shopCatIndex = idx;
     _updateShopTrack();
     document.querySelectorAll('.shop-tab-btn').forEach((b, i) => {
@@ -1530,7 +1517,7 @@ window.switchShopCat = function(idx, btn) {
     });
 };
 
-window.shopNav = function(dir) {
+window.shopNav = function (dir) {
     const panels = document.querySelectorAll('.shop-cat-panel');
     _shopCatIndex = Math.max(0, Math.min(panels.length - 1, _shopCatIndex + dir));
     _updateShopTrack();
@@ -1551,14 +1538,14 @@ function _updateShopTrack() {
     const track = document.getElementById('shop-shelf-track');
     const prevBtn = document.getElementById('shop-prev-btn');
     const nextBtn = document.getElementById('shop-next-btn');
-    const label   = document.getElementById('shop-cat-label');
-    const panels  = document.querySelectorAll('.shop-cat-panel');
+    const label = document.getElementById('shop-cat-label');
+    const panels = document.querySelectorAll('.shop-cat-panel');
 
     if (!track) return;
     track.style.transform = `translateX(-${_shopCatIndex * 100}%)`;
     if (prevBtn) prevBtn.style.display = _shopCatIndex > 0 ? 'block' : 'none';
     if (nextBtn) nextBtn.style.display = _shopCatIndex < panels.length - 1 ? 'block' : 'none';
-    if (label)   label.textContent = _shopCatLabels[_shopCatIndex] || '';
+    if (label) label.textContent = _shopCatLabels[_shopCatIndex] || '';
 }
 
 document.addEventListener('DOMContentLoaded', () => { _updateShopTrack(); });
@@ -1611,4 +1598,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-

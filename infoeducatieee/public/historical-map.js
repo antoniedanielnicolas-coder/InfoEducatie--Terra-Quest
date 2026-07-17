@@ -1,81 +1,160 @@
-
-
 const historicalEras = [
     {
         year: 1914,
-        label: '1914 — Eve of WWI',
         color: '#e05c3a',
-        description: `<strong style="color:#e05c3a;">1914 — Eve of World War I</strong><br>
-        Europe is divided into two armed alliance blocs: the Triple Entente (France, Russia, UK) vs the Triple Alliance (Germany, Austria-Hungary, Italy).
-        The Austro-Hungarian and Ottoman empires are crumbling. The entire African continent has been partitioned by European colonial powers at the Berlin Conference (1884).`,
         geojson: 'https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1914.geojson',
-        events: [
-            { icon: '🏭', title: 'Industrial Powers', desc: 'Germany overtakes Britain in industrial production' },
-            { icon: '🌍', title: 'Scramble for Africa', desc: '90% of Africa under European colonial control' },
-            { icon: '💣', title: 'Arms Race', desc: 'Naval buildup between UK and Germany intensifies' },
-            { icon: '🤝', title: 'Alliance System', desc: 'Europe split into two armed, rigid treaty blocs' }
-        ]
+        label: {
+            ro: '1914 — Ajunul WWI',
+            en: '1914 — Eve of WWI'
+        },
+        description: {
+            ro: `<strong style="color:#e05c3a;">1914 — Ajunul Primului Război Mondial</strong><br>
+            Europa este divizată în două blocuri de alianțe înarmate: Tripla Înțelegere (Franța, Rusia, Marea Britanie) contra Tripla Alianță (Germania, Austro-Ungaria, Italia).
+            Imperiile Austro-Ungar și Otoman se prăbușesc. Întregul continent african a fost împărțit de puterile coloniale europene la Conferința de la Berlin (1884).`,
+            en: `<strong style="color:#e05c3a;">1914 — Eve of World War I</strong><br>
+            Europe is divided into two armed alliance blocs: the Triple Entente (France, Russia, UK) vs the Triple Alliance (Germany, Austria-Hungary, Italy).
+            The Austro-Hungarian and Ottoman empires are crumbling. The entire African continent has been partitioned by European colonial powers at the Berlin Conference (1884).`
+        },
+        events: {
+            ro: [
+                { icon: '🏭', title: 'Puterile Industriale', desc: 'Germania depășește Marea Britanie în producția industrială' },
+                { icon: '🌍', title: 'Lupta pentru Africa', desc: '90% din Africa se află sub control colonial european' },
+                { icon: '💣', title: 'Cursa Înarmării', desc: 'Construcția navală dintre Marea Britanie și Germania se intensifică' },
+                { icon: '🤝', title: 'Sistemul de Alianțe', desc: 'Europa este împărțită în două blocuri rigide de tratate' }
+            ],
+            en: [
+                { icon: '🏭', title: 'Industrial Powers', desc: 'Germany overtakes Britain in industrial production' },
+                { icon: '🌍', title: 'Scramble for Africa', desc: '90% of Africa under European colonial control' },
+                { icon: '💣', title: 'Arms Race', desc: 'Naval buildup between UK and Germany intensifies' },
+                { icon: '🤝', title: 'Alliance System', desc: 'Europe split into two armed, rigid treaty blocs' }
+            ]
+        }
     },
     {
         year: 1938,
-        label: '1938 — Pre WW2',
         color: '#d4a843',
-        description: `<strong style="color:#d4a843;">1938 — Eve of World War II</strong><br>
-        Tensions rise dramatically globally. Germany has annexed Austria and the Sudetenland. 
-        Japan's invasion of China expands the conflict in Asia. The League of Nations proves ineffective at preventing aggression.`,
         geojson: 'https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1938.geojson',
-        events: [
-            { icon: '⚔️', title: 'Axis Expansion', desc: 'Aggressive territorial claims by Germany, Italy, and Japan' },
-            { icon: '🛡️', title: 'Appeasement', desc: 'Western powers attempt to avoid war through concessions' },
-            { icon: '🕊️', title: 'League of Nations Fails', desc: 'International diplomatic framework collapses' }
-        ]
+        label: {
+            ro: '1938 — Pre WW2',
+            en: '1938 — Pre WW2'
+        },
+        description: {
+            ro: `<strong style="color:#d4a843;">1938 — Ajunul Celui de-al Doilea Război Mondial</strong><br>
+            Tensiunile globale cresc dramatic. Germania a anexat Austria și Regiunea Sudetă.
+            Invazia Japoniei în China extinde conflictul în Asia. Liga Națiunilor se dovedește ineficientă în prevenirea agresiunii.`,
+            en: `<strong style="color:#d4a843;">1938 — Eve of World War II</strong><br>
+            Tensions rise dramatically globally. Germany has annexed Austria and the Sudetenland.
+            Japan's invasion of China expands the conflict in Asia. The League of Nations proves ineffective at preventing aggression.`
+        },
+        events: {
+            ro: [
+                { icon: '⚔️', title: 'Expansiunea Axei', desc: 'Pretenții teritoriale agresive ale Germaniei, Italiei și Japoniei' },
+                { icon: '🛡️', title: 'Politica de Conciliere', desc: 'Puterile occidentale încearcă să evite războiul prin concesii' },
+                { icon: '🕊️', title: 'Liga Națiunilor Eșuează', desc: 'Cadrul diplomatic internațional se prăbușește' }
+            ],
+            en: [
+                { icon: '⚔️', title: 'Axis Expansion', desc: 'Aggressive territorial claims by Germany, Italy, and Japan' },
+                { icon: '🛡️', title: 'Appeasement', desc: 'Western powers attempt to avoid war through concessions' },
+                { icon: '🕊️', title: 'League of Nations Fails', desc: 'International diplomatic framework collapses' }
+            ]
+        }
     },
     {
         year: 1945,
-        label: '1945 — Post WW2',
         color: '#cc3355',
-        description: `<strong style="color:#cc3355;">1945 — Post World War II</strong><br>
-        The world is reshaped by WW2's aftermath. The United States and Soviet Union emerge as superpowers. 
-        Europe is divided by the "Iron Curtain". The United Nations is founded with 51 original members. 
-        Decolonization begins — but most of Africa and Asia remain under European rule.`,
         geojson: 'https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1945.geojson',
-        events: [
-            { icon: '🇺🇳', title: 'United Nations', desc: 'Founded in 1945 with 51 member states' },
-            { icon: '✂️', title: 'Iron Curtain', desc: 'Europe divided between capitalism and communism' },
-            { icon: '💣', title: 'Nuclear Age', desc: 'USA and USSR enter the nuclear arms race' },
-            { icon: '🕊️', title: 'Decolonization Begins', desc: 'India, Pakistan gain independence shortly after' }
-        ]
+        label: {
+            ro: '1945 — Post WW2',
+            en: '1945 — Post WW2'
+        },
+        description: {
+            ro: `<strong style="color:#cc3355;">1945 — După Al Doilea Război Mondial</strong><br>
+            Lumea este remodelată în urma războiului. Statele Unite și Uniunea Sovietică devin superputeri.
+            Europa este divizată de "Cortina de Fier". Organizația Națiunilor Unite este fondată cu 51 de membri.
+            Începe decolonizarea, dar majoritatea Africii și Asiei rămân sub dominație europeană.`,
+            en: `<strong style="color:#cc3355;">1945 — Post World War II</strong><br>
+            The world is reshaped by WW2's aftermath. The United States and Soviet Union emerge as superpowers.
+            Europe is divided by the "Iron Curtain". The United Nations is founded with 51 original members.
+            Decolonization begins — but most of Africa and Asia remain under European rule.`
+        },
+        events: {
+            ro: [
+                { icon: '🇺🇳', title: 'Națiunile Unite', desc: 'Fondată în 1945 cu 51 de state membre fondatoare' },
+                { icon: '✂️', title: 'Cortina de Fier', desc: 'Europa divizată între capitalism și comunism' },
+                { icon: '💣', title: 'Era Nucleară', desc: 'SUA și URSS încep cursa înarmării nucleare' },
+                { icon: '🕊️', title: 'Începutul Decolonizării', desc: 'India și Pakistan își câștigă independența la scurt timp după' }
+            ],
+            en: [
+                { icon: '🇺🇳', title: 'United Nations', desc: 'Founded in 1945 with 51 member states' },
+                { icon: '✂️', title: 'Iron Curtain', desc: 'Europe divided between capitalism and communism' },
+                { icon: '💣', title: 'Nuclear Age', desc: 'USA and USSR enter the nuclear arms race' },
+                { icon: '🕊️', title: 'Decolonization Begins', desc: 'India, Pakistan gain independence shortly after' }
+            ]
+        }
     },
     {
         year: 1994,
-        label: '1994 — Post Cold War',
         color: '#2eaa6e',
-        description: `<strong style="color:#2eaa6e;">1994 — Post Cold War</strong><br>
-        The Soviet Union has dissolved into 15 independent states. Germany is reunified. 
-        Eastern European nations transition to democracy. Apartheid ends in South Africa.
-        The USA stands as the world's sole superpower in a "unipolar moment".`,
         geojson: 'https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1994.geojson',
-        events: [
-            { icon: '🏳️', title: 'USSR Dissolves', desc: '15 new sovereign states emerged recently' },
-            { icon: '🇩🇪', title: 'German Reunification', desc: 'East and West Germany reunified' },
-            { icon: '🗳️', title: 'Democracy Wave', desc: 'Eastern Europe shifts to market economy' }
-        ]
+        label: {
+            ro: '1994 — Post Războiul Rece',
+            en: '1994 — Post Cold War'
+        },
+        description: {
+            ro: `<strong style="color:#2eaa6e;">1994 — Post Războiul Rece</strong><br>
+            Uniunea Sovietică s-a dizolvat în 15 state independente. Germania este reunificată.
+            Națiunile din Europa de Est fac tranziția către democrație. Apartheid-ul se încheie în Africa de Sud.
+            SUA rămâne singura superputere mondială într-un "moment unipolar".`,
+            en: `<strong style="color:#2eaa6e;">1994 — Post Cold War</strong><br>
+            The Soviet Union has dissolved into 15 independent states. Germany is reunified.
+            Eastern European nations transition to democracy. Apartheid ends in South Africa.
+            The USA stands as the world's sole superpower in a "unipolar moment".`
+        },
+        events: {
+            ro: [
+                { icon: '🏳️', title: 'Dizolvarea URSS', desc: '15 noi state suverane au apărut pe hartă' },
+                { icon: '🇩🇪', title: 'Reunificarea Germaniei', desc: 'Germania de Est și de Vest s-au reunificat' },
+                { icon: '🗳️', title: 'Valul Democratic', desc: 'Europa de Est trece la democrație și economia de piață' }
+            ],
+            en: [
+                { icon: '🏳️', title: 'USSR Dissolves', desc: '15 new sovereign states emerged recently' },
+                { icon: '🇩🇪', title: 'German Reunification', desc: 'East and West Germany reunified' },
+                { icon: '🗳️', title: 'Democracy Wave', desc: 'Eastern Europe shifts to market economy' }
+            ]
+        }
     },
     {
         year: 2026,
-        label: '2026 — Present',
         color: '#00d4ff',
-        description: `<strong style="color:#00d4ff;">2026 — The Multipolar World</strong><br>
-        The unipolar US dominance has given way to a multipolar world order. China is an economic powerhouse. 
-        Conflicts like the invasion of Ukraine reshape European security. BRICS expands. 
-        Climate change and technological races are defining geopolitical challenges.`,
         geojson: 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
-        events: [
-            { icon: '🇨🇳', title: 'Rise of China', desc: "Global economic and technological competition intensifies" },
-            { icon: '⚔️', title: 'Global Conflicts', desc: "Ongoing conflicts reshape regional security borders" },
-            { icon: '🌡️', title: 'Climate Geopolitics', desc: 'Arctic resources and sea routes become contested' },
-            { icon: '🤝', title: 'BRICS Expansion', desc: 'New members join to balance Western financial influence' }
-        ]
+        label: {
+            ro: '2026 — Prezent',
+            en: '2026 — Present'
+        },
+        description: {
+            ro: `<strong style="color:#00d4ff;">2026 — Lumea Multipolară</strong><br>
+            Dominanța unipolară a SUA a lăsat loc unei ordini mondiale multipolare. China este o superputere economică.
+            Conflictele precum invazia Ucrainei remodelează securitatea europeană. BRICS se extinde.
+            Schimbările climatice și cursele tehnologice definesc provocările geopolitice.`,
+            en: `<strong style="color:#00d4ff;">2026 — The Multipolar World</strong><br>
+            The unipolar US dominance has given way to a multipolar world order. China is an economic powerhouse.
+            Conflicts like the invasion of Ukraine reshape European security. BRICS expands.
+            Climate change and technological races are defining geopolitical challenges.`
+        },
+        events: {
+            ro: [
+                { icon: '🇨🇳', title: 'Ascensiunea Chinei', desc: 'Competiția economică și tehnologică globală se intensifică' },
+                { icon: '⚔️', title: 'Conflicte Globale', desc: 'Conflictele în desfășurare remodelează granițele de securitate' },
+                { icon: '🌡️', title: 'Geopolitica Climatică', desc: 'Resursele și rutele din Arctica devin disputate' },
+                { icon: '🤝', title: 'Extinderea BRICS', desc: 'Noi membri se alătură pentru a echilibra influența financiară a Occidentului' }
+            ],
+            en: [
+                { icon: '🇨🇳', title: 'Rise of China', desc: "Global economic and technological competition intensifies" },
+                { icon: '⚔️', title: 'Global Conflicts', desc: "Ongoing conflicts reshape regional security borders" },
+                { icon: '🌡️', title: 'Climate Geopolitics', desc: 'Arctic resources and sea routes become contested' },
+                { icon: '🤝', title: 'BRICS Expansion', desc: 'New members join to balance Western financial influence' }
+            ]
+        }
     }
 ];
 
@@ -83,6 +162,10 @@ let currentEra = 0;
 let historicalMap = null;
 let geojsonLayer = null;
 let historicalMapInitialized = false;
+
+function getActiveLang() {
+    return localStorage.getItem('appLang') === 'ro' ? 'ro' : 'en';
+}
 
 export function initHistoryMap() {
     const navLinks = document.querySelectorAll('.nav-link');
@@ -131,6 +214,7 @@ function renderHistoryMap() {
 window.showHistoricalEra = function(eraIndex) {
     currentEra = eraIndex;
     const era = historicalEras[eraIndex];
+    const lang = getActiveLang();
 
     const btnContainer = document.getElementById('era-buttons');
     if (btnContainer) {
@@ -141,12 +225,13 @@ window.showHistoricalEra = function(eraIndex) {
                     border:1px solid ${i === eraIndex ? e.color : 'rgba(255,255,255,0.2)'};
                     background:${i === eraIndex ? e.color+'30' : 'transparent'};
                     color:${i === eraIndex ? e.color : 'var(--text-secondary)'};">
-                    ${e.label}
+                    ${e.label[lang]}
                 </button>
             `).join('');
         } else {
             Array.from(btnContainer.children).forEach((btn, i) => {
                 const e = historicalEras[i];
+                btn.textContent = e.label[lang];
                 if (i === eraIndex) {
                     btn.style.border = `1px solid ${e.color}`;
                     btn.style.background = `${e.color}30`;
@@ -163,14 +248,14 @@ window.showHistoricalEra = function(eraIndex) {
     const descEl = document.getElementById('era-description');
     if (descEl) {
         descEl.style.borderLeftColor = era.color;
-        descEl.innerHTML = era.description;
+        descEl.innerHTML = era.description[lang];
     }
 
     loadEraGeoJSON(era);
 
     const eventsEl = document.getElementById('era-events');
     if (eventsEl) {
-        eventsEl.innerHTML = era.events.map(ev => `
+        eventsEl.innerHTML = era.events[lang].map(ev => `
             <div style="background:rgba(${hexToRgb(era.color)},0.06);border:1px solid ${era.color}44;border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
                 <div style="font-size:1.5rem;">${ev.icon}</div>
                 <div>
@@ -205,3 +290,13 @@ function hexToRgb(hex) {
     return result ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}` : '0,212,255';
 }
 
+document.addEventListener('languageChanged', () => {
+    const btnContainer = document.getElementById('era-buttons');
+    if (btnContainer) {
+        
+        btnContainer.innerHTML = '';
+    }
+    if (historicalMapInitialized) {
+        showHistoricalEra(currentEra);
+    }
+});

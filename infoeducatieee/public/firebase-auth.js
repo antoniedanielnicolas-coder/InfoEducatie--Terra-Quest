@@ -30,14 +30,14 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyALeqYG4l3tEyn-rh35kVlOS54QiiYBvnw",
-  authDomain: "terraquest-1.firebaseapp.com",
-  databaseURL: "https://terraquest-1-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "terraquest-1",
-  storageBucket: "terraquest-1.firebasestorage.app",
-  messagingSenderId: "871453954070",
-  appId: "1:871453954070:web:32f26c5e844e5b52876537",
-  measurementId: "G-EYL16CE5X8"
+    apiKey: "AIzaSyALeqYG4l3tEyn-rh35kVlOS54QiiYBvnw",
+    authDomain: "terraquest-1.firebaseapp.com",
+    databaseURL: "https://terraquest-1-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "terraquest-1",
+    storageBucket: "terraquest-1.firebasestorage.app",
+    messagingSenderId: "871453954070",
+    appId: "1:871453954070:web:32f26c5e844e5b52876537",
+    measurementId: "G-EYL16CE5X8"
 };
 
 console.log("[Firebase] Project Initialized:", firebaseConfig.projectId);
@@ -60,8 +60,8 @@ export function onAuthReady(callback) {
     if (!auth) return;
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
-        
-        seedInitialNews().catch(() => {});
+
+        if (!newsSeededOnce) { seedInitialNews().catch(() => { }); }
 
         if (user) {
             await ensureUserProfile(user);
@@ -102,37 +102,34 @@ async function ensureUserProfile(user) {
     }
 }
 
-// Update presence periodically
 setInterval(async () => {
     if (auth && auth.currentUser && db) {
         const ts = serverTimestamp();
         const userRef = doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userRef, { lastSeen: ts, online: true }).catch(() => {});
-        
+        await updateDoc(userRef, { lastSeen: ts, online: true }).catch(() => { });
+
         const playerRef = doc(db, 'players', auth.currentUser.uid);
-        await setDoc(playerRef, { 
-            lastSeen: ts, 
+        await setDoc(playerRef, {
+            lastSeen: ts,
             online: true,
             displayName: auth.currentUser.displayName,
             photoURL: auth.currentUser.photoURL
-        }, { merge: true }).catch(() => {});
+        }, { merge: true }).catch(() => { });
     }
-}, 30000); // Every 30 seconds for better responsiveness
+}, 30000);
 
 export async function updateLocation(lat, lng) {
     if (!db || !currentUser) return;
     const ts = serverTimestamp();
-    
-    // Update Users collection
+
     const userRef = doc(db, 'users', currentUser.uid);
     await updateDoc(userRef, { lat, lng, lastSeen: ts });
 
-    // Update Players collection for Map
     const playerRef = doc(db, 'players', currentUser.uid);
-    await setDoc(playerRef, { 
-        lat, 
-        lng, 
-        lastSeen: ts, 
+    await setDoc(playerRef, {
+        lat,
+        lng,
+        lastSeen: ts,
         online: true,
         displayName: currentUser.displayName,
         photoURL: currentUser.photoURL,
@@ -143,19 +140,16 @@ export async function updateLocation(lat, lng) {
 export function listenToFriendsLocations(callback) {
     if (!db || !currentUser) return;
     const userRef = doc(db, 'users', currentUser.uid);
-    
-    // First, listen to the current user's friend list
+
     return onSnapshot(userRef, (userSnap) => {
         if (!userSnap.exists()) return;
         const friendsIds = userSnap.data().friends || [];
-        
+
         if (friendsIds.length === 0) {
             callback([]);
             return;
         }
 
-        // Firestore 'in' query is limited to 10-30 IDs usually. 
-        // For a prototype, we'll take the first 10 friends.
         const friendsQuery = query(
             collection(db, 'users'),
             where('uid', 'in', friendsIds.slice(0, 10))
@@ -171,7 +165,6 @@ export function listenToFriendsLocations(callback) {
     });
 }
 
-// ─── Update Auth UI ─────────────────────────────────────────────────────────────
 function updateAuthUI(user) {
     const authSection = document.getElementById('auth-section');
     const loggedInSection = document.getElementById('logged-in-section');
@@ -317,23 +310,20 @@ export async function getFriendsList() {
 
 export function listenToFriends(callback) {
     if (!db || !currentUser) return;
-    
+
     let innerUnsub = null;
-    
-    // Listen to user's own doc for friend list changes
+
     const unsub = onSnapshot(doc(db, 'users', currentUser.uid), (snap) => {
         if (!snap.exists()) return;
         const friendIds = snap.data().friends || [];
-        
-        // Cancel previous inner listener
+
         if (innerUnsub) { innerUnsub(); innerUnsub = null; }
-        
+
         if (friendIds.length === 0) {
             callback([]);
             return;
         }
 
-        // Use documentId() to query by document ID directly — avoids needing 'uid' field
         const batchIds = friendIds.slice(0, 30);
         const q = query(collection(db, 'users'), where(documentId(), 'in', batchIds));
         innerUnsub = onSnapshot(q, (friendsSnap) => {
@@ -350,7 +340,7 @@ export function listenToFriends(callback) {
             callback(friends);
         }, (err) => {
             console.error('[Friends] Listener error:', err);
-            // Fallback: fetch one by one
+
             Promise.all(friendIds.map(uid => getDoc(doc(db, 'users', uid))))
                 .then(snaps => {
                     const friends = snaps.filter(s => s.exists()).map(s => ({ uid: s.id, ...s.data() }));
@@ -371,8 +361,6 @@ export async function getMyQRCode() {
     return snap.exists() ? snap.data().qrCode : null;
 }
 
-// ─── Universal Chat ──────────────────────────────────────────────────────────
-
 export async function sendChatMessage(text) {
     if (!db || !currentUser) return;
     if (!text || !text.trim()) return;
@@ -382,12 +370,12 @@ export async function sendChatMessage(text) {
         uid: currentUser.uid,
         displayName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Agent',
         photoURL: currentUser.photoURL || '',
-        createdAt: serverTimestamp()
+        createdAt: new Date()
     });
 }
 
 export function listenToChat(callback) {
-    if (!db) return () => {};
+    if (!db) return () => { };
     const q = query(
         collection(db, 'global_chat'),
         orderBy('createdAt', 'desc'),
@@ -396,13 +384,12 @@ export function listenToChat(callback) {
     return onSnapshot(q, (snap) => {
         const messages = snap.docs
             .map(d => ({ id: d.id, ...d.data() }))
-            .reverse(); // oldest first
+            .reverse();
         callback(messages);
     }, (err) => {
         console.error('[Chat] Listener error:', err);
     });
 }
-
 
 export async function syncUserProgress(xp, coins) {
     if (!db || !currentUser) return;
@@ -459,6 +446,8 @@ function showAuthSuccess(msg) {
     const el = document.getElementById('auth-success-msg');
     if (el) { el.textContent = msg; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 3000); }
 }
+
+let newsSeededOnce = false;
 
 const INITIAL_NEWS = [
     {
@@ -520,22 +509,28 @@ const INITIAL_NEWS = [
 ];
 
 async function seedInitialNews() {
-    if (!db) return;
+    if (!db || newsSeededOnce) return;
+    newsSeededOnce = true;
     try {
         const newsCol = collection(db, 'app_news');
-        const snap = await getDocs(query(newsCol, limit(100)));
-        const existingTitles = snap.docs.map(d => d.data().title);
 
         for (const item of INITIAL_NEWS) {
-            if (!existingTitles.includes(item.title)) {
-                await setDoc(doc(newsCol), {
+
+            const stableId = item.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '_')
+                .slice(0, 60);
+            const docRef = doc(newsCol, stableId);
+            const existing = await getDoc(docRef);
+            if (!existing.exists()) {
+                await setDoc(docRef, {
                     ...item,
                     createdAt: serverTimestamp()
                 });
-                console.log(`Seeding news: ${item.title}`);
+                console.log('Seeded news:', item.title);
             }
         }
-        
+
         snap.docs.forEach(async (docSnap) => {
             const data = docSnap.data();
             if (data.description && (data.description.includes('GeoQuest') || data.description.includes('GeoInformatica'))) {
@@ -554,7 +549,7 @@ export function listenToNews(callback) {
         callback(INITIAL_NEWS.sort((a, b) => b.createdAt - a.createdAt));
         return () => { };
     }
-    seedInitialNews();
+    
     const newsQuery = query(
         collection(db, 'app_news'),
         orderBy('createdAt', 'desc'),

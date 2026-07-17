@@ -1,5 +1,3 @@
-
-
 import { t } from './i18n.js';
 
 const countryData = {
@@ -157,7 +155,6 @@ export function initWorldMap() {
         });
     }
 
-    // Global Tab Switcher
     window.switchMapTab = function(tab) {
         const sections = {
             'political': document.getElementById('map-section-political'),
@@ -170,7 +167,6 @@ export function initWorldMap() {
             'social': document.getElementById('tab-social-map')
         };
 
-        // Hide all, deactivate all tabs
         Object.keys(sections).forEach(key => {
             if (sections[key]) sections[key].style.display = 'none';
             if (tabs[key]) {
@@ -179,7 +175,6 @@ export function initWorldMap() {
             }
         });
 
-        // Show selected
         if (sections[tab]) sections[tab].style.display = 'block';
         if (tabs[tab]) {
             const activeColor = tab === 'political' ? 'var(--blue-gradient)' : 
@@ -189,7 +184,6 @@ export function initWorldMap() {
             tabs[tab].style.color = '#0a0e17';
         }
 
-        // Trigger Render
         if (tab === 'political') {
             renderWorldMap();
         } else if (tab === 'history') {
@@ -295,7 +289,6 @@ function renderWorldMap() {
                 }
             }).addTo(worldMapInstance);
 
-            // Snap Map Toggle Logic
             const snapToggle = document.getElementById('snap-map-toggle');
             if (snapToggle) {
                 snapToggle.addEventListener('click', () => {
@@ -311,7 +304,6 @@ function renderWorldMap() {
                 });
             }
 
-            // Add Legend Filter Logic
             document.querySelectorAll('.legend-item').forEach(item => {
                 item.style.cursor = 'pointer';
                 item.style.transition = 'all 0.3s ease';

@@ -1,4 +1,4 @@
-﻿window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
     const logoContainer = document.getElementById('logo-3d-container');
     if (!logoContainer || !window.THREE) return;
 

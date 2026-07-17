@@ -236,11 +236,11 @@ function initGeoSimulator() {
                 <!-- Drop Zones -->
                 ${geoSimItems.map((item, i) => {
                     const positions = [
-                        { top: '22%', left: '52%' },  // EU — Western Europe (Brussels area)
-                        { top: '18%', left: '47%' },  // NATO — North Atlantic / NW Europe
-                        { top: '27%', left: '80%' },  // DMZ — Korean Peninsula
-                        { top: '21%', left: '21%' },  // 49th Parallel — US-Canada border
-                        { top: '28%', left: '73%' }   // BRI — China / East Asia
+                        { top: '22%', left: '52%' },  
+                        { top: '18%', left: '47%' },  
+                        { top: '27%', left: '80%' },  
+                        { top: '21%', left: '21%' },  
+                        { top: '28%', left: '73%' }   
                     ];
                     const pos = positions[i];
                     return `
@@ -922,37 +922,37 @@ window.guessCity = function(guess, correct) {
 const shapeGuesserData = [
     {
         name: "Italy",
-        // Boot shape of Italy — recognizable peninsular form
+        
         shape: "M 44,5 L 50,8 L 54,14 L 52,20 L 48,24 L 50,30 L 54,36 L 58,44 L 62,54 L 64,62 L 60,70 L 54,76 L 48,80 L 53,84 L 51,90 L 46,86 L 42,78 L 38,68 L 34,58 L 32,48 L 35,38 L 37,28 L 36,20 L 39,14 L 43,8 Z",
         options: ["Italy", "Greece", "Spain", "France"]
     },
     {
         name: "Japan",
-        // Island chain — Kyushu + Shikoku + Honshu + Hokkaido
+        
         shape: "M 70,12 L 65,18 L 68,24 L 72,18 Z M 58,28 L 53,34 L 56,40 L 62,36 L 60,30 Z M 44,42 L 38,50 L 40,58 L 48,62 L 54,56 L 52,48 L 46,44 Z M 32,64 L 28,72 L 32,78 L 38,74 L 36,68 Z",
         options: ["Japan", "Philippines", "New Zealand", "Madagascar"]
     },
     {
         name: "Chile",
-        // Long thin strip along the west coast of South America
+        
         shape: "M 47,5 L 53,5 L 55,15 L 57,28 L 58,42 L 57,56 L 56,68 L 54,80 L 52,90 L 48,90 L 46,80 L 44,68 L 43,56 L 42,42 L 42,28 L 44,15 Z",
         options: ["Chile", "Argentina", "Peru", "Norway"]
     },
     {
         name: "Australia",
-        // Continent shape — large irregular mass with Gulf of Carpentaria indent
+        
         shape: "M 22,28 L 32,20 L 48,18 L 62,20 L 74,24 L 80,18 L 84,26 L 86,36 L 84,48 L 78,58 L 82,66 L 78,76 L 68,82 L 55,84 L 42,82 L 30,76 L 20,66 L 14,54 L 12,42 L 15,32 Z",
         options: ["Australia", "Brazil", "India", "USA"]
     },
     {
         name: "Norway",
-        // Jagged fjord coastline, long and narrow in the south, wider in north
+        
         shape: "M 48,5 L 55,8 L 60,14 L 58,22 L 62,28 L 58,34 L 62,40 L 56,46 L 58,54 L 52,60 L 54,68 L 48,72 L 44,68 L 46,60 L 42,54 L 44,46 L 40,40 L 44,34 L 40,28 L 44,20 L 42,12 Z",
         options: ["Norway", "Sweden", "Finland", "Denmark"]
     },
     {
         name: "India",
-        // Triangular subcontinent with wide north and pointed south
+        
         shape: "M 30,15 L 70,15 L 75,22 L 72,30 L 78,38 L 74,46 L 68,38 L 72,50 L 65,60 L 58,70 L 50,82 L 42,70 L 35,60 L 28,50 L 24,38 L 28,28 Z",
         options: ["India", "Pakistan", "Bangladesh", "Sri Lanka"]
     }

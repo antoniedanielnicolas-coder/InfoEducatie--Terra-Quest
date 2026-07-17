@@ -4,7 +4,7 @@ import { collection, onSnapshot, query, where } from 'https://www.gstatic.com/fi
 let socialMapInstance = null;
 let socialMapInitialized = false;
 let syncUnsub = null;
-let markersMap = new Map(); // Store markers by playerId
+let markersMap = new Map(); 
 
 export function initSocialMap() {
     const worldmapLink = document.querySelector('[data-page="worldmap"]');
@@ -35,10 +35,10 @@ export function renderSocialMap() {
         attribution: '&copy; CartoDB'
     }).addTo(socialMapInstance);
 
-    // Initialise Sync
+    
     initSocialSync();
 
-    // Initialise My Location
+    
     if ("geolocation" in navigator) {
         navigator.geolocation.watchPosition((pos) => {
             updateLocation(pos.coords.latitude, pos.coords.longitude);
@@ -50,7 +50,7 @@ function initSocialSync() {
     if (syncUnsub) syncUnsub();
 
     const playersRef = collection(db, "players");
-    // Listen for all players except me (optional, but requested for 'others')
+    
     syncUnsub = onSnapshot(playersRef, (snapshot) => {
         if (!socialMapInstance) return;
 
@@ -58,17 +58,17 @@ function initSocialSync() {
             const playerId = change.doc.id;
             const data = change.doc.data();
 
-            // Skip if it's my own marker (optional, usually you want to see others)
+            
             if (currentUser && playerId === currentUser.uid) return;
 
             if (change.type === "removed" || (data.online === false)) {
-                // Remove marker
+                
                 if (markersMap.has(playerId)) {
                     socialMapInstance.removeLayer(markersMap.get(playerId));
                     markersMap.delete(playerId);
                 }
             } else {
-                // Add or Update marker
+                
                 if (data.lat && data.lng) {
                     const statusColor = '#00d4ff';
                     const markerHtml = `

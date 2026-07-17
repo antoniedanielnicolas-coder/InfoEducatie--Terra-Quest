@@ -1,0 +1,4 @@
+node_modules/
+terraquest_backups/
+.env
+.firebase/

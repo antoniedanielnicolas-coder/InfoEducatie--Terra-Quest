@@ -102,7 +102,7 @@ async function ensureUserProfile(user) {
     }
 }
 
-// Update presence periodically
+
 setInterval(async () => {
     if (auth && auth.currentUser && db) {
         const ts = serverTimestamp();
@@ -117,17 +117,17 @@ setInterval(async () => {
             photoURL: auth.currentUser.photoURL
         }, { merge: true }).catch(() => {});
     }
-}, 30000); // Every 30 seconds for better responsiveness
+}, 30000); 
 
 export async function updateLocation(lat, lng) {
     if (!db || !currentUser) return;
     const ts = serverTimestamp();
     
-    // Update Users collection
+    
     const userRef = doc(db, 'users', currentUser.uid);
     await updateDoc(userRef, { lat, lng, lastSeen: ts });
 
-    // Update Players collection for Map
+    
     const playerRef = doc(db, 'players', currentUser.uid);
     await setDoc(playerRef, { 
         lat, 
@@ -144,7 +144,7 @@ export function listenToFriendsLocations(callback) {
     if (!db || !currentUser) return;
     const userRef = doc(db, 'users', currentUser.uid);
     
-    // First, listen to the current user's friend list
+    
     return onSnapshot(userRef, (userSnap) => {
         if (!userSnap.exists()) return;
         const friendsIds = userSnap.data().friends || [];
@@ -154,8 +154,8 @@ export function listenToFriendsLocations(callback) {
             return;
         }
 
-        // Firestore 'in' query is limited to 10-30 IDs usually. 
-        // For a prototype, we'll take the first 10 friends.
+        
+        
         const friendsQuery = query(
             collection(db, 'users'),
             where('uid', 'in', friendsIds.slice(0, 10))
@@ -171,7 +171,7 @@ export function listenToFriendsLocations(callback) {
     });
 }
 
-// ─── Update Auth UI ─────────────────────────────────────────────────────────────
+
 function updateAuthUI(user) {
     const authSection = document.getElementById('auth-section');
     const loggedInSection = document.getElementById('logged-in-section');
@@ -320,12 +320,12 @@ export function listenToFriends(callback) {
     
     let innerUnsub = null;
     
-    // Listen to user's own doc for friend list changes
+    
     const unsub = onSnapshot(doc(db, 'users', currentUser.uid), (snap) => {
         if (!snap.exists()) return;
         const friendIds = snap.data().friends || [];
         
-        // Cancel previous inner listener
+        
         if (innerUnsub) { innerUnsub(); innerUnsub = null; }
         
         if (friendIds.length === 0) {
@@ -333,7 +333,7 @@ export function listenToFriends(callback) {
             return;
         }
 
-        // Use documentId() to query by document ID directly — avoids needing 'uid' field
+        
         const batchIds = friendIds.slice(0, 30);
         const q = query(collection(db, 'users'), where(documentId(), 'in', batchIds));
         innerUnsub = onSnapshot(q, (friendsSnap) => {
@@ -350,7 +350,7 @@ export function listenToFriends(callback) {
             callback(friends);
         }, (err) => {
             console.error('[Friends] Listener error:', err);
-            // Fallback: fetch one by one
+            
             Promise.all(friendIds.map(uid => getDoc(doc(db, 'users', uid))))
                 .then(snaps => {
                     const friends = snaps.filter(s => s.exists()).map(s => ({ uid: s.id, ...s.data() }));
@@ -371,7 +371,7 @@ export async function getMyQRCode() {
     return snap.exists() ? snap.data().qrCode : null;
 }
 
-// ─── Universal Chat ──────────────────────────────────────────────────────────
+
 
 export async function sendChatMessage(text) {
     if (!db || !currentUser) return;
@@ -382,7 +382,7 @@ export async function sendChatMessage(text) {
         uid: currentUser.uid,
         displayName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Agent',
         photoURL: currentUser.photoURL || '',
-        createdAt: serverTimestamp()
+        createdAt: new Date()
     });
 }
 
@@ -396,7 +396,7 @@ export function listenToChat(callback) {
     return onSnapshot(q, (snap) => {
         const messages = snap.docs
             .map(d => ({ id: d.id, ...d.data() }))
-            .reverse(); // oldest first
+            .reverse(); 
         callback(messages);
     }, (err) => {
         console.error('[Chat] Listener error:', err);

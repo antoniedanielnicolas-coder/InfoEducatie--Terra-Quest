@@ -125,7 +125,7 @@ const g12RealLong = [
     }
 ];
 
-// Populate tests
+
 export const testSets = [];
 
 function getQuestionsByGrade(grade, count) {
@@ -135,17 +135,17 @@ function getQuestionsByGrade(grade, count) {
     else if (grade === 11) pool = grade11Questions;
     else if (grade === 12) pool = g12RealLong;
 
-    // Return a random selection of 'count' questions from the pool
+    
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count).map((q, i) => ({ ...q, id: `g${grade}_q_${i}_${Math.random()}` }));
 }
 
 [9, 10, 11, 12].forEach(grade => {
-    // Generate 10 Levels for each Island
+    
     for (let i = 1; i <= 10; i++) {
-        // As levels go up, they get slightly harder/longer
+        
         let numQs = i <= 3 ? 3 : (i <= 7 ? 4 : 5);
-        let timeSecs = numQs * 20; // 20 seconds per question
+        let timeSecs = numQs * 20; 
 
         testSets.push({
             id: `g${grade}_level_${i}`, grade: grade, type: "level", levelNum: i,

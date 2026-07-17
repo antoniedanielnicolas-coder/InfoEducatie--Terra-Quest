@@ -1,5 +1,3 @@
-﻿
-
 export function initWelcomeOverlay() {
   buildOverlayHTML();
   initStars();
